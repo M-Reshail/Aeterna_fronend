@@ -50,7 +50,7 @@ export const Footer = () => {
               <li>WhatsApp: +92000000000</li>
               <li>
                 Email:{' '}
-                <a href="mailto:info@mt5simulator.com" className="text-[#64A320] hover:underline">
+                <a href="mailto:info@aeterna.com" className="text-[#64A320] hover:underline">
                   info@aeterna.com
                 </a>
               </li>

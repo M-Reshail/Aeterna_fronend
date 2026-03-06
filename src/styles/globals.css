@@ -170,7 +170,7 @@
     @apply bg-warning-600 bg-opacity-20 text-warning-400;
   }
 
-  /* Premium badge-platform style - matches MT5 design */
+  /* Premium badge-platform style */
   .badge-platform {
     border-style: solid;
     border-width: 1px 0px 0px 1px;
@@ -407,7 +407,7 @@
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
   background: rgba(255,255,255,0.15);
 }
-/* Glass Header Styling - MT5 Design */
+/* Glass Header Styling */
 .glass-header {
   background: rgba(11, 22, 27, 0.6);
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
@@ -469,8 +469,8 @@
   }
 }
 
-/* Navigation Links - exact MT5 style */
-.nav-link-mt5 {
+/* Navigation Links */
+.nav-link {
   color: #E5E7EB;
   font-size: 16px;
   font-family: 'Inter', -apple-system, sans-serif;
@@ -483,8 +483,8 @@
   transition: 0.3s ease-in-out;
 }
 
-.nav-link-mt5.active,
-.nav-link-mt5:hover {
+.nav-link.active,
+.nav-link:hover {
   color: #ffffff;
   border-bottom: 1px solid #53F0AB;
   background: linear-gradient(
@@ -496,7 +496,7 @@
 
 
 /* CTA Buttons */
-.btn-buy-mt5 {
+.btn-buy {
   background-color: #1EB683;
   border-radius: 50px;
   color: white;
@@ -513,7 +513,7 @@
   font-weight: 500;
 }
 
-.btn-buy-mt5:hover {
+.btn-buy:hover {
   background-color: transparent;
   color: #1EB683;
   border-color: #1EB683;
@@ -521,7 +521,7 @@
   transform: scale(1.05);
 }
 
-.btn-boost-mt5 {
+.btn-boost {
   background-color: transparent;
   border-radius: 50px;
   color: #ACBAC0;
@@ -538,7 +538,7 @@
   font-weight: 500;
 }
 
-.btn-boost-mt5:hover {
+.btn-boost:hover {
   background-color: #1EB683;
   color: white;
   border-color: #1EB683;

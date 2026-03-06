@@ -56,7 +56,7 @@ export const Header = () => {
   return (
     <header className="sticky top-0 z-40" style={{paddingTop: '32px'}}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[71px]">
-        {/* Glass header container - MT5 style */}
+        {/* Glass header container */}
         <div className={`glass-header border border-emerald-500/20 flex items-stretch justify-between ${isScrolled ? 'fixed-scroll' : ''}`}>
           
           {/* Logo */}
@@ -73,20 +73,20 @@ export const Header = () => {
               <>
                 <RouterLink
                   to="/dashboard"
-                  className={`nav-link-mt5 ${isActive('/dashboard') ? 'active' : ''}`}
+                  className={`nav-link ${isActive('/dashboard') ? 'active' : ''}`}
                 >
                   Dashboard
                 </RouterLink>
                 <RouterLink
                   to="/alerts"
-                  className={`nav-link-mt5 ${isActive('/alerts') ? 'active' : ''}`}
+                  className={`nav-link ${isActive('/alerts') ? 'active' : ''}`}
                 >
                   Alerts
                 </RouterLink>
                 {user?.role === 'admin' && (
                   <RouterLink
                     to="/admin"
-                    className={`nav-link-mt5 ${isActive('/admin') ? 'active' : ''}`}
+                    className={`nav-link ${isActive('/admin') ? 'active' : ''}`}
                   >
                     Admin
                   </RouterLink>
@@ -96,19 +96,19 @@ export const Header = () => {
               <>
                 <a
                   href="#features"
-                  className="nav-link-mt5"
+                  className="nav-link"
                 >
                   Features
                 </a>
                 <a
                   href="#testimonials"
-                  className="nav-link-mt5"
+                  className="nav-link"
                 >
                   Testimonials
                 </a>
                 <a
                   href="#pricing"
-                  className="nav-link-mt5"
+                  className="nav-link"
                 >
                   Pricing
                 </a>
@@ -117,7 +117,7 @@ export const Header = () => {
                 <div className="relative" onMouseLeave={() => setShowMoreMenu(false)}>
                   <button
                     onClick={() => setShowMoreMenu(!showMoreMenu)}
-                    className="nav-link-mt5 flex items-center gap-1"
+                    className="nav-link flex items-center gap-1"
                   >
                     More
                     <ChevronDown className="w-4 h-4" />
@@ -211,13 +211,13 @@ export const Header = () => {
               <>
                 <button
                   onClick={() => navigate('/login')}
-                  className="btn-boost-mt5 hidden md:flex"
+                  className="btn-boost hidden md:flex"
                 >
                   Sign In
                 </button>
                 <button
                   onClick={() => navigate('/register')}
-                  className="btn-buy-mt5 hidden md:flex"
+                  className="btn-buy hidden md:flex"
                 >
                   Get Started
                 </button>
@@ -287,13 +287,13 @@ export const Header = () => {
                   <div className="border-t border-emerald-500/10 mt-2 pt-2 px-4 pb-3 flex gap-3">
                     <button
                       onClick={() => { navigate('/login'); setShowMobileMenu(false); }}
-                      className="btn-boost-mt5 flex-1"
+                      className="btn-boost flex-1"
                     >
                       Sign In
                     </button>
                     <button
                       onClick={() => { navigate('/register'); setShowMobileMenu(false); }}
-                      className="btn-buy-mt5 flex-1"
+                      className="btn-buy flex-1"
                     >
                       Get Started
                     </button>
