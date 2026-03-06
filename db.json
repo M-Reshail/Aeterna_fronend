@@ -1,0 +1,190 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "email": "test@example.com",
+      "password": "Test@1234",
+      "name": "Test User",
+      "role": "admin",
+      "active": true,
+      "createdAt": "2024-02-19T00:00:00Z",
+      "verified": true,
+      "refreshToken": null
+    },
+    {
+      "id": 100,
+      "email": "admin@gmail.com",
+      "password": "Admin50@",
+      "name": "Admin",
+      "role": "admin",
+      "active": true,
+      "createdAt": "2026-02-28T00:00:00Z",
+      "verified": true,
+      "refreshToken": "eyJpZCI6MTAwLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInR5cGUiOiJyZWZyZXNoIiwiaWF0IjoxNzcyMjkzNzY5NjE2LCJleHAiOjE3NzI4OTg1Njk2MTZ9"
+    },
+    {
+      "email": "reshail50@gmail.com",
+      "password": "Reshail50@",
+      "name": "reshail50",
+      "role": "user",
+      "active": true,
+      "createdAt": "2026-02-25T22:45:03.927Z",
+      "verified": true,
+      "id": 2,
+      "refreshToken": null
+    },
+    {
+      "email": "reshail51@gmail.com",
+      "password": "Reshail51@",
+      "name": "reshail51",
+      "role": "user",
+      "active": true,
+      "createdAt": "2026-02-26T10:58:12.203Z",
+      "verified": true,
+      "id": 3,
+      "refreshToken": null
+    }
+  ],
+  "alerts": [
+    {
+      "id": 1,
+      "title": "Bitcoin surge above $45K",
+      "description": "Bitcoin has surged above $45,000 for the first time this month",
+      "priority": "HIGH",
+      "status": "new",
+      "type": "price_movement",
+      "token": "BTC",
+      "sources": [
+        "CoinMarketCap",
+        "Twitter",
+        "Reuters"
+      ],
+      "createdAt": "2024-02-19T10:30:00Z",
+      "readAt": null,
+      "dismissedAt": null
+    },
+    {
+      "id": 2,
+      "title": "Ethereum network upgrade announced",
+      "description": "The Ethereum foundation announced a major network upgrade scheduled for next quarter",
+      "priority": "MEDIUM",
+      "status": "new",
+      "type": "news",
+      "token": "ETH",
+      "sources": [
+        "Ethereum Blog",
+        "GitHub"
+      ],
+      "createdAt": "2024-02-19T09:15:00Z",
+      "readAt": null,
+      "dismissedAt": null
+    },
+    {
+      "id": 3,
+      "title": "Polkadot partnerships expand",
+      "description": "Polkadot announces new partnerships with major institutions",
+      "priority": "LOW",
+      "status": "read",
+      "type": "partnership",
+      "token": "DOT",
+      "sources": [
+        "Polkadot Forum"
+      ],
+      "createdAt": "2024-02-19T08:00:00Z",
+      "readAt": "2024-02-19T08:30:00Z",
+      "dismissedAt": null
+    }
+  ],
+  "preferences": [
+    {
+      "id": 1,
+      "userId": 1,
+      "watchlist": [
+        "BTC",
+        "ETH",
+        "SOL",
+        "DOT"
+      ],
+      "notificationChannels": {
+        "email": true,
+        "telegram": false,
+        "dashboard": true
+      },
+      "quietHours": {
+        "enabled": true,
+        "startTime": "22:00",
+        "endTime": "08:00"
+      },
+      "alertFrequency": "instant",
+      "priorityFilter": [
+        "HIGH",
+        "MEDIUM"
+      ]
+    },
+    {
+      "userId": 2,
+      "notificationChannels": {
+        "email": true,
+        "telegram": false,
+        "dashboard": true
+      },
+      "quietHours": {
+        "enabled": false,
+        "startTime": "22:00",
+        "endTime": "08:00"
+      },
+      "alertFrequency": "realtime",
+      "priorityFilter": [
+        "HIGH",
+        "MEDIUM",
+        "LOW"
+      ],
+      "watchlist": [
+        "BTC",
+        "ETH",
+        "DOGE",
+        "SOL",
+        "ATA"
+      ],
+      "id": 2
+    }
+  ],
+  "metrics": [
+    {
+      "id": 1,
+      "timestamp": "2024-02-19T10:00:00Z",
+      "eventsPerSecond": 1250,
+      "alertsProcessed": 5420,
+      "activeUsers": 2341,
+      "systemHealth": 99.5
+    },
+    {
+      "id": 2,
+      "timestamp": "2024-02-20T10:00:00Z",
+      "eventsPerSecond": 1320,
+      "alertsProcessed": 5810,
+      "activeUsers": 2410,
+      "systemHealth": 99.4,
+      "errorRate": 0.74
+    },
+    {
+      "id": 3,
+      "timestamp": "2024-02-21T10:00:00Z",
+      "eventsPerSecond": 1180,
+      "alertsProcessed": 4980,
+      "activeUsers": 2388,
+      "systemHealth": 99.2,
+      "errorRate": 0.88
+    },
+    {
+      "id": 4,
+      "timestamp": "2024-02-22T10:00:00Z",
+      "eventsPerSecond": 1410,
+      "alertsProcessed": 6094,
+      "activeUsers": 2478,
+      "systemHealth": 99.6,
+      "errorRate": 0.62
+    }
+  ],
+  "feedback": []
+}

@@ -1,0 +1,262 @@
+
+Week 1:
+Set up React 18 project with Vite
+Configure TailwindCSS and design system
+Define color palette (Blue, Green, Red, Amber)
+Set up typography (Inter font family)
+Create base CSS utilities
+Set up React Router for navigation
+Create project folder structure
+/components (reusable UI components)
+/pages (page-level components)
+/hooks (custom React hooks)
+/services (API calls)
+/utils (helper functions)
+/contexts (React Context)
+Create AuthContext for authentication state management
+Week 2:
+Design and implement Landing Page
+Hero section with value proposition
+Features section
+Pricing section (placeholder)
+CTA buttons
+Footer
+Create Login page
+Email and password fields
+Form validation
+Error message display
+"Forgot Password" link
+Create Registration page
+Email, password, confirm password fields
+Terms of service checkbox
+Form validation (client-side)
+Success state handling
+Implement authentication flow
+API integration with backend
+JWT token storage (localStorage/sessionStorage)
+Protected route wrapper
+Auto-redirect logic
+Create basic layout components (Header, Sidebar, Footer)
+Deliverables:
+✅React app with routing
+✅Landing page (responsive)
+✅Authentication pages (Login, Register)
+✅Basic layout structure
+................................
+Week 3:
+Design Dashboard wireframes and mockups
+Alert feed layout
+Filter sidebar
+Alert card design
+Detail view modal
+Create reusable UI components
+Button component (variants: primary, secondary, danger)
+Input component (text, email, password)
+Card component
+Badge component (priority indicators)
+Loading spinner
+Alert/Toast notification
+Implement dashboard layout
+Header with user profile dropdown
+Sidebar for filters
+Main content area
+Responsive breakpoints
+Week 4:
+Create Alert Card component
+Display event type, source, timestamp
+Priority badge (HIGH/MEDIUM/LOW)
+Content preview (truncated)
+Action buttons (view details, mark as read)
+Hover states
+Implement Alert Feed view (static data)
+List of alert cards
+Infinite scroll setup (react-infinite-scroll-component)
+Loading states
+Empty state design
+Create Filter component
+Priority filter (HIGH, MEDIUM, LOW)
+Date range picker
+Entity/token filter (search input)
+Apply/Clear buttons
+Add dark mode support (optional enhancement)
+Deliverables:
+✅Dashboard UI (static)
+✅Reusable component library
+✅Alert card design
+✅Filter UI
+..................................................
+Week 5:
+Implement API service layer
+Create axios instance with interceptors
+Add JWT token to requests
+Handle token refresh
+Error handling and retry logic
+Integrate alerts API
+Fetch user alerts (GET /api/alerts)
+Pagination/infinite scroll implementation
+Filter application
+Loading and error states
+Implement Alert Detail Modal
+Full event content display
+Metadata section (source, timestamp, score)
+Related alerts section
+Action buttons (share, mark as read, dismiss)
+Close and navigation controls
+Week 6:
+Implement Settings page
+Account settings tab
+Email display
+Password change form
+Account deletion (with confirmation)
+Notification settings tab
+Channel toggles (Telegram, Email, Dashboard)
+Quiet hours configuration
+Alert frequency preferences
+Alert preferences tab
+Watchlist management (add/remove tokens)
+Priority filter (which priorities to receive)
+Save preferences button
+Create user preferences API integration
+Save preferences to backend
+Load preferences on mount
+Real-time validation
+Add success/error notifications (toast)
+Implement loading states across the app
+Deliverables:
+✅Alert feed with real data
+✅Alert detail view
+✅Settings page (fully functional)
+✅User preferences management
+......................................................
+Week 7:
+Integrate WebSocket with Socket.IO client
+Connect to WebSocket server
+Authenticate connection with JWT
+Handle connection/disconnection
+Automatic reconnection logic
+Show connection status indicator
+Implement real-time alert updates
+Listen for 'new_alert' events
+Update alert feed in real-time
+Smooth UI updates (no jarring insertions)
+Show notification badge
+Browser notification support (optional)
+Create Alert History page
+List view of past alerts (last 30 days)
+Date range picker
+Priority and entity filters
+Search functionality
+Export to CSV button
+Pagination controls
+Week 8:
+Create Admin Dashboard (if admin user)
+System metrics cards
+Total events ingested
+Total alerts generated
+Active users
+System uptime percentage
+Error rate
+Real-time metrics charts (using Chart.js or Recharts)
+Events over time (line chart)
+Alerts by priority (pie chart)
+User growth (line chart)
+User management table
+List of users with status
+Search and filter
+Action buttons (view, disable)
+Implement user feedback mechanism
+Feedback button on alerts
+Simple thumbs up/down rating
+Submit feedback form
+UI polish and refinements
+Smooth animations and transitions
+Loading skeletons
+Error boundary implementation
+404 page
+Mobile responsiveness testing and fixes
+Deliverables:
+✅Real-time dashboard updates
+✅Alert history page
+✅Admin dashboard (if admin)
+✅Fully responsive UI
+✅User feedback system
+....................................
+Week 9:
+Write frontend tests
+Component unit tests (Jest + React Testing Library)
+Integration tests for key user flows
+Test authentication flows
+Test alert feed functionality
+Test settings page
+Cross-browser testing
+Chrome, Firefox, Safari, Edge (last 2 versions)
+Fix browser-specific issues
+Accessibility audit
+Run axe-core audit
+Fix WCAG 2.1 Level A violations
+Add ARIA labels where needed
+Keyboard navigation testing
+Screen reader compatibility testing
+Week 10:
+UI/UX refinements based on testing
+Improve error messages
+Add contextual help/tooltips
+Loading state improvements
+Empty state designs
+Success feedback improvements
+Performance optimization
+Code splitting
+Lazy loading components
+Image optimization
+Bundle size reduction
+Lighthouse score optimization (target >80)
+Bug fixing
+Fix UI bugs
+Fix responsive design issues
+Fix interaction bugs
+Deliverables:
+✅Frontend tests (70%+ coverage)
+✅Cross-browser compatibility
+✅WCAG 2.1 Level A compliance
+✅Lighthouse score >80
+✅All UI bugs fixed
+........................................
+Week 11:
+Create user-facing documentation
+User guide / Help center
+FAQ page
+Getting started tutorial
+Feature documentation
+Video tutorial (optional)
+Final UI polish
+Review all user flows
+Ensure consistent design language
+Fix any remaining visual issues
+Add final animations/micro-interactions
+Create marketing assets
+Screenshot high-quality dashboard views
+Create feature demo GIFs
+Update landing page with real screenshots
+Social media preview images
+Week 12:
+Pre-launch checklist
+Test all user flows one final time
+Verify mobile responsiveness
+Check all links and navigation
+Verify forms and validation
+Test on multiple devices
+Launch preparation
+Update landing page for launch
+Add "Sign Up" CTA prominently
+Ensure onboarding flow is smooth
+Post-launch monitoring
+Monitor user feedback
+Track user behavior (analytics)
+Identify UX friction points
+Quick bug fixes
+Deliverables:
+✅User documentation and help center
+✅Marketing assets
+✅Final UI polish complete
+✅Pre-launch checklist completed
+✅Launch day support

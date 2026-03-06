@@ -1,0 +1,4264 @@
+
+<!doctype html>
+<html class="js" lang="en">
+  <head>
+    <!-- TikTok Pixel Code Start -->
+<script>
+!function (w, d, t) {
+  w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(
+var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script")
+;n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
+
+
+  ttq.load('D5BSSS3C77U9GK0PM670');
+  ttq.page();
+}(window, document, 'ttq');
+</script>
+<!-- TikTok Pixel Code End -->
+    <!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '2121440888665418');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=2121440888665418&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+ <script>/* start spd config */window._spt_delay_keywords=["/gtag/js,gtag(,/checkouts,/tiktok-track.js,/hotjar-,/smile-,/adoric.js,/wpm/,fbq("];/* end spd config */</script>
+<meta name="description" content="Practice trading strategies with 20+ years of real market data. Learn 50x faster, avoid $3,420 in losses, and trade with confidence. 15% OFF Lunar Special!">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@marqueefy/marqueefy@1.0.3/dist/css/marqueefy.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18/build/css/intlTelInput.css">
+          <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <link rel="canonical" href="https://mt5simulator.com/"><link rel="icon" type="image/png" href="//mt5simulator.com/cdn/shop/files/favicon_8a51dcbf-e6a3-480e-aa3f-168ed383e4e8.png?crop=center&height=32&v=1749110855&width=32"><link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin><title>
+      MT5 Simulator
+</title>
+
+    
+
+    
+
+<meta property="og:site_name" content="MT5 Simulator">
+<meta property="og:url" content="https://mt5simulator.com/">
+<meta property="og:title" content="MT5 Simulator">
+<meta property="og:type" content="website">
+<meta property="og:description" content="MT5 Simulator"><meta property="og:image" content="http://mt5simulator.com/cdn/shop/files/Frame-1984078466-1.webp?height=628&pad_color=ffffff&v=1749110774&width=1200">
+  <meta property="og:image:secure_url" content="https://mt5simulator.com/cdn/shop/files/Frame-1984078466-1.webp?height=628&pad_color=ffffff&v=1749110774&width=1200">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="628"><meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MT5 Simulator">
+<meta name="twitter:description" content="MT5 Simulator">
+
+
+    <script src="//mt5simulator.com/cdn/shop/t/16/assets/constants.js?v=132983761750457495441767924187" defer="defer"></script>
+    <script src="//mt5simulator.com/cdn/shop/t/16/assets/pubsub.js?v=158357773527763999511767924187" defer="defer"></script>
+    <script src="//mt5simulator.com/cdn/shop/t/16/assets/global.js?v=152862011079830610291767924187" defer="defer"></script>
+    <script src="//mt5simulator.com/cdn/shop/t/16/assets/details-disclosure.js?v=13653116266235556501767924187" defer="defer"></script>
+    <script src="//mt5simulator.com/cdn/shop/t/16/assets/details-modal.js?v=25581673532751508451767924187" defer="defer"></script>
+    <script src="//mt5simulator.com/cdn/shop/t/16/assets/search-form.js?v=133129549252120666541767924187" defer="defer"></script>
+<script src="https://cdn.jsdelivr.net/npm/@marqueefy/marqueefy@1.0.3/dist/js/marqueefy.min.js"></script>
+    <script src="//mt5simulator.com/cdn/shop/t/16/assets/jquery.min.js?v=4256" ></script>
+    <script src="//mt5simulator.com/cdn/shop/t/16/assets/owl.carousel.js?v=4256" ></script><script src="//mt5simulator.com/cdn/shop/t/16/assets/animations.js?v=88693664871331136111767924187" defer="defer"></script><script>window.performance && window.performance.mark && window.performance.mark('shopify.content_for_header.start');</script><meta name="google-site-verification" content="CE_gSTsvXGG3azf-PQi_iOuhuwfF6l5JYTFC6o6InCM">
+<meta id="shopify-digital-wallet" name="shopify-digital-wallet" content="/73180905746/digital_wallets/dialog">
+<meta name="shopify-checkout-api-token" content="6a2e2a8be5472b54a5b0e4f56894b27f">
+<meta id="in-context-paypal-metadata" data-shop-id="73180905746" data-venmo-supported="false" data-environment="production" data-locale="en_US" data-paypal-v4="true" data-currency="USD">
+<script async="async" src="/checkouts/internal/preloads.js?locale=en-US"></script>
+<link rel="preconnect" href="https://shop.app" crossorigin="anonymous">
+<script async="async" src="https://shop.app/checkouts/internal/preloads.js?locale=en-US&shop_id=73180905746" crossorigin="anonymous"></script>
+<script id="apple-pay-shop-capabilities" type="application/json">{"shopId":73180905746,"countryCode":"AU","currencyCode":"USD","merchantCapabilities":["supports3DS"],"merchantId":"gid:\/\/shopify\/Shop\/73180905746","merchantName":"MT5 Simulator","requiredBillingContactFields":["postalAddress","email","phone"],"requiredShippingContactFields":["postalAddress","email","phone"],"shippingType":"shipping","supportedNetworks":["visa","masterCard","amex","jcb"],"total":{"type":"pending","label":"MT5 Simulator","amount":"1.00"},"shopifyPaymentsEnabled":true,"supportsSubscriptions":true}</script>
+<script id="shopify-features" type="application/json">{"accessToken":"6a2e2a8be5472b54a5b0e4f56894b27f","betas":["rich-media-storefront-analytics"],"domain":"mt5simulator.com","predictiveSearch":true,"shopId":73180905746,"locale":"en"}</script>
+<script>var Shopify = Shopify || {};
+Shopify.shop = "mt5-simulator.myshopify.com";
+Shopify.locale = "en";
+Shopify.currency = {"active":"USD","rate":"1.0"};
+Shopify.country = "US";
+Shopify.theme = {"name":"Copy of New Look","id":180015202578,"schema_name":"Dawn","schema_version":"15.2.0","theme_store_id":887,"role":"main"};
+Shopify.theme.handle = "null";
+Shopify.theme.style = {"id":null,"handle":null};
+Shopify.cdnHost = "mt5simulator.com/cdn";
+Shopify.routes = Shopify.routes || {};
+Shopify.routes.root = "/";</script>
+<script type="module">!function(o){(o.Shopify=o.Shopify||{}).modules=!0}(window);</script>
+<script>!function(o){function n(){var o=[];function n(){o.push(Array.prototype.slice.apply(arguments))}return n.q=o,n}var t=o.Shopify=o.Shopify||{};t.loadFeatures=n(),t.autoloadFeatures=n()}(window);</script>
+<script>
+  window.ShopifyPay = window.ShopifyPay || {};
+  window.ShopifyPay.apiHost = "shop.app\/pay";
+  window.ShopifyPay.redirectState = null;
+</script>
+<script id="shop-js-analytics" type="application/json">{"pageType":"index"}</script>
+<script defer="defer" async type="module" src="//mt5simulator.com/cdn/shopifycloud/shop-js/modules/v2/client.init-shop-cart-sync_BLuSqYWl.en.esm.js"></script>
+<script defer="defer" async type="module" src="//mt5simulator.com/cdn/shopifycloud/shop-js/modules/v2/chunk.common_DplD2_3Q.en.esm.js"></script>
+<script defer="defer" async type="module" src="//mt5simulator.com/cdn/shopifycloud/shop-js/modules/v2/chunk.modal_BxEbAqG6.en.esm.js"></script>
+<script type="module">
+  await import("//mt5simulator.com/cdn/shopifycloud/shop-js/modules/v2/client.init-shop-cart-sync_BLuSqYWl.en.esm.js");
+await import("//mt5simulator.com/cdn/shopifycloud/shop-js/modules/v2/chunk.common_DplD2_3Q.en.esm.js");
+await import("//mt5simulator.com/cdn/shopifycloud/shop-js/modules/v2/chunk.modal_BxEbAqG6.en.esm.js");
+
+  window.Shopify.SignInWithShop?.initShopCartSync?.({"fedCMEnabled":true,"windoidEnabled":true});
+
+</script>
+<script>
+  window.Shopify = window.Shopify || {};
+  if (!window.Shopify.featureAssets) window.Shopify.featureAssets = {};
+  window.Shopify.featureAssets['shop-js'] = {"shop-cart-sync":["modules/v2/client.shop-cart-sync_DyWd-nW0.en.esm.js","modules/v2/chunk.common_DplD2_3Q.en.esm.js","modules/v2/chunk.modal_BxEbAqG6.en.esm.js"],"shop-login-button":["modules/v2/client.shop-login-button_DmUq1QfF.en.esm.js","modules/v2/chunk.common_DplD2_3Q.en.esm.js","modules/v2/chunk.modal_BxEbAqG6.en.esm.js"],"init-fed-cm":["modules/v2/client.init-fed-cm_DTevxAm9.en.esm.js","modules/v2/chunk.common_DplD2_3Q.en.esm.js","modules/v2/chunk.modal_BxEbAqG6.en.esm.js"],"shop-cash-offers":["modules/v2/client.shop-cash-offers_C8YC6m4X.en.esm.js","modules/v2/chunk.common_DplD2_3Q.en.esm.js","modules/v2/chunk.modal_BxEbAqG6.en.esm.js"],"init-shop-email-lookup-coordinator":["modules/v2/client.init-shop-email-lookup-coordinator_GbpdeWmj.en.esm.js","modules/v2/chunk.common_DplD2_3Q.en.esm.js","modules/v2/chunk.modal_BxEbAqG6.en.esm.js"],"shop-button":["modules/v2/client.shop-button_BK9mqnWd.en.esm.js","modules/v2/chunk.common_DplD2_3Q.en.esm.js","modules/v2/chunk.modal_BxEbAqG6.en.esm.js"],"shop-toast-manager":["modules/v2/client.shop-toast-manager_ChgSjnfR.en.esm.js","modules/v2/chunk.common_DplD2_3Q.en.esm.js","modules/v2/chunk.modal_BxEbAqG6.en.esm.js"],"init-windoid":["modules/v2/client.init-windoid_Bcjo1TvM.en.esm.js","modules/v2/chunk.common_DplD2_3Q.en.esm.js","modules/v2/chunk.modal_BxEbAqG6.en.esm.js"],"checkout-modal":["modules/v2/client.checkout-modal_DtFwzpsd.en.esm.js","modules/v2/chunk.common_DplD2_3Q.en.esm.js","modules/v2/chunk.modal_BxEbAqG6.en.esm.js"],"pay-button":["modules/v2/client.pay-button_CbTi9e6h.en.esm.js","modules/v2/chunk.common_DplD2_3Q.en.esm.js","modules/v2/chunk.modal_BxEbAqG6.en.esm.js"],"init-customer-accounts-sign-up":["modules/v2/client.init-customer-accounts-sign-up_CkXfFFBJ.en.esm.js","modules/v2/client.shop-login-button_DmUq1QfF.en.esm.js","modules/v2/chunk.common_DplD2_3Q.en.esm.js","modules/v2/chunk.modal_BxEbAqG6.en.esm.js"],"init-shop-cart-sync":["modules/v2/client.init-shop-cart-sync_BLuSqYWl.en.esm.js","modules/v2/chunk.common_DplD2_3Q.en.esm.js","modules/v2/chunk.modal_BxEbAqG6.en.esm.js"],"avatar":["modules/v2/client.avatar_BTnouDA3.en.esm.js"],"init-customer-accounts":["modules/v2/client.init-customer-accounts_CItT2Bi5.en.esm.js","modules/v2/client.shop-login-button_DmUq1QfF.en.esm.js","modules/v2/chunk.common_DplD2_3Q.en.esm.js","modules/v2/chunk.modal_BxEbAqG6.en.esm.js"],"shop-follow-button":["modules/v2/client.shop-follow-button_N9VQxGYc.en.esm.js","modules/v2/chunk.common_DplD2_3Q.en.esm.js","modules/v2/chunk.modal_BxEbAqG6.en.esm.js"],"init-shop-for-new-customer-accounts":["modules/v2/client.init-shop-for-new-customer-accounts_BERy6bBc.en.esm.js","modules/v2/client.shop-login-button_DmUq1QfF.en.esm.js","modules/v2/chunk.common_DplD2_3Q.en.esm.js","modules/v2/chunk.modal_BxEbAqG6.en.esm.js"],"shop-login":["modules/v2/client.shop-login_C1PpjQAV.en.esm.js","modules/v2/chunk.common_DplD2_3Q.en.esm.js","modules/v2/chunk.modal_BxEbAqG6.en.esm.js"],"lead-capture":["modules/v2/client.lead-capture_ym2s8Rq7.en.esm.js","modules/v2/chunk.common_DplD2_3Q.en.esm.js","modules/v2/chunk.modal_BxEbAqG6.en.esm.js"],"payment-terms":["modules/v2/client.payment-terms_DA8oAx9D.en.esm.js","modules/v2/chunk.common_DplD2_3Q.en.esm.js","modules/v2/chunk.modal_BxEbAqG6.en.esm.js"]};
+</script>
+<script>(function() {
+  var isLoaded = false;
+  function asyncLoad() {
+    if (isLoaded) return;
+    isLoaded = true;
+    var urls = ["https:\/\/cdn.shopify.com\/s\/files\/1\/0597\/3783\/3627\/files\/tptinstall.min.js?v=1718591634\u0026t=tapita-seo-script-tags\u0026shop=mt5-simulator.myshopify.com","\/\/cdn.shopify.com\/proxy\/07cc92e7a2dff9a5cfc2fcd71261b5ed0d0da5162bffc2c8cdfcdf80264292c4\/app.bixgrow.com\/scripttag\/bixgrow-friend-reward-popup.js?shop=mt5-simulator.myshopify.com\u0026sp-cache-control=cHVibGljLCBtYXgtYWdlPTkwMA"];
+    for (var i = 0; i < urls.length; i++) {
+      var s = document.createElement('script');
+      s.type = 'text/javascript';
+      s.async = true;
+      s.src = urls[i];
+      var x = document.getElementsByTagName('script')[0];
+      x.parentNode.insertBefore(s, x);
+    }
+  };
+  if(window.attachEvent) {
+    window.attachEvent('onload', asyncLoad);
+  } else {
+    window.addEventListener('load', asyncLoad, false);
+  }
+})();</script>
+<script id="__st">var __st={"a":73180905746,"offset":39600,"reqid":"94c8593c-027a-4ab2-b61d-4c9151e5de58-1771760457","pageurl":"mt5simulator.com\/?srsltid=AfmBOoqKWk6UzNZ9KWhQb0F9wm2q_PkHMBl6JgZIeTEdHQTbB7ZWDhqn","u":"06b2a3d3ab7a","p":"home"};</script>
+<script>window.ShopifyPaypalV4VisibilityTracking = true;</script>
+<script id="captcha-bootstrap">!function(){'use strict';const t='contact',e='account',n='new_comment',o=[[t,t],['blogs',n],['comments',n],[t,'customer']],c=[[e,'customer_login'],[e,'guest_login'],[e,'recover_customer_password'],[e,'create_customer']],r=t=>t.map((([t,e])=>`form[action*='/${t}']:not([data-nocaptcha='true']) input[name='form_type'][value='${e}']`)).join(','),a=t=>()=>t?[...document.querySelectorAll(t)].map((t=>t.form)):[];function s(){const t=[...o],e=r(t);return a(e)}const i='password',u='form_key',d=['recaptcha-v3-token','g-recaptcha-response','h-captcha-response',i],f=()=>{try{return window.sessionStorage}catch{return}},m='__shopify_v',_=t=>t.elements[u];function p(t,e,n=!1){try{const o=window.sessionStorage,c=JSON.parse(o.getItem(e)),{data:r}=function(t){const{data:e,action:n}=t;return t[m]||n?{data:e,action:n}:{data:t,action:n}}(c);for(const[e,n]of Object.entries(r))t.elements[e]&&(t.elements[e].value=n);n&&o.removeItem(e)}catch(o){console.error('form repopulation failed',{error:o})}}const l='form_type',E='cptcha';function T(t){t.dataset[E]=!0}const w=window,h=w.document,L='Shopify',v='ce_forms',y='captcha';let A=!1;((t,e)=>{const n=(g='f06e6c50-85a8-45c8-87d0-21a2b65856fe',I='https://cdn.shopify.com/shopifycloud/storefront-forms-hcaptcha/ce_storefront_forms_captcha_hcaptcha.v1.5.2.iife.js',D={infoText:'Protected by hCaptcha',privacyText:'Privacy',termsText:'Terms'},(t,e,n)=>{const o=w[L][v],c=o.bindForm;if(c)return c(t,g,e,D).then(n);var r;o.q.push([[t,g,e,D],n]),r=I,A||(h.body.append(Object.assign(h.createElement('script'),{id:'captcha-provider',async:!0,src:r})),A=!0)});var g,I,D;w[L]=w[L]||{},w[L][v]=w[L][v]||{},w[L][v].q=[],w[L][y]=w[L][y]||{},w[L][y].protect=function(t,e){n(t,void 0,e),T(t)},Object.freeze(w[L][y]),function(t,e,n,w,h,L){const[v,y,A,g]=function(t,e,n){const i=e?o:[],u=t?c:[],d=[...i,...u],f=r(d),m=r(i),_=r(d.filter((([t,e])=>n.includes(e))));return[a(f),a(m),a(_),s()]}(w,h,L),I=t=>{const e=t.target;return e instanceof HTMLFormElement?e:e&&e.form},D=t=>v().includes(t);t.addEventListener('submit',(t=>{const e=I(t);if(!e)return;const n=D(e)&&!e.dataset.hcaptchaBound&&!e.dataset.recaptchaBound,o=_(e),c=g().includes(e)&&(!o||!o.value);(n||c)&&t.preventDefault(),c&&!n&&(function(t){try{if(!f())return;!function(t){const e=f();if(!e)return;const n=_(t);if(!n)return;const o=n.value;o&&e.removeItem(o)}(t);const e=Array.from(Array(32),(()=>Math.random().toString(36)[2])).join('');!function(t,e){_(t)||t.append(Object.assign(document.createElement('input'),{type:'hidden',name:u})),t.elements[u].value=e}(t,e),function(t,e){const n=f();if(!n)return;const o=[...t.querySelectorAll(`input[type='${i}']`)].map((({name:t})=>t)),c=[...d,...o],r={};for(const[a,s]of new FormData(t).entries())c.includes(a)||(r[a]=s);n.setItem(e,JSON.stringify({[m]:1,action:t.action,data:r}))}(t,e)}catch(e){console.error('failed to persist form',e)}}(e),e.submit())}));const S=(t,e)=>{t&&!t.dataset[E]&&(n(t,e.some((e=>e===t))),T(t))};for(const o of['focusin','change'])t.addEventListener(o,(t=>{const e=I(t);D(e)&&S(e,y())}));const B=e.get('form_key'),M=e.get(l),P=B&&M;t.addEventListener('DOMContentLoaded',(()=>{const t=y();if(P)for(const e of t)e.elements[l].value===M&&p(e,B);[...new Set([...A(),...v().filter((t=>'true'===t.dataset.shopifyCaptcha))])].forEach((e=>S(e,t)))}))}(h,new URLSearchParams(w.location.search),n,t,e,['guest_login'])})(!0,!0)}();</script>
+<script integrity="sha256-4kQ18oKyAcykRKYeNunJcIwy7WH5gtpwJnB7kiuLZ1E=" data-source-attribution="shopify.loadfeatures" defer="defer" src="//mt5simulator.com/cdn/shopifycloud/storefront/assets/storefront/load_feature-a0a9edcb.js" crossorigin="anonymous"></script>
+<script crossorigin="anonymous" defer="defer" src="//mt5simulator.com/cdn/shopifycloud/storefront/assets/shopify_pay/storefront-65b4c6d7.js?v=20250812"></script>
+<script data-source-attribution="shopify.dynamic_checkout.dynamic.init">var Shopify=Shopify||{};Shopify.PaymentButton=Shopify.PaymentButton||{isStorefrontPortableWallets:!0,init:function(){window.Shopify.PaymentButton.init=function(){};var t=document.createElement("script");t.src="https://mt5simulator.com/cdn/shopifycloud/portable-wallets/latest/portable-wallets.en.js",t.type="module",document.head.appendChild(t)}};
+</script>
+<script data-source-attribution="shopify.dynamic_checkout.buyer_consent">
+  function portableWalletsHideBuyerConsent(e){var t=document.getElementById("shopify-buyer-consent"),n=document.getElementById("shopify-subscription-policy-button");t&&n&&(t.classList.add("hidden"),t.setAttribute("aria-hidden","true"),n.removeEventListener("click",e))}function portableWalletsShowBuyerConsent(e){var t=document.getElementById("shopify-buyer-consent"),n=document.getElementById("shopify-subscription-policy-button");t&&n&&(t.classList.remove("hidden"),t.removeAttribute("aria-hidden"),n.addEventListener("click",e))}window.Shopify?.PaymentButton&&(window.Shopify.PaymentButton.hideBuyerConsent=portableWalletsHideBuyerConsent,window.Shopify.PaymentButton.showBuyerConsent=portableWalletsShowBuyerConsent);
+</script>
+<script data-source-attribution="shopify.dynamic_checkout.cart.bootstrap">document.addEventListener("DOMContentLoaded",(function(){function t(){return document.querySelector("shopify-accelerated-checkout-cart, shopify-accelerated-checkout")}if(t())Shopify.PaymentButton.init();else{new MutationObserver((function(e,n){t()&&(Shopify.PaymentButton.init(),n.disconnect())})).observe(document.body,{childList:!0,subtree:!0})}}));
+</script>
+<link id="shopify-accelerated-checkout-styles" rel="stylesheet" media="screen" href="https://mt5simulator.com/cdn/shopifycloud/portable-wallets/latest/accelerated-checkout-backwards-compat.css" crossorigin="anonymous">
+<style id="shopify-accelerated-checkout-cart">
+        #shopify-buyer-consent {
+  margin-top: 1em;
+  display: inline-block;
+  width: 100%;
+}
+
+#shopify-buyer-consent.hidden {
+  display: none;
+}
+
+#shopify-subscription-policy-button {
+  background: none;
+  border: none;
+  padding: 0;
+  text-decoration: underline;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+#shopify-subscription-policy-button::before {
+  box-shadow: none;
+}
+
+      </style>
+
+<script>window.performance && window.performance.mark && window.performance.mark('shopify.content_for_header.end');</script>
+
+
+    
+    <style>
+    
+
+        /* NAVIGATION */
+        .navbar {
+            position: sticky;
+            top: 0;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            padding: 1rem 0;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-red);
+        }
+
+        .language-selector {
+            padding: 8px 15px;
+            border: 2px solid var(--primary-gold);
+            border-radius: 5px;
+            background: white;
+            color: var(--text-dark);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .language-selector:hover {
+            background: var(--primary-gold);
+            color: white;
+        }
+
+        /* HERO SECTION */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-red) 0%, #C41E3A 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '🏮';
+            position: absolute;
+            font-size: 150px;
+            opacity: 0.1;
+            top: -30px;
+            right: 10%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .hero::after {
+            content: '🧧';
+            position: absolute;
+            font-size: 120px;
+            opacity: 0.1;
+            bottom: -20px;
+            left: 10%;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .hero-content {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .lunar-badge {
+            background: var(--primary-gold);
+            color: var(--primary-red);
+            padding: 8px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            font-weight: bold;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero .subtitle {
+            font-size: 1.4rem;
+            margin-bottom: 30px;
+            opacity: 0.95;
+        }
+
+        .social-proof {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 30px 0;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .proof-item {
+            text-align: center;
+        }
+
+        .proof-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-gold);
+        }
+
+        .proof-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            background: var(--primary-gold);
+            color: var(--primary-red);
+            padding: 18px 40px;
+            font-size: 1.3rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.6);
+        }
+
+        /* FREE GIFT MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 40px;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 20px;
+            position: relative;
+            animation: slideIn 0.4s;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close-modal:hover {
+            color: var(--primary-red);
+        }
+
+        .modal h2 {
+            color: var(--primary-red);
+            margin-bottom: 15px;
+            font-size: 2rem;
+        }
+
+        .modal-form {
+            margin-top: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-gold);
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: var(--primary-red);
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: #A00000;
+            transform: translateY(-2px);
+        }
+
+        .no-card-text {
+            text-align: center;
+            margin-top: 15px;
+            color: var(--success-green);
+            font-size: 0.9rem;
+        }
+
+        /* CONTAINER */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        /* SECTION HEADERS */
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            color: var(--primary-red);
+            margin-bottom: 15px;
+        }
+
+        .section-header p {
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        /* VIDEO SECTION */
+        .video-container {
+            max-width: 900px;
+            margin: 0 auto 60px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+
+        .video-container iframe {
+            width: 100%;
+            height: 500px;
+            border: none;
+        }
+
+        /* COMPARISON TABLE */
+        .comparison-table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.1);
+            margin: 40px 0;
+        }
+
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th {
+            background: var(--primary-red);
+            color: white;
+            padding: 20px;
+            text-align: left;
+            font-size: 1.1rem;
+        }
+
+        .comparison-table td {
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .comparison-table tr:hover {
+            background: var(--bg-cream);
+        }
+
+        .check {
+            color: var(--success-green);
+            font-size: 1.5rem;
+        }
+
+        .cross {
+            color: #E74C3C;
+            font-size: 1.5rem;
+        }
+
+        /* PRICING SECTION */
+        .pricing-box {
+            background: linear-gradient(135deg, var(--bg-cream) 0%, white 100%);
+            border: 3px solid var(--primary-gold);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            margin: 40px auto;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(212, 175, 55, 0.2);
+        }
+
+        .pricing-header {
+            font-size: 2rem;
+            color: var(--primary-red);
+            margin-bottom: 20px;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .price-row:last-child {
+            border-bottom: none;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 3px solid var(--primary-gold);
+        }
+
+        .price-label {
+            font-size: 1.2rem;
+            color: var(--text-dark);
+        }
+
+        .price-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .final-price {
+            font-size: 2.5rem !important;
+            color: var(--primary-red);
+        }
+
+        .pricing-features {
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .feature-item {
+            padding: 10px 0;
+            font-size: 1.1rem;
+        }
+
+        .feature-item::before {
+            content: '✓ ';
+            color: var(--success-green);
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        /* COUNTDOWN */
+        .countdown {
+            background: var(--primary-red);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .countdown-label {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .countdown-timer {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .time-unit {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .time-number {
+            font-size: 3rem;
+            color: var(--primary-gold);
+        }
+
+        .time-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* FOOTER */
+        footer {
+            background: var(--text-dark);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        /* MOBILE RESPONSIVE */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero .subtitle {
+                font-size: 1.1rem;
+            }
+
+            .social-proof {
+                flex-direction: column;
+            }
+
+            .video-container iframe {
+                height: 300px;
+            }
+
+            .comparison-table {
+                overflow-x: auto;
+            }
+
+            .countdown-timer {
+                font-size: 1.5rem;
+            }
+
+            .time-number {
+                font-size: 2rem;
+            }
+        }
+
+        /* FLOATING CTA */
+        .floating-cta {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 999;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+
+
+
+
+
+    <style data-shopify>
+      @font-face {
+  font-family: Assistant;
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("//mt5simulator.com/cdn/fonts/assistant/assistant_n4.9120912a469cad1cc292572851508ca49d12e768.woff2") format("woff2"),
+       url("//mt5simulator.com/cdn/fonts/assistant/assistant_n4.6e9875ce64e0fefcd3f4446b7ec9036b3ddd2985.woff") format("woff");
+}
+
+      @font-face {
+  font-family: Assistant;
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("//mt5simulator.com/cdn/fonts/assistant/assistant_n7.bf44452348ec8b8efa3aa3068825305886b1c83c.woff2") format("woff2"),
+       url("//mt5simulator.com/cdn/fonts/assistant/assistant_n7.0c887fee83f6b3bda822f1150b912c72da0f7b64.woff") format("woff");
+}
+
+      
+      
+      @font-face {
+  font-family: Assistant;
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("//mt5simulator.com/cdn/fonts/assistant/assistant_n4.9120912a469cad1cc292572851508ca49d12e768.woff2") format("woff2"),
+       url("//mt5simulator.com/cdn/fonts/assistant/assistant_n4.6e9875ce64e0fefcd3f4446b7ec9036b3ddd2985.woff") format("woff");
+}
+
+
+      
+        :root,
+        .color-scheme-1 {
+          --color-background: 255,255,255;
+        
+          --gradient-background: #ffffff;
+        
+
+        
+
+        --color-foreground: 18,18,18;
+        --color-background-contrast: 191,191,191;
+        --color-shadow: 18,18,18;
+        --color-button: 18,18,18;
+        --color-button-text: 255,255,255;
+        --color-secondary-button: 255,255,255;
+        --color-secondary-button-text: 18,18,18;
+        --color-link: 18,18,18;
+        --color-badge-foreground: 18,18,18;
+        --color-badge-background: 255,255,255;
+        --color-badge-border: 18,18,18;
+        --payment-terms-background-color: rgb(255 255 255);
+      }
+      
+        
+        .color-scheme-2 {
+          --color-background: 243,243,243;
+        
+          --gradient-background: #f3f3f3;
+        
+
+        
+
+        --color-foreground: 18,18,18;
+        --color-background-contrast: 179,179,179;
+        --color-shadow: 18,18,18;
+        --color-button: 18,18,18;
+        --color-button-text: 243,243,243;
+        --color-secondary-button: 243,243,243;
+        --color-secondary-button-text: 18,18,18;
+        --color-link: 18,18,18;
+        --color-badge-foreground: 18,18,18;
+        --color-badge-background: 243,243,243;
+        --color-badge-border: 18,18,18;
+        --payment-terms-background-color: rgb(243 243 243);
+      }
+      
+        
+        .color-scheme-3 {
+          --color-background: 36,40,51;
+        
+          --gradient-background: #242833;
+        
+
+        
+
+        --color-foreground: 255,255,255;
+        --color-background-contrast: 47,52,66;
+        --color-shadow: 18,18,18;
+        --color-button: 255,255,255;
+        --color-button-text: 0,0,0;
+        --color-secondary-button: 36,40,51;
+        --color-secondary-button-text: 255,255,255;
+        --color-link: 255,255,255;
+        --color-badge-foreground: 255,255,255;
+        --color-badge-background: 36,40,51;
+        --color-badge-border: 255,255,255;
+        --payment-terms-background-color: rgb(36 40 51);
+      }
+      
+        
+        .color-scheme-4 {
+          --color-background: 82,148,128;
+        
+          --gradient-background: #529480;
+        
+
+        
+
+        --color-foreground: 255,255,255;
+        --color-background-contrast: 37,66,57;
+        --color-shadow: 18,18,18;
+        --color-button: 235,203,20;
+        --color-button-text: 18,18,18;
+        --color-secondary-button: 82,148,128;
+        --color-secondary-button-text: 255,255,255;
+        --color-link: 255,255,255;
+        --color-badge-foreground: 255,255,255;
+        --color-badge-background: 82,148,128;
+        --color-badge-border: 255,255,255;
+        --payment-terms-background-color: rgb(82 148 128);
+      }
+      
+        
+        .color-scheme-5 {
+          --color-background: 6,17,99;
+        
+          --gradient-background: #061163;
+        
+
+        
+
+        --color-foreground: 255,255,255;
+        --color-background-contrast: 114,129,246;
+        --color-shadow: 18,18,18;
+        --color-button: 255,255,255;
+        --color-button-text: 51,79,180;
+        --color-secondary-button: 6,17,99;
+        --color-secondary-button-text: 255,255,255;
+        --color-link: 255,255,255;
+        --color-badge-foreground: 255,255,255;
+        --color-badge-background: 6,17,99;
+        --color-badge-border: 255,255,255;
+        --payment-terms-background-color: rgb(6 17 99);
+      }
+      
+
+      body, .color-scheme-1, .color-scheme-2, .color-scheme-3, .color-scheme-4, .color-scheme-5 {
+        color: rgba(var(--color-foreground), 0.75);
+        background-color: rgb(var(--color-background));
+      }
+
+      :root {
+        --font-body-family: Assistant, sans-serif;
+        --font-body-style: normal;
+        --font-body-weight: 400;
+        --font-body-weight-bold: 700;
+
+        --font-heading-family: Assistant, sans-serif;
+        --font-heading-style: normal;
+        --font-heading-weight: 400;
+
+        --font-body-scale: 1.0;
+        --font-heading-scale: 1.0;
+
+        --media-padding: px;
+        --media-border-opacity: 0.05;
+        --media-border-width: 1px;
+        --media-radius: 0px;
+        --media-shadow-opacity: 0.0;
+        --media-shadow-horizontal-offset: 0px;
+        --media-shadow-vertical-offset: 4px;
+        --media-shadow-blur-radius: 5px;
+        --media-shadow-visible: 0;
+
+        --page-width: 140rem;
+        --page-width-margin: 0rem;
+
+        --product-card-image-padding: 0.0rem;
+        --product-card-corner-radius: 0.0rem;
+        --product-card-text-alignment: left;
+        --product-card-border-width: 0.0rem;
+        --product-card-border-opacity: 0.1;
+        --product-card-shadow-opacity: 0.0;
+        --product-card-shadow-visible: 0;
+        --product-card-shadow-horizontal-offset: 0.0rem;
+        --product-card-shadow-vertical-offset: 0.4rem;
+        --product-card-shadow-blur-radius: 0.5rem;
+
+        --collection-card-image-padding: 0.0rem;
+        --collection-card-corner-radius: 0.0rem;
+        --collection-card-text-alignment: left;
+        --collection-card-border-width: 0.0rem;
+        --collection-card-border-opacity: 0.1;
+        --collection-card-shadow-opacity: 0.0;
+        --collection-card-shadow-visible: 0;
+        --collection-card-shadow-horizontal-offset: 0.0rem;
+        --collection-card-shadow-vertical-offset: 0.4rem;
+        --collection-card-shadow-blur-radius: 0.5rem;
+
+        --blog-card-image-padding: 0.0rem;
+        --blog-card-corner-radius: 0.0rem;
+        --blog-card-text-alignment: left;
+        --blog-card-border-width: 0.0rem;
+        --blog-card-border-opacity: 0.1;
+        --blog-card-shadow-opacity: 0.0;
+        --blog-card-shadow-visible: 0;
+        --blog-card-shadow-horizontal-offset: 0.0rem;
+        --blog-card-shadow-vertical-offset: 0.4rem;
+        --blog-card-shadow-blur-radius: 0.5rem;
+
+        --badge-corner-radius: 4.0rem;
+
+        --popup-border-width: 1px;
+        --popup-border-opacity: 0.1;
+        --popup-corner-radius: 0px;
+        --popup-shadow-opacity: 0.05;
+        --popup-shadow-horizontal-offset: 0px;
+        --popup-shadow-vertical-offset: 4px;
+        --popup-shadow-blur-radius: 5px;
+
+        --drawer-border-width: 1px;
+        --drawer-border-opacity: 0.1;
+        --drawer-shadow-opacity: 0.0;
+        --drawer-shadow-horizontal-offset: 0px;
+        --drawer-shadow-vertical-offset: 4px;
+        --drawer-shadow-blur-radius: 5px;
+
+        --spacing-sections-desktop: 0px;
+        --spacing-sections-mobile: 0px;
+
+        --grid-desktop-vertical-spacing: 8px;
+        --grid-desktop-horizontal-spacing: 8px;
+        --grid-mobile-vertical-spacing: 4px;
+        --grid-mobile-horizontal-spacing: 4px;
+
+        --text-boxes-border-opacity: 0.1;
+        --text-boxes-border-width: 0px;
+        --text-boxes-radius: 0px;
+        --text-boxes-shadow-opacity: 0.0;
+        --text-boxes-shadow-visible: 0;
+        --text-boxes-shadow-horizontal-offset: 0px;
+        --text-boxes-shadow-vertical-offset: 4px;
+        --text-boxes-shadow-blur-radius: 5px;
+
+        --buttons-radius: 0px;
+        --buttons-radius-outset: 0px;
+        --buttons-border-width: 1px;
+        --buttons-border-opacity: 1.0;
+        --buttons-shadow-opacity: 0.0;
+        --buttons-shadow-visible: 0;
+        --buttons-shadow-horizontal-offset: 0px;
+        --buttons-shadow-vertical-offset: 4px;
+        --buttons-shadow-blur-radius: 5px;
+        --buttons-border-offset: 0px;
+
+        --inputs-radius: 0px;
+        --inputs-border-width: 1px;
+        --inputs-border-opacity: 0.55;
+        --inputs-shadow-opacity: 0.0;
+        --inputs-shadow-horizontal-offset: 0px;
+        --inputs-margin-offset: 0px;
+        --inputs-shadow-vertical-offset: 0px;
+        --inputs-shadow-blur-radius: 5px;
+        --inputs-radius-outset: 0px;
+
+        --variant-pills-radius: 40px;
+        --variant-pills-border-width: 1px;
+        --variant-pills-border-opacity: 0.55;
+        --variant-pills-shadow-opacity: 0.0;
+        --variant-pills-shadow-horizontal-offset: 0px;
+        --variant-pills-shadow-vertical-offset: 4px;
+        --variant-pills-shadow-blur-radius: 5px;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: inherit;
+      }
+
+      html {
+        box-sizing: border-box;
+        font-size: calc(var(--font-body-scale) * 62.5%);
+        height: 100%;
+      }
+
+      body {
+        display: grid;
+        grid-template-rows: auto auto 1fr auto;
+        grid-template-columns: 100%;
+        min-height: 100%;
+        margin: 0;
+        font-size: 1.5rem;
+        letter-spacing: 0.06rem;
+        line-height: calc(1 + 0.8 / var(--font-body-scale));
+        font-family: var(--font-body-family);
+        font-style: var(--font-body-style);
+        font-weight: var(--font-body-weight);
+      }
+
+      @media screen and (min-width: 750px) {
+        body {
+          font-size: 1.6rem;
+        }
+      }
+    </style>
+
+    <link href="//mt5simulator.com/cdn/shop/t/16/assets/base.css?v=110502520340081141111767924187" rel="stylesheet" type="text/css" media="all" />
+    <link rel="stylesheet" href="//mt5simulator.com/cdn/shop/t/16/assets/component-cart-items.css?v=123238115697927560811767924187" media="print" onload="this.media='all'">
+      <link rel="preload" as="font" href="//mt5simulator.com/cdn/fonts/assistant/assistant_n4.9120912a469cad1cc292572851508ca49d12e768.woff2" type="font/woff2" crossorigin>
+      
+
+      <link rel="preload" as="font" href="//mt5simulator.com/cdn/fonts/assistant/assistant_n4.9120912a469cad1cc292572851508ca49d12e768.woff2" type="font/woff2" crossorigin>
+      
+<script>
+      if (Shopify.designMode) {
+        document.documentElement.classList.add('shopify-design-mode');
+      }
+    </script>
+  <!-- BEGIN app block: shopify://apps/microsoft-clarity/blocks/brandAgents_js/31c3d126-8116-4b4a-8ba1-baeda7c4aeea -->
+
+
+
+
+
+<!-- END app block --><!-- BEGIN app block: shopify://apps/microsoft-clarity/blocks/clarity_js/31c3d126-8116-4b4a-8ba1-baeda7c4aeea -->
+<script type="text/javascript">
+  (function (c, l, a, r, i, t, y) {
+    c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments); };
+    t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i + "?ref=shopify";
+    y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+
+    c.Shopify.loadFeatures([{ name: "consent-tracking-api", version: "0.1" }], error => {
+      if (error) {
+        console.error("Error loading Shopify features:", error);
+        return;
+      }
+
+      c[a]('consentv2', {
+        ad_Storage: c.Shopify.customerPrivacy.marketingAllowed() ? "granted" : "denied",
+        analytics_Storage: c.Shopify.customerPrivacy.analyticsProcessingAllowed() ? "granted" : "denied",
+      });
+    });
+
+    l.addEventListener("visitorConsentCollected", function (e) {
+      c[a]('consentv2', {
+        ad_Storage: e.detail.marketingAllowed ? "granted" : "denied",
+        analytics_Storage: e.detail.analyticsAllowed ? "granted" : "denied",
+      });
+    });
+  })(window, document, "clarity", "script", "uytjjvmzfl");
+</script>
+
+
+
+<!-- END app block --><script src="https://cdn.shopify.com/extensions/019c5612-9ab9-7514-966d-0aca7931e8f8/referral-page-147/assets/bixgrow_tracker_logic.js" type="text/javascript" defer="defer"></script>
+<script src="https://cdn.shopify.com/extensions/d28e1ec2-6292-4105-93bc-76eed1989032/inbox-1255/assets/inbox-chat-loader.js" type="text/javascript" defer="defer"></script>
+<link href="https://monorail-edge.shopifysvc.com" rel="dns-prefetch">
+<script>(function(){if ("sendBeacon" in navigator && "performance" in window) {try {var session_token_from_headers = performance.getEntriesByType('navigation')[0].serverTiming.find(x => x.name == '_s').description;} catch {var session_token_from_headers = undefined;}var session_cookie_matches = document.cookie.match(/_shopify_s=([^;]*)/);var session_token_from_cookie = session_cookie_matches && session_cookie_matches.length === 2 ? session_cookie_matches[1] : "";var session_token = session_token_from_headers || session_token_from_cookie || "";function handle_abandonment_event(e) {var entries = performance.getEntries().filter(function(entry) {return /monorail-edge.shopifysvc.com/.test(entry.name);});if (!window.abandonment_tracked && entries.length === 0) {window.abandonment_tracked = true;var currentMs = Date.now();var navigation_start = performance.timing.navigationStart;var payload = {shop_id: 73180905746,url: window.location.href,navigation_start,duration: currentMs - navigation_start,session_token,page_type: "index"};window.navigator.sendBeacon("https://monorail-edge.shopifysvc.com/v1/produce", JSON.stringify({schema_id: "online_store_buyer_site_abandonment/1.1",payload: payload,metadata: {event_created_at_ms: currentMs,event_sent_at_ms: currentMs}}));}}window.addEventListener('pagehide', handle_abandonment_event);}}());</script>
+<script id="web-pixels-manager-setup">(function e(e,d,r,n,o){if(void 0===o&&(o={}),!Boolean(null===(a=null===(i=window.Shopify)||void 0===i?void 0:i.analytics)||void 0===a?void 0:a.replayQueue)){var i,a;window.Shopify=window.Shopify||{};var t=window.Shopify;t.analytics=t.analytics||{};var s=t.analytics;s.replayQueue=[],s.publish=function(e,d,r){return s.replayQueue.push([e,d,r]),!0};try{self.performance.mark("wpm:start")}catch(e){}var l=function(){var e={modern:/Edge?\/(1{2}[4-9]|1[2-9]\d|[2-9]\d{2}|\d{4,})\.\d+(\.\d+|)|Firefox\/(1{2}[4-9]|1[2-9]\d|[2-9]\d{2}|\d{4,})\.\d+(\.\d+|)|Chrom(ium|e)\/(9{2}|\d{3,})\.\d+(\.\d+|)|(Maci|X1{2}).+ Version\/(15\.\d+|(1[6-9]|[2-9]\d|\d{3,})\.\d+)([,.]\d+|)( \(\w+\)|)( Mobile\/\w+|) Safari\/|Chrome.+OPR\/(9{2}|\d{3,})\.\d+\.\d+|(CPU[ +]OS|iPhone[ +]OS|CPU[ +]iPhone|CPU IPhone OS|CPU iPad OS)[ +]+(15[._]\d+|(1[6-9]|[2-9]\d|\d{3,})[._]\d+)([._]\d+|)|Android:?[ /-](13[3-9]|1[4-9]\d|[2-9]\d{2}|\d{4,})(\.\d+|)(\.\d+|)|Android.+Firefox\/(13[5-9]|1[4-9]\d|[2-9]\d{2}|\d{4,})\.\d+(\.\d+|)|Android.+Chrom(ium|e)\/(13[3-9]|1[4-9]\d|[2-9]\d{2}|\d{4,})\.\d+(\.\d+|)|SamsungBrowser\/([2-9]\d|\d{3,})\.\d+/,legacy:/Edge?\/(1[6-9]|[2-9]\d|\d{3,})\.\d+(\.\d+|)|Firefox\/(5[4-9]|[6-9]\d|\d{3,})\.\d+(\.\d+|)|Chrom(ium|e)\/(5[1-9]|[6-9]\d|\d{3,})\.\d+(\.\d+|)([\d.]+$|.*Safari\/(?![\d.]+ Edge\/[\d.]+$))|(Maci|X1{2}).+ Version\/(10\.\d+|(1[1-9]|[2-9]\d|\d{3,})\.\d+)([,.]\d+|)( \(\w+\)|)( Mobile\/\w+|) Safari\/|Chrome.+OPR\/(3[89]|[4-9]\d|\d{3,})\.\d+\.\d+|(CPU[ +]OS|iPhone[ +]OS|CPU[ +]iPhone|CPU IPhone OS|CPU iPad OS)[ +]+(10[._]\d+|(1[1-9]|[2-9]\d|\d{3,})[._]\d+)([._]\d+|)|Android:?[ /-](13[3-9]|1[4-9]\d|[2-9]\d{2}|\d{4,})(\.\d+|)(\.\d+|)|Mobile Safari.+OPR\/([89]\d|\d{3,})\.\d+\.\d+|Android.+Firefox\/(13[5-9]|1[4-9]\d|[2-9]\d{2}|\d{4,})\.\d+(\.\d+|)|Android.+Chrom(ium|e)\/(13[3-9]|1[4-9]\d|[2-9]\d{2}|\d{4,})\.\d+(\.\d+|)|Android.+(UC? ?Browser|UCWEB|U3)[ /]?(15\.([5-9]|\d{2,})|(1[6-9]|[2-9]\d|\d{3,})\.\d+)\.\d+|SamsungBrowser\/(5\.\d+|([6-9]|\d{2,})\.\d+)|Android.+MQ{2}Browser\/(14(\.(9|\d{2,})|)|(1[5-9]|[2-9]\d|\d{3,})(\.\d+|))(\.\d+|)|K[Aa][Ii]OS\/(3\.\d+|([4-9]|\d{2,})\.\d+)(\.\d+|)/},d=e.modern,r=e.legacy,n=navigator.userAgent;return n.match(d)?"modern":n.match(r)?"legacy":"unknown"}(),u="modern"===l?"modern":"legacy",c=(null!=n?n:{modern:"",legacy:""})[u],f=function(e){return[e.baseUrl,"/wpm","/b",e.hashVersion,"modern"===e.buildTarget?"m":"l",".js"].join("")}({baseUrl:d,hashVersion:r,buildTarget:u}),m=function(e){var d=e.version,r=e.bundleTarget,n=e.surface,o=e.pageUrl,i=e.monorailEndpoint;return{emit:function(e){var a=e.status,t=e.errorMsg,s=(new Date).getTime(),l=JSON.stringify({metadata:{event_sent_at_ms:s},events:[{schema_id:"web_pixels_manager_load/3.1",payload:{version:d,bundle_target:r,page_url:o,status:a,surface:n,error_msg:t},metadata:{event_created_at_ms:s}}]});if(!i)return console&&console.warn&&console.warn("[Web Pixels Manager] No Monorail endpoint provided, skipping logging."),!1;try{return self.navigator.sendBeacon.bind(self.navigator)(i,l)}catch(e){}var u=new XMLHttpRequest;try{return u.open("POST",i,!0),u.setRequestHeader("Content-Type","text/plain"),u.send(l),!0}catch(e){return console&&console.warn&&console.warn("[Web Pixels Manager] Got an unhandled error while logging to Monorail."),!1}}}}({version:r,bundleTarget:l,surface:e.surface,pageUrl:self.location.href,monorailEndpoint:e.monorailEndpoint});try{o.browserTarget=l,function(e){var d=e.src,r=e.async,n=void 0===r||r,o=e.onload,i=e.onerror,a=e.sri,t=e.scriptDataAttributes,s=void 0===t?{}:t,l=document.createElement("script"),u=document.querySelector("head"),c=document.querySelector("body");if(l.async=n,l.src=d,a&&(l.integrity=a,l.crossOrigin="anonymous"),s)for(var f in s)if(Object.prototype.hasOwnProperty.call(s,f))try{l.dataset[f]=s[f]}catch(e){}if(o&&l.addEventListener("load",o),i&&l.addEventListener("error",i),u)u.appendChild(l);else{if(!c)throw new Error("Did not find a head or body element to append the script");c.appendChild(l)}}({src:f,async:!0,onload:function(){if(!function(){var e,d;return Boolean(null===(d=null===(e=window.Shopify)||void 0===e?void 0:e.analytics)||void 0===d?void 0:d.initialized)}()){var d=window.webPixelsManager.init(e)||void 0;if(d){var r=window.Shopify.analytics;r.replayQueue.forEach((function(e){var r=e[0],n=e[1],o=e[2];d.publishCustomEvent(r,n,o)})),r.replayQueue=[],r.publish=d.publishCustomEvent,r.visitor=d.visitor,r.initialized=!0}}},onerror:function(){return m.emit({status:"failed",errorMsg:"".concat(f," has failed to load")})},sri:function(e){var d=/^sha384-[A-Za-z0-9+/=]+$/;return"string"==typeof e&&d.test(e)}(c)?c:"",scriptDataAttributes:o}),m.emit({status:"loading"})}catch(e){m.emit({status:"failed",errorMsg:(null==e?void 0:e.message)||"Unknown error"})}}})({shopId: 73180905746,storefrontBaseUrl: "https://mt5simulator.com",extensionsBaseUrl: "https://extensions.shopifycdn.com/cdn/shopifycloud/web-pixels-manager",monorailEndpoint: "https://monorail-edge.shopifysvc.com/unstable/produce_batch",surface: "storefront-renderer",enabledBetaFlags: ["2dca8a86"],webPixelsConfigList: [{"id":"1780711698","configuration":"{\"projectId\":\"uytjjvmzfl\"}","eventPayloadVersion":"v1","runtimeContext":"STRICT","scriptVersion":"cf1781658ed156031118fc4bbc2ed159","type":"APP","apiClientId":240074326017,"privacyPurposes":[],"capabilities":["advanced_dom_events"],"dataSharingAdjustments":{"protectedCustomerApprovalScopes":["read_customer_personal_data"],"dataSharingControls":["share_all_events"]},"dataSharingState":"unrestricted"},{"id":"1774158098","configuration":"{\"pixel_id\":\"1496003572535092\",\"pixel_type\":\"facebook_pixel\"}","eventPayloadVersion":"v1","runtimeContext":"OPEN","scriptVersion":"ca16bc87fe92b6042fbaa3acc2fbdaa6","type":"APP","apiClientId":2329312,"privacyPurposes":["ANALYTICS","MARKETING","SALE_OF_DATA"],"dataSharingAdjustments":{"protectedCustomerApprovalScopes":["read_customer_address","read_customer_email","read_customer_name","read_customer_personal_data","read_customer_phone"],"dataSharingControls":["share_all_events"]},"dataSharingState":"optimized","enabledFlags":["9a3ed68a"]},{"id":"854982930","configuration":"{\"config\":\"{\\\"google_tag_ids\\\":[\\\"G-T8NV5DGMG7\\\",\\\"AW-16453333808\\\",\\\"GT-PLHS7BNG\\\"],\\\"target_country\\\":\\\"ZZ\\\",\\\"gtag_events\\\":[{\\\"type\\\":\\\"begin_checkout\\\",\\\"action_label\\\":[\\\"G-T8NV5DGMG7\\\",\\\"AW-16453333808\\\/WKqhCMissIsbELDmx6U9\\\"]},{\\\"type\\\":\\\"search\\\",\\\"action_label\\\":[\\\"G-T8NV5DGMG7\\\",\\\"AW-16453333808\\\/g2IaCNSssIsbELDmx6U9\\\"]},{\\\"type\\\":\\\"view_item\\\",\\\"action_label\\\":[\\\"G-T8NV5DGMG7\\\",\\\"AW-16453333808\\\/cmAJCNGssIsbELDmx6U9\\\",\\\"MC-3KJNS405KB\\\"]},{\\\"type\\\":\\\"purchase\\\",\\\"action_label\\\":[\\\"G-T8NV5DGMG7\\\",\\\"AW-16453333808\\\/1S_fCJKJsIsbELDmx6U9\\\",\\\"MC-3KJNS405KB\\\"]},{\\\"type\\\":\\\"page_view\\\",\\\"action_label\\\":[\\\"G-T8NV5DGMG7\\\",\\\"AW-16453333808\\\/sWBECM6ssIsbELDmx6U9\\\",\\\"MC-3KJNS405KB\\\"]},{\\\"type\\\":\\\"add_payment_info\\\",\\\"action_label\\\":[\\\"G-T8NV5DGMG7\\\",\\\"AW-16453333808\\\/h71qCNessIsbELDmx6U9\\\"]},{\\\"type\\\":\\\"add_to_cart\\\",\\\"action_label\\\":[\\\"G-T8NV5DGMG7\\\",\\\"AW-16453333808\\\/c18ZCMussIsbELDmx6U9\\\"]}],\\\"enable_monitoring_mode\\\":false}\"}","eventPayloadVersion":"v1","runtimeContext":"OPEN","scriptVersion":"b2a88bafab3e21179ed38636efcd8a93","type":"APP","apiClientId":1780363,"privacyPurposes":[],"dataSharingAdjustments":{"protectedCustomerApprovalScopes":["read_customer_address","read_customer_email","read_customer_name","read_customer_personal_data","read_customer_phone"],"dataSharingControls":["share_all_events"]},"dataSharingState":"optimized","enabledFlags":["9a3ed68a"]},{"id":"297632018","configuration":"{\"shopId\":\"13946\"}","eventPayloadVersion":"v1","runtimeContext":"STRICT","scriptVersion":"e46595b10fdc5e1674d5c89a8c843bb3","type":"APP","apiClientId":5443297,"privacyPurposes":["ANALYTICS","MARKETING","SALE_OF_DATA"],"dataSharingAdjustments":{"protectedCustomerApprovalScopes":["read_customer_address","read_customer_email","read_customer_name","read_customer_personal_data","read_customer_phone"],"dataSharingControls":["share_all_events"]},"dataSharingState":"unrestricted"},{"id":"221053202","configuration":"{\"myshopifyDomain\":\"mt5-simulator.myshopify.com\"}","eventPayloadVersion":"v1","runtimeContext":"STRICT","scriptVersion":"23b97d18e2aa74363140dc29c9284e87","type":"APP","apiClientId":2775569,"privacyPurposes":["ANALYTICS","MARKETING","SALE_OF_DATA"],"dataSharingAdjustments":{"protectedCustomerApprovalScopes":["read_customer_address","read_customer_email","read_customer_name","read_customer_phone","read_customer_personal_data"],"dataSharingControls":["share_all_events"]},"dataSharingState":"optimized"},{"id":"109969682","eventPayloadVersion":"1","runtimeContext":"LAX","scriptVersion":"1","type":"CUSTOM","privacyPurposes":["ANALYTICS","MARKETING","SALE_OF_DATA"],"name":"Google Ads ConversionsTracking"},{"id":"shopify-app-pixel","configuration":"{}","eventPayloadVersion":"v1","runtimeContext":"STRICT","scriptVersion":"0450","apiClientId":"shopify-pixel","type":"APP","privacyPurposes":["ANALYTICS","MARKETING"]},{"id":"shopify-custom-pixel","eventPayloadVersion":"v1","runtimeContext":"LAX","scriptVersion":"0450","apiClientId":"shopify-pixel","type":"CUSTOM","privacyPurposes":["ANALYTICS","MARKETING"]}],isMerchantRequest: false,initData: {"shop":{"name":"MT5 Simulator","paymentSettings":{"currencyCode":"USD"},"myshopifyDomain":"mt5-simulator.myshopify.com","countryCode":"AU","storefrontUrl":"https:\/\/mt5simulator.com"},"customer":null,"cart":null,"checkout":null,"productVariants":[],"purchasingCompany":null},},"https://mt5simulator.com/cdn","3c1f2529w4065d210p03530cb8m151179d6",{"modern":"","legacy":""},{"shopId":"73180905746","storefrontBaseUrl":"https:\/\/mt5simulator.com","extensionBaseUrl":"https:\/\/extensions.shopifycdn.com\/cdn\/shopifycloud\/web-pixels-manager","surface":"storefront-renderer","enabledBetaFlags":"[\"2dca8a86\"]","isMerchantRequest":"false","hashVersion":"3c1f2529w4065d210p03530cb8m151179d6","publish":"custom","events":"[[\"page_viewed\",{}]]"});</script><script>
+  window.ShopifyAnalytics = window.ShopifyAnalytics || {};
+  window.ShopifyAnalytics.meta = window.ShopifyAnalytics.meta || {};
+  window.ShopifyAnalytics.meta.currency = 'USD';
+  var meta = {"page":{"pageType":"home","requestId":"94c8593c-027a-4ab2-b61d-4c9151e5de58-1771760457"}};
+  for (var attr in meta) {
+    window.ShopifyAnalytics.meta[attr] = meta[attr];
+  }
+</script>
+<script class="analytics">
+  (function () {
+    var customDocumentWrite = function(content) {
+      var jquery = null;
+
+      if (window.jQuery) {
+        jquery = window.jQuery;
+      } else if (window.Checkout && window.Checkout.$) {
+        jquery = window.Checkout.$;
+      }
+
+      if (jquery) {
+        jquery('body').append(content);
+      }
+    };
+
+    var hasLoggedConversion = function(token) {
+      if (token) {
+        return document.cookie.indexOf('loggedConversion=' + token) !== -1;
+      }
+      return false;
+    }
+
+    var setCookieIfConversion = function(token) {
+      if (token) {
+        var twoMonthsFromNow = new Date(Date.now());
+        twoMonthsFromNow.setMonth(twoMonthsFromNow.getMonth() + 2);
+
+        document.cookie = 'loggedConversion=' + token + '; expires=' + twoMonthsFromNow;
+      }
+    }
+
+    var trekkie = window.ShopifyAnalytics.lib = window.trekkie = window.trekkie || [];
+    if (trekkie.integrations) {
+      return;
+    }
+    trekkie.methods = [
+      'identify',
+      'page',
+      'ready',
+      'track',
+      'trackForm',
+      'trackLink'
+    ];
+    trekkie.factory = function(method) {
+      return function() {
+        var args = Array.prototype.slice.call(arguments);
+        args.unshift(method);
+        trekkie.push(args);
+        return trekkie;
+      };
+    };
+    for (var i = 0; i < trekkie.methods.length; i++) {
+      var key = trekkie.methods[i];
+      trekkie[key] = trekkie.factory(key);
+    }
+    trekkie.load = function(config) {
+      trekkie.config = config || {};
+      trekkie.config.initialDocumentCookie = document.cookie;
+      var first = document.getElementsByTagName('script')[0];
+      var script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.onerror = function(e) {
+        var scriptFallback = document.createElement('script');
+        scriptFallback.type = 'text/javascript';
+        scriptFallback.onerror = function(error) {
+                var Monorail = {
+      produce: function produce(monorailDomain, schemaId, payload) {
+        var currentMs = new Date().getTime();
+        var event = {
+          schema_id: schemaId,
+          payload: payload,
+          metadata: {
+            event_created_at_ms: currentMs,
+            event_sent_at_ms: currentMs
+          }
+        };
+        return Monorail.sendRequest("https://" + monorailDomain + "/v1/produce", JSON.stringify(event));
+      },
+      sendRequest: function sendRequest(endpointUrl, payload) {
+        // Try the sendBeacon API
+        if (window && window.navigator && typeof window.navigator.sendBeacon === 'function' && typeof window.Blob === 'function' && !Monorail.isIos12()) {
+          var blobData = new window.Blob([payload], {
+            type: 'text/plain'
+          });
+
+          if (window.navigator.sendBeacon(endpointUrl, blobData)) {
+            return true;
+          } // sendBeacon was not successful
+
+        } // XHR beacon
+
+        var xhr = new XMLHttpRequest();
+
+        try {
+          xhr.open('POST', endpointUrl);
+          xhr.setRequestHeader('Content-Type', 'text/plain');
+          xhr.send(payload);
+        } catch (e) {
+          console.log(e);
+        }
+
+        return false;
+      },
+      isIos12: function isIos12() {
+        return window.navigator.userAgent.lastIndexOf('iPhone; CPU iPhone OS 12_') !== -1 || window.navigator.userAgent.lastIndexOf('iPad; CPU OS 12_') !== -1;
+      }
+    };
+    Monorail.produce('monorail-edge.shopifysvc.com',
+      'trekkie_storefront_load_errors/1.1',
+      {shop_id: 73180905746,
+      theme_id: 180015202578,
+      app_name: "storefront",
+      context_url: window.location.href,
+      source_url: "//mt5simulator.com/cdn/s/trekkie.storefront.79c9ee2a1f7d217701a15e49200b1e976848d6d6.min.js"});
+
+        };
+        scriptFallback.async = true;
+        scriptFallback.src = '//mt5simulator.com/cdn/s/trekkie.storefront.79c9ee2a1f7d217701a15e49200b1e976848d6d6.min.js';
+        first.parentNode.insertBefore(scriptFallback, first);
+      };
+      script.async = true;
+      script.src = '//mt5simulator.com/cdn/s/trekkie.storefront.79c9ee2a1f7d217701a15e49200b1e976848d6d6.min.js';
+      first.parentNode.insertBefore(script, first);
+    };
+    trekkie.load(
+      {"Trekkie":{"appName":"storefront","development":false,"defaultAttributes":{"shopId":73180905746,"isMerchantRequest":null,"themeId":180015202578,"themeCityHash":"11757303150267921490","contentLanguage":"en","currency":"USD","eventMetadataId":"4633c777-169d-4946-9bfe-fb5dc2567216"},"isServerSideCookieWritingEnabled":true,"monorailRegion":"shop_domain","enabledBetaFlags":["65f19447","b5387b81"]},"Session Attribution":{},"S2S":{"facebookCapiEnabled":true,"source":"trekkie-storefront-renderer","apiClientId":580111}}
+    );
+
+    var loaded = false;
+    trekkie.ready(function() {
+      if (loaded) return;
+      loaded = true;
+
+      window.ShopifyAnalytics.lib = window.trekkie;
+
+      var originalDocumentWrite = document.write;
+      document.write = customDocumentWrite;
+      try { window.ShopifyAnalytics.merchantGoogleAnalytics.call(this); } catch(error) {};
+      document.write = originalDocumentWrite;
+
+      window.ShopifyAnalytics.lib.page(null,{"pageType":"home","requestId":"94c8593c-027a-4ab2-b61d-4c9151e5de58-1771760457","shopifyEmitted":true});
+
+      var match = window.location.pathname.match(/checkouts\/(.+)\/(thank_you|post_purchase)/)
+      var token = match? match[1]: undefined;
+      if (!hasLoggedConversion(token)) {
+        setCookieIfConversion(token);
+        
+      }
+    });
+
+
+        var eventsListenerScript = document.createElement('script');
+        eventsListenerScript.async = true;
+        eventsListenerScript.src = "//mt5simulator.com/cdn/shopifycloud/storefront/assets/shop_events_listener-3da45d37.js";
+        document.getElementsByTagName('head')[0].appendChild(eventsListenerScript);
+
+})();</script>
+<script
+  defer
+  src="https://mt5simulator.com/cdn/shopifycloud/perf-kit/shopify-perf-kit-3.1.0.min.js"
+  data-application="storefront-renderer"
+  data-shop-id="73180905746"
+  data-render-region="gcp-europe-west1"
+  data-page-type="index"
+  data-theme-instance-id="180015202578"
+  data-theme-name="Dawn"
+  data-theme-version="15.2.0"
+  data-monorail-region="shop_domain"
+  data-resource-timing-sampling-rate="10"
+  data-shs="true"
+  data-shs-beacon="true"
+  data-shs-export-with-fetch="true"
+  data-shs-logs-sample-rate="1"
+  data-shs-beacon-endpoint="https://mt5simulator.com/api/collect"
+></script>
+</head>
+
+  <body class="gradient">
+    <a class="skip-to-content-link button visually-hidden" href="#MainContent">
+      Skip to content
+    </a><!-- BEGIN sections: header-group -->
+<div id="shopify-section-sections--25010261557522__header" class="shopify-section shopify-section-group-header-group"><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* Normal navbar */
+#mainNavbar {
+  transition: all 0.3s ease;
+}
+
+/* Fixed when scrolling */
+/* Fixed when scrolling */
+#mainNavbar.fixed-scroll {
+  position: fixed;
+  top: 5px;
+  margin-top: 0;
+  margin-bottom: 0;
+  z-index: 1050;
+  width: calc(100% - 0px); /* Account for left/right padding */
+  left: 0px; /* Fallback for browsers that don't support inset-inline-start */
+  inset-inline-start: 0px; /* Default for mobile */
+  right: 0px; /* Fallback for browsers that don't support inset-inline-end */
+  inset-inline-end: 0px;
+  max-width: 1200px; /* Match your container width if needed */
+  margin: 0 auto; /* Center the navbar */
+  animation: slideDown 0.3s ease-out;
+}
+
+/* For tablets and small desktops */
+@media (min-width: 768px) {
+  #mainNavbar.fixed-scroll {
+    left: 50%; /* Fallback */
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 80px);
+    max-width: 1200px;
+  }
+}
+
+/* For larger desktops where you want the 270px offset */
+@media (min-width: 1200px) {
+  #mainNavbar.fixed-scroll {
+    left: 200px; /* Fallback */
+    inset-inline-start: 20px;
+    transform: none;
+    width: calc(100% - 270px - 40px); /* Subtract offset and padding */
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+    .glass-header {
+      background: rgba(11, 22, 27, 0.6);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+      backdrop-filter: blur(6.5px);
+      -webkit-backdrop-filter: blur(6.5px);
+      border-radius: 1000px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      padding: 0 16px 0 32px;
+      height:71px;
+      margin-top:32px;
+    }
+
+    .navbar {
+  align-items: stretch; /* Ensures children grow equally */
+}
+
+.navbar-nav {
+  display: flex;
+  align-items: stretch; /* Make li's take full navbar height */
+  height: 100%;
+}
+
+.navbar-nav li {
+  display: flex;
+  align-items: stretch; /* Make a's take full li height */
+  height: 100%;
+}
+
+.navbar-nav .nav-link {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 1rem; /* Optional: adjust horizontal spacing */
+}
+    
+.navbar-nav li:not(:last-child) > a {
+  margin-inline-end: 5px;
+}
+
+.navbar-nav li:not(:first-child) > a {
+  margin-inline-start: 5px;
+}
+
+
+   .navbar-nav .nav-link {
+ color: #ACBAC0;
+      font-size:18px !important;
+      font-family: 'Work Sans', sans-serif;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 20px !important;
+  transition: 0.3s ease-in-out;
+}
+
+.navbar-nav .nav-link.active,
+.navbar-nav .nav-link:hover {
+  color: #ffffff;
+  border-bottom: 1px solid #53F0AB;
+  background: linear-gradient(
+    180deg,
+    rgba(83, 240, 171, 0.00) 49.47%,
+    rgba(83, 240, 171, 0.40) 112.24%
+  ) !important;
+}
+.navbar-nav .nav-link.show{color: #ffffff;}
+    .navbar-brand img {
+      height: 40px;
+    }
+    .dropdown-menu{background:#072017 !important;}
+.dropdown-item{
+  color: #BED2C8;
+      font-size:18px !important;
+      font-family: 'Work Sans', sans-serif;
+  font-weight:400;
+  height: 100%;
+  display: flex;
+  padding:13px;
+}
+.dropdown-item.active,.dropdown-item:hover{color:#1EB683;background:transparent !important;}     
+.btn-buy {
+  background-color: #1EB683;
+  border-radius: 50px 50px 50px 50px;
+  color: white;
+  font-size:18px;
+  padding: 18px 32px 18px 32px;
+  border: solid 1px #1EB683;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 12px;
+  transition-duration: 0.3s;
+  transition-property: transform, background-color;
+}
+
+.btn-buy:hover {
+background-color: #02010100;
+  color: #1EB683;
+  border-color: #1EB683;
+  box-shadow: 0px 6px 10px 0px rgba(29.999999999999996, 181.9999999999999, 130.99999999999991, 0.26);
+  transform: scale(1.05);
+}
+.btn-boost {
+  background-color:transparent;
+  border-radius: 50px 50px 50px 50px;
+  color: #ACBAC0;
+  font-size:18px;
+  padding: 18px 32px 18px 32px;
+  border: solid 1px #ACBAC0;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 12px;
+  transition-duration: 0.3s;
+  transition-property: transform, background-color;
+}
+
+.btn-boost:hover {
+background-color: #1EB683;
+  color: white;
+  border-color: #1EB683;
+  box-shadow: 0px 6px 10px 0px rgba(29.999999999999996, 181.9999999999999, 130.99999999999991, 0.26);
+  transform: scale(1.05);
+}
+.navbar-nav .dropdown-toggle::after {
+  display: none !important;
+}
+    
+    /* Custom navbar toggler */
+    .navbar-toggler {
+      background-color: #1EB683;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .navbar-toggler:focus {
+      box-shadow: 0 0 0 0.25rem rgba(30, 182, 131, 0.5);
+    }
+    
+ .custom-toggler:not(.collapsed) .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M6 6L24 24M6 24L24 6'/%3e%3c/svg%3e");
+}
+.custom-toggler .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+  width: 1.25em;
+  height: 1.25em;
+}
+    
+   
+    
+    /* Mobile menu styles */
+    @media (max-width: 991.98px) {
+      .navbar-collapse {
+        position: fixed;
+        top: 110px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        background: rgba(7, 32, 23, 0.95);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        backdrop-filter: blur(6.5px);
+        -webkit-backdrop-filter: blur(6.5px);
+        border-radius: 20px;
+        border: 1px solid rgba(83, 240, 171, 0.18);
+        padding: 20px;
+        text-align: center;
+        z-index: 1000;
+      }
+      
+      .navbar-nav {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .navbar-nav li {
+        width: 100%;
+        margin: 5px 0;
+      }
+      
+      .navbar-nav .nav-link {
+        justify-content: center;
+        padding: 10px 0 !important;
+      }
+      
+      .dropdown-menu {
+        position: static !important;
+        transform: none !important;
+        background: transparent !important;
+        border: none;
+        text-align: center;
+      }
+      
+      .dropdown-item {
+        justify-content: center;
+      }
+    }
+  </style>
+
+  <nav id="mainNavbar" class="navbar navbar-expand-lg glass-header container">
+    <a class="navbar-brand d-flex align-items-center" href="/">
+      <img src="https://cdn.shopify.com/s/files/1/0731/8090/5746/files/Frame-1984078466-1.webp?v=1749110774" alt="Logo" />
+    </a>
+  
+    <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/pages/about">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/pages/software">Software</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/pages/user-guides">User Guides</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle d-flex align-items-center gap-1" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            More
+            <svg viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg" width="12" height="8">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M1.47.97a.75.75 0 011.06 0L5 3.44 7.47.97a.75.75 0 111.06 1.06L5.53 5.03a.75.75 0 01-1.06 0L1.47 2.03A.75.75 0 011.47.97z" fill="currentColor"/>
+            </svg>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="/pages/users">Users</a></li>
+            <li><a class="dropdown-item" href="https://signup.mt5simulator.com/reset-activation/">Reset License</a></li>
+            <li><a class="dropdown-item" href="/pages/cancel-subscription">Cancel Subscription</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+        <a href="/pages/buy-now" class="btn btn-buy">Buy Now</a>
+        </li>
+        
+      </ul>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      
+      <button class="navbar-toggler custom-toggler ms-2 collapsed"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation">
+  <span class="navbar-toggler-icon"></span>
+</button>
+    </div>
+  </nav>
+
+<script>
+  window.addEventListener('scroll', function () {
+    const navbar = document.getElementById('mainNavbar');
+    if (window.scrollY > 10) {
+      navbar.classList.add('fixed-scroll');
+    } else {
+      navbar.classList.remove('fixed-scroll');
+    }
+  });
+</script>
+<script>
+  const currentPath = window.location.pathname;
+
+  // Add 'active' to normal nav links
+  document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+    const href = link.getAttribute('href');
+    if (!href || href === "#") return;
+
+    const linkPath = new URL(link.href).pathname;
+    if (linkPath === currentPath) {
+      link.classList.add('active');
+    }
+  });
+
+  // Add 'active' to dropdown items
+  document.querySelectorAll('.dropdown-item').forEach(item => {
+    const itemPath = new URL(item.href).pathname;
+    if (itemPath === currentPath) {
+      item.classList.add('active');
+
+      // Activate dropdown-toggle parent as well
+      const dropdownToggle = item.closest('.dropdown')?.querySelector('.dropdown-toggle');
+      if (dropdownToggle) dropdownToggle.classList.add('active');
+    }
+  });
+</script></div>
+<!-- END sections: header-group -->
+
+    <main id="MainContent" class="content-for-layout focus-none" role="main" tabindex="-1">
+   
+
+
+      <section id="shopify-section-template--25010264637714__custom_liquid_JqDFw6" class="shopify-section section"><style data-shopify>.section-template--25010264637714__custom_liquid_JqDFw6-padding {
+    padding-top: calc(0px * 0.75);
+    padding-bottom: calc(0px  * 0.75);
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-template--25010264637714__custom_liquid_JqDFw6-padding {
+      padding-top: 0px;
+      padding-bottom: 0px;
+    }
+  }</style><div class="color-scheme-1 gradient">
+  <div class="section-template--25010264637714__custom_liquid_JqDFw6-padding">
+    <style>
+.iti__flag.iti__in{display:block;}
+.iti__arrow{display:block;}
+  /* Modal Overlay */
+  .v-modal-overlay {
+    display: none; 
+    position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.6); backdrop-filter: blur(3px);
+  }
+
+  /* Modal Content Box */
+  .v-modal-content {
+    background: linear-gradient(135deg, #fff5f6 0%, #ffffff 100%);
+    margin: 10% auto; padding: 30px; border-radius: 20px;
+    width: 90%; max-width: 400px; position: relative;
+    box-shadow: 0 10px 30px rgba(225, 29, 72, 0.3);
+    border: 3px solid #fecaca; text-align: center;
+  }
+
+  .v-modal-content h2 { color: #be123c; margin-bottom: 5px; font-family: 'Georgia', serif; }
+  .v-modal-content p { color: #4b5563; font-size: 14px; margin-bottom: 20px; }
+
+  /* Form Styling */
+  .v-form-group { margin-bottom: 15px; text-align: left; }
+  .v-input {
+    width: 100%; padding: 12px; border: 1px solid #f9a8d4;
+    border-radius: 8px; outline: none; transition: 0.3s;
+  }
+  .v-input:focus { border-color: #e11d48; box-shadow: 0 0 5px rgba(225, 29, 72, 0.2); }
+
+  /* Fix for International Tel Input width */
+  .iti { width: 100%; }
+
+  .v-submit-btn {
+    background: #e11d48; color: white; border: none; padding: 12px 25px;
+    border-radius: 50px; font-weight: bold; cursor: pointer; width: 100%;
+    font-size: 16px; transition: 0.3s; margin-top: 10px;
+  }
+  .v-submit-btn:hover { background: #be123c; transform: translateY(-2px); }
+
+  .v-close { position: absolute; right: 15px; top: 10px; font-size: 24px; cursor: pointer; color: #fda4af; }
+  
+  /* Success Message Styling */
+  #v-success-msg { display: none; color: #be123c; padding: 20px; }
+  .heart-icon { font-size: 40px; color: #e11d48; }
+  /* Spinner Animation */
+.v-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: v-spin 0.8s linear infinite;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+@keyframes v-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Optional: Disable button hover effect during processing */
+.v-submit-btn:disabled {
+  cursor: not-allowed;
+  transform: none !important;
+}
+</style>
+
+<div id="valentineModal" class="v-modal-overlay">
+  <div class="v-modal-content">
+    <span class="v-close" onclick="closeModal()">&times;</span>
+    
+    <div id="v-form-container">
+      <h2>Claim Your Love 💝</h2>
+      <p>Get your 2-for-1 License deal instantly!</p>
+      
+      <form id="valentineForm">
+        <div class="v-form-group">
+          <input type="text" name="name" class="v-input" placeholder="Your Name" required>
+        </div>
+        <div class="v-form-group">
+          <input type="email" name="email" class="v-input" placeholder="Email Address" required>
+        </div>
+        <div class="v-form-group">
+          <input type="tel" id="phone" name="phone" class="v-input" required>
+        </div>
+        <button type="submit" class="v-submit-btn">Send Me The Deal 🏹</button>
+      </form>
+    </div>
+
+    <div id="v-success-msg">
+      <div class="heart-icon">❤️</div>
+      <h3>Thank You, Valentine!</h3>
+      <p>Your 2-for-1 details have been sent to your email. Happy Trading!</p>
+      <button class="v-submit-btn" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+  </div>
+</div>
+
+
+</section><section id="shopify-section-template--25010264637714__custom_liquid_UtFAJC" class="shopify-section section"><style data-shopify>.section-template--25010264637714__custom_liquid_UtFAJC-padding {
+    padding-top: calc(0px * 0.75);
+    padding-bottom: calc(0px  * 0.75);
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-template--25010264637714__custom_liquid_UtFAJC-padding {
+      padding-top: 0px;
+      padding-bottom: 0px;
+    }
+  }</style><div class="color-scheme-1 gradient">
+  <div class="section-template--25010264637714__custom_liquid_UtFAJC-padding">
+    <style>
+.navbar-brand img{margin-top:20px;}
+.exit-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.92);
+  z-index: 999999;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.exit-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-radius: 20px;
+  max-width: 620px;
+  width: 90%;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
+  animation: slideUp 0.4s ease;
+  border: 3px solid #fbbf24;
+  overflow: hidden;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translate(-50%, -40%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+.exit-header {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  padding: 30px;
+  position: relative;
+  text-align: center;
+}
+
+.exit-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+  animation: bounce 1s ease infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.exit-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 10px 0;
+  line-height: 1.2;
+}
+
+.exit-subtitle {
+  font-size: 18px;
+  color: #fecaca;
+  margin: 0;
+  font-weight: 600;
+}
+
+.exit-body {
+  padding: 40px 35px;
+}
+
+.exit-offer-box {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  padding: 30px;
+  border-radius: 16px;
+  text-align: center;
+  margin-bottom: 30px;
+  position: relative;
+  overflow: hidden;
+  border: 3px solid #78350f;
+}
+
+.exit-offer-badge {
+  background: #dc2626;
+  color: #ffffff;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-weight: 800;
+  font-size: 12px;
+  text-transform: uppercase;
+  display: inline-block;
+  margin-bottom: 15px;
+  letter-spacing: 0.05em;
+}
+
+.exit-price {
+  font-size: 56px;
+  font-weight: 800;
+  color: #78350f;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.exit-price small {
+  font-size: 28px;
+  text-decoration: line-through;
+  opacity: 0.6;
+  margin-right: 10px;
+}
+
+.exit-save-text {
+  font-size: 18px;
+  color: #78350f;
+  font-weight: 700;
+}
+
+.exit-benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 30px 0;
+}
+
+.exit-benefit {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  font-size: 15px;
+}
+
+.exit-benefit:last-child {
+  border-bottom: none;
+}
+
+.exit-benefit::before {
+  content: '✓';
+  background: #22c55e;
+  color: #ffffff;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.exit-cta-btn {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: #ffffff;
+  padding: 20px 45px;
+  font-size: 20px;
+  font-weight: 800;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 25px rgba(220, 38, 38, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.exit-cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 35px rgba(220, 38, 38, 0.7);
+}
+
+.exit-decline-btn {
+  text-align: center;
+  color: #94a3b8;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: underline;
+  background: none;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  transition: color 0.3s ease;
+}
+
+.exit-decline-btn:hover {
+  color: #cbd5e1;
+}
+
+.exit-close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10;
+  font-weight: 700;
+}
+
+.exit-close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+.exit-urgency-footer {
+  background: #fbbf24;
+  padding: 15px;
+  text-align: center;
+  color: #78350f;
+  font-weight: 800;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+</style>
+
+<div class="exit-overlay" id="exitPopup">
+  <div class="exit-modal">
+    <button class="exit-close-btn" onclick="closeExitPopup()">×</button>
+    
+    <div class="exit-header">
+      <div class="exit-icon">⚡</div>
+      <h2 class="exit-title">WAIT! Special Offer</h2>
+      <p class="exit-subtitle">Lock in 55% OFF before price increases</p>
+    </div>
+
+    <div class="exit-body">
+      <div class="exit-offer-box">
+        <span class="exit-offer-badge">FLASH SALE ENDS IN 48 HOURS</span>
+        <div class="exit-price">
+          <small>$299</small> $134.55
+        </div>
+        <p class="exit-save-text">SAVE $164.45 (55% OFF)</p>
+      </div>
+
+      <ul class="exit-benefits">
+        <li class="exit-benefit">Lifetime access - No monthly fees ever</li>
+        <li class="exit-benefit">20+ years of real market data</li>
+        <li class="exit-benefit">5-day money-back guarantee</li>
+        <li class="exit-benefit">1-on-1 installation support included</li>
+        <li class="exit-benefit">Instant delivery to your email</li>
+      </ul>
+
+      <button class="exit-cta-btn" onclick="claimFlashSale()">
+        🔥 LOCK IN $134.55 NOW
+      </button>
+
+      <button class="exit-decline-btn" onclick="closeExitPopup()">
+        No thanks, I'll pay $299 later
+      </button>
+    </div>
+
+    <div class="exit-urgency-footer">
+      ⏰ This price expires in 48 hours
+    </div>
+  </div>
+</div>
+
+<script>
+let exitShown = false;
+
+document.addEventListener('mouseleave', function(e) {
+  if (e.clientY < 50 && !exitShown && !sessionStorage.getItem('exitSeen')) {
+    showExitPopup();
+  }
+});
+
+let lastY = 0;
+let startTime = 0;
+
+document.addEventListener('touchstart', function(e) {
+  lastY = e.touches[0].clientY;
+  startTime = Date.now();
+}, { passive: true });
+
+document.addEventListener('touchmove', function(e) {
+  const y = e.touches[0].clientY;
+  const diff = Date.now() - startTime;
+  
+  if (y - lastY > 50 && lastY < 100 && diff < 300 && !exitShown) {
+    showExitPopup();
+  }
+}, { passive: true });
+
+function showExitPopup() {
+  if (exitShown) return;
+  document.getElementById('exitPopup').style.display = 'block';
+  exitShown = true;
+  sessionStorage.setItem('exitSeen', 'true');
+}
+
+function closeExitPopup() {
+  document.getElementById('exitPopup').style.display = 'none';
+}
+
+function claimFlashSale() {
+  window.location.href = 'https://mt5-simulator.myshopify.com/cart/50288713367826:1?discount=SAVE55';
+}
+
+document.getElementById('exitPopup').addEventListener('click', function(e) {
+  if (e.target === this) closeExitPopup();
+});
+</script>
+  </div>
+</div>
+
+
+</section><section id="shopify-section-template--25010264637714__custom_liquid_EKNfBU" class="shopify-section section"><style data-shopify>.section-template--25010264637714__custom_liquid_EKNfBU-padding {
+    padding-top: calc(64px * 0.75);
+    padding-bottom: calc(0px  * 0.75);
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-template--25010264637714__custom_liquid_EKNfBU-padding {
+      padding-top: 64px;
+      padding-bottom: 0px;
+    }
+  }</style><div class="color-scheme-1 gradient">
+  <div class="section-template--25010264637714__custom_liquid_EKNfBU-padding">
+    <!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  .home-banner {
+background-position: top center;
+  background-repeat: no-repeat;
+  background-size: cover;
+    padding:150px 20px 100px 20px;
+    position: relative;
+    background: url(https://cdn.shopify.com/s/files/1/0731/8090/5746/files/FlooF-Home-page.webp?v=1749113736);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+    flex-direction: column;
+    font-family: "Work Sans", sans-serif;
+  }
+
+  .badge-platform {
+    border-style: solid;
+    border-width: 1px 0px 0px 1px;
+    border-color: #53F0AB;
+    border-radius: 50px;
+    padding: 16px 32px;
+    background-image: linear-gradient(to right, #000, #000, #0000, #1eb683);
+    font-size: 24px;
+    font-weight: 400;
+    text-transform: uppercase;
+    color: #ffffff;
+  }
+
+  .hero-heading {
+    font-size: 90px;
+    font-weight: 300;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    color: #ffffff;
+  }
+
+  .hero-heading span {
+    font-weight: 700;
+    display: block;
+  }
+
+  .hero-subtext {
+    max-width: 800px;
+    font-size: 16px;
+    font-weight: 400;
+    color: #ffffff;
+    margin: 20px auto;
+  }
+
+  .btn-buy1 {
+    margin-top: 24px;
+    background-color: #1EB683;
+    padding: 12px 32px;
+    border-radius: 1000px;
+    font-weight: 500;
+    font-size: 16px;
+    transition: transform 0.3s;
+    color: white;
+    border: none;
+    display: inline-block;
+  }
+
+  .btn-buy1:hover {
+    transform: scale(1.05);
+    background-color: transparent;
+    color: #1EB683;
+    border: 1px solid #1EB683;
+    box-shadow: 0px 6px 10px rgba(30, 182, 130, 0.26);
+  }
+
+  .video-wrapper {
+    position: relative;
+    margin-top: 32px;
+   
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    background-image: url("https://cdn.shopify.com/s/files/1/0731/8090/5746/files/Rectangle-39389.webp?v=1749200726");
+  margin: 30px 0px 0px 0px;
+  padding: 20px 20px 20px 20px;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 24px 24px 24px 24px;
+  height: 100%;
+  }
+
+  .video-wrapper video {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+  }
+
+  @media (max-width: 768px) {
+    .hero-heading {
+      font-size: 42px;
+    }
+
+    .hero-subtext {
+      font-size: 14px;
+      padding: 0 20px;
+    }
+
+    .badge-platform {
+      font-size: 18px;
+      padding: 12px 24px;
+    }
+.video-wrapper{width:100%;padding: 10px 10px 10px 10px;
+    border-radius: 12px 12px 12px 12px;}
+  }
+</style>
+
+<div class="home-banner">
+
+
+
+
+
+  <div class="badge-platform">BACK TESTING PLATFORM</div>
+  <h1 class="hero-heading">
+    Before You Trade Live,  <span class="highlight">Practice First</span>
+  </h1>
+  <p class="hero-subtext">
+     Most traders don’t lose because of strategy.<br>
+      They lose because they never practiced.
+  </p>
+  <button onclick="openModal()" class="btn btn-buy1">Download Free Trading Checklist</button>
+
+  <!-- Video section -->
+  <div class="video-wrapper">
+   <img src="https://cdn.shopify.com/s/files/1/0731/8090/5746/files/Buy-sell-ezgif.com-video-to-gif-converter.gif?v=1768198156" style="width:100%;">
+  </div>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">    
+    <style>
+       .overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+.close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: 28px;
+  color: #fff;
+  cursor: pointer;
+}
+
+        /* Modal Container */
+        .modal-card {
+            /* REPLACE 'path/to/your-trading-bg.jpg' below with the path 
+               to your blue trading candles background image. 
+            */
+          transition: max-height 0.4s ease, padding 0.4s ease;
+            background: 
+                
+                url('https://cdn.shopify.com/s/files/1/0731/8090/5746/files/trding-bg.png?v=1767946502'); 
+            
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            max-height: 90vh;
+            overflow-y: auto;
+            width: 410px;
+            border-radius: 20px;
+            padding: 15px 30px;
+            position: relative;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            text-align: center;
+            border: 2px solid #5a82ed;
+            overflow: hidden; /* Ensures inner elements don't overflow rounded corners */
+        }
+
+        /* Top Graphic Section */
+        .header-section {
+          transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.4s ease;
+            position: relative;
+            min-height: 190px; /* Increased height for the bigger gift image */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 15px;
+            z-index: 10;
+        }
+
+        /* The Gold "FREE" Text */
+        .free-text {
+            font-size: 52px;
+            font-weight: 900;
+            color: #FFD700;
+            text-transform: uppercase;
+            text-shadow: 
+                0px 3px 0px #b8860b,
+                0px 0px 25px rgba(255, 215, 0, 0.9);
+            letter-spacing: 2px;
+            position: absolute;
+            top: 0;
+            z-index: 12;
+        }
+
+        /* The Gift Box Image */
+        .gift-img {
+            width: 90%;
+            height: 240px;
+            object-fit: contain;
+            z-index: 11;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+        }
+
+        /* White Form Container */
+        .form-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px 15px 15px; /* More top padding for overlap */
+            box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 5;
+        }
+
+        /* Input Groups */
+        .input-group {
+            display: flex;
+            align-items: center;
+            background: #f0f2f5;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            padding: 4px;
+        }
+
+        .input-icon {
+            width: 45px;
+            height: 45px;
+            background: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #0d2673; /* Dark Blue Icon */
+            font-size: 24px;
+        }
+
+        .input-field {
+            border: none;
+            background: transparent;
+            outline: none;
+            flex-grow: 1;
+            padding: 10px;
+            font-size: 16px;
+            color: #555;
+        }
+
+        .input-field::placeholder {
+            color: #999;
+            font-size: 14px;
+        }
+
+        /* Button Section */
+        .cta-section {
+            position: relative;
+            padding: 0 10px;
+            z-index: 15;
+        }
+
+        .cta-btn {
+            background: linear-gradient(180deg, #ffaa00 0%, #ff7700 100%);
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 50px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #cc5500, 0 10px 20px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .cta-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #cc5500, 0 5px 10px rgba(0,0,0,0.4);
+        }
+
+        .cta-btn.loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.cta-btn.loading::after {
+  content: '⏳ Processing...';
+}
+
+.cta-btn.loading span {
+  display: none;
+}
+
+        /* Red Arrows */
+        .arrows {
+            position: absolute;
+            color: #ff0000;
+            font-size: 28px;
+            animation: pulse 1.5s infinite ease-in-out;
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5));
+        }
+
+        .arrow-left-top { left: -20px; top: -10px; }
+        .arrow-left-bottom { left: -20px; bottom: 10px; }
+        .arrow-right-top { right: -20px; top: -10px; }
+        .arrow-right-bottom { right: -20px; bottom: 10px; }
+
+        @keyframes pulse {
+            0% { transform: scale(1) rotate(var(--r)); }
+            50% { transform: scale(1.3) rotate(var(--r)); }
+            100% { transform: scale(1) rotate(var(--r)); }
+        }
+
+        /* Footer Security Icons */
+        .footer-icons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            position: relative;
+            z-index: 15;
+        }
+
+        .icon-wrap {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            position: relative;
+        }
+        
+        .icon-wrap i {
+            font-size: 22px;
+            color: #ccc;
+        }
+
+        /* Custom Cross Line for "No" icons */
+        .crossed {
+            position: relative;
+        }
+        .crossed::after {
+            content: '';
+            position: absolute;
+            width: 110%;
+            height: 3px;
+            background: #ff0000;
+            top: 50%;
+            left: -5%;
+            transform: rotate(-45deg);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .footer-text {
+            color: white;
+            font-weight: bold;
+            font-size: 15px;
+            display: block;
+            margin-left: 5px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+@media (max-height: 700px) {
+    .modal-card {
+        transform: scale(0.9);
+    }
+}
+    </style>
+
+<div class="overlay" id="checklistModal">
+    <div class="modal-card" >
+        <span class="close" onclick="closeModal()">×</span>
+        <div class="header-section">
+          
+            
+            <img src="https://cdn.shopify.com/s/files/1/0731/8090/5746/files/free.png?v=1767945846" alt="Trading Checklist Gift" class="gift-img">
+        </div>
+        <div class="formContent">
+        <div class="form-container">
+
+            <div class="input-group">
+                <div class="input-icon">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <input type="text" id="name" class="input-field" placeholder="Name">
+            </div>
+
+            <div class="input-group">
+                <div class="input-icon">
+                    <i class="fa-solid fa-envelope"></i>
+                </div>
+                <input type="email" id="email" class="input-field" placeholder="Email">
+            </div>
+
+            <div class="input-group">
+                <div class="input-icon">
+                    <i class="fa-solid fa-circle-question"></i>
+                </div>
+                <input type="text" id="answer" class="input-field" placeholder="What is your BIGGEST trading challenge?">
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <i class="fa-solid fa-arrow-right arrows arrow-left-top" style="--r: 45deg;"></i>
+            <i class="fa-solid fa-arrow-right arrows arrow-left-bottom" style="--r: -45deg;"></i>
+            <i class="fa-solid fa-arrow-right arrows arrow-right-top" style="--r: 135deg;"></i>
+            <i class="fa-solid fa-arrow-right arrows arrow-right-bottom" style="--r: 225deg;"></i>
+
+            <button class="cta-btn" id="ctaBtn" onclick="submitForm()">
+  <span>GET FREE 🎁</span>
+</button>
+        </div>
+
+        <div class="footer-icons">
+            <div class="icon-wrap">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <div class="icon-wrap crossed">
+                <i class="fa-solid fa-envelope"></i>
+            </div>
+            <div class="icon-wrap crossed">
+                <i class="fa-solid fa-credit-card"></i>
+            </div>
+            <span class="footer-text">No Card Needed</span>
+        </div>
+      </div>
+    </div>
+
+</div>
+<script>
+function openModal() {
+  document.getElementById('checklistModal').style.display = 'flex';
+}
+
+function closeModal() {
+  document.getElementById('checklistModal').style.display = 'none';
+}
+
+/* Close when clicking outside modal */
+document.getElementById('checklistModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    closeModal();
+  }
+});
+</script>
+<script>
+function submitForm() {
+
+  const btn = document.getElementById('ctaBtn');
+  btn.classList.add('loading');
+
+  const name   = document.getElementById('name').value.trim();
+  const email  = document.getElementById('email').value.trim();
+  const answer = document.getElementById('answer').value.trim();
+
+  if (!name || !email || !answer) {
+    alert('Please fill all fields');
+    btn.classList.remove('loading');
+    return;
+  }
+
+  fetch('https://signup.mt5simulator.com/record-popup.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: new URLSearchParams({
+      name, email, answer
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === 'success') {
+      showThankYou();
+    } else {
+      btn.classList.remove('loading');
+      alert('Something went wrong');
+    }
+  })
+  .catch(() => {
+    btn.classList.remove('loading');
+    alert('Network error');
+  });
+}
+
+function showThankYou() {
+
+  // 1️⃣ SHRINK HEADER
+  const header = document.querySelector('.header-section');
+  header.style.maxHeight = '0';
+  header.style.opacity = '0';
+  header.style.margin = '0';
+  header.style.padding = '0';
+  header.style.display = 'none';
+
+  // 2️⃣ REPLACE FORM CONTENT
+  document.querySelector('.formContent').innerHTML = `
+    <div style="text-align:center;color:#fff; padding:10px 0;">
+      <h2 style="color:#fff;">🎉 Thank You!</h2>
+      <p>Your FREE Trading Checklist is ready.</p>
+
+      <a href="https://cdn.shopify.com/s/files/1/0731/8090/5746/files/Trading-Checklist.pdf?v=1767597806"
+         target="_blank"
+         class="cta-btn"
+         style="margin-top:15px; text-decoration:none;">
+         ⬇ DOWNLOAD CHECKLIST
+      </a>
+    </div>
+  `;
+
+  // 3️⃣ SHRINK MODAL HEIGHT
+  const modal = document.querySelector('.modal-card');
+  modal.style.maxHeight = '520px';
+}
+</script>
+  </div>
+</div>
+
+
+</section><section id="shopify-section-template--25010264637714__custom_liquid_YiCdVx" class="shopify-section section"><style data-shopify>.section-template--25010264637714__custom_liquid_YiCdVx-padding {
+    padding-top: calc(0px * 0.75);
+    padding-bottom: calc(0px  * 0.75);
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-template--25010264637714__custom_liquid_YiCdVx-padding {
+      padding-top: 0px;
+      padding-bottom: 0px;
+    }
+  }</style><div class="color-scheme-1 gradient">
+  <div class="section-template--25010264637714__custom_liquid_YiCdVx-padding">
+    <style>
+  .home-banner1 {
+    padding:100px 20px 100px 20px;
+    position: relative;
+    background: url(https://cdn.shopify.com/s/files/1/0731/8090/5746/files/Frame-1321319034.png?v=1749203373);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+    flex-direction: column;
+    font-family: "Work Sans", sans-serif;
+    background-position: bottom center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+  .hero-heading1 {
+    font-size: 54px;
+    font-weight: 500;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    font-family: "Work Sans", sans-serif;
+    color: #ffffff;
+  }
+
+  .hero-heading1 span {
+    font-weight: 700;
+    display: block;
+  }
+
+  .hero-subtext1 {
+    max-width: 800px;
+    font-size: 16px;
+    font-weight: 400;
+    color: #ffffff;
+    margin: 20px auto;
+  }
+
+  .btn-buy1 {
+    margin-top: 24px;
+    background-color: #1EB683;
+    padding: 12px 32px;
+    border-radius: 1000px;
+    font-weight: 500;
+    font-size: 16px;
+    transition: transform 0.3s;
+    color: white;
+    border: none;
+    display: inline-block;
+  }
+
+  .btn-buy1:hover {
+    transform: scale(1.05);
+    background-color: transparent;
+    color: #1EB683;
+    border: 1px solid #1EB683;
+    box-shadow: 0px 6px 10px rgba(30, 182, 130, 0.26);
+  }
+
+
+
+
+  @media (max-width: 768px) {
+    .hero-heading1 {
+      font-size: 42px;
+    }
+
+    .hero-subtext1 {
+      font-size: 14px;
+      padding: 0 20px;
+    }
+
+  }
+</style>
+
+<div class="home-banner1">
+  
+  <h2 class="hero-heading1">
+    Sharpen your skills for the market
+  </h2>
+  <p class="hero-subtext1">
+   Immerse yourself in the dynamic world of the market. Feel the pulse of every candle as it forms, and learn to master your emotions and cultivate patience.
+  </p>
+  <a href="https://mt5simulator.com/pages/buy-now" class="btn btn-buy1">Buy Now</a>
+
+
+</div>
+  </div>
+</div>
+
+
+</section><section id="shopify-section-template--25010264637714__custom_liquid_JLGbeM" class="shopify-section section"><style data-shopify>.section-template--25010264637714__custom_liquid_JLGbeM-padding {
+    padding-top: calc(0px * 0.75);
+    padding-bottom: calc(0px  * 0.75);
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-template--25010264637714__custom_liquid_JLGbeM-padding {
+      padding-top: 0px;
+      padding-bottom: 0px;
+    }
+  }</style><div class="color-scheme-1 gradient">
+  <div class="section-template--25010264637714__custom_liquid_JLGbeM-padding">
+    <style>
+  .home-section2 {
+    background: url(https://cdn.shopify.com/s/files/1/0731/8090/5746/files/Frame-1321319035.webp?v=1749204628);
+    background-size: cover;
+    background-position: center;
+    padding: 100px 20px 100px 20px;
+    font-family: 'Work Sans', sans-serif;
+  }
+
+  .badge-platform {
+    border-style: solid;
+    border-width: 1px 0px 0px 1px;
+    border-color: #53F0AB;
+    border-radius: 50px;
+    padding: 16px 32px;
+    background-image: linear-gradient(to right, #000, #000, #0000, #1eb683);
+    font-size: 24px;
+    font-weight: 400;
+    text-transform: uppercase;
+    color: #ffffff;
+    display: inline-block;
+  }
+
+  .hero-heading2 {
+    font-size: 54px;
+    font-weight: 300;
+    line-height: 1.2;
+    color: #ffffff;
+    margin: 20px 0 10px;
+    font-family: 'Work Sans', sans-serif;
+  }
+
+  .hero-heading2 span {
+    font-weight: 500;
+    display: block;
+  }
+
+  .hero-subtext2 {
+    max-width: 600px;
+    font-size: 16px;
+    font-weight: 400;
+    color: #ffffff;
+    margin: 20px 0;
+  }
+
+  .btn-buy1 {
+    margin-top: 24px;
+    background-color: #1EB683;
+    padding: 12px 32px;
+    border-radius: 1000px;
+    font-weight: 500;
+    font-size: 16px;
+    transition: transform 0.3s;
+    color: white;
+    border: none;
+    display: inline-block;
+  }
+
+  .btn-buy1:hover {
+    transform: scale(1.05);
+    background-color: transparent;
+    color: #1EB683;
+    border: 1px solid #1EB683;
+    box-shadow: 0px 6px 10px rgba(30, 182, 130, 0.26);
+  }
+
+  .left-img {
+    width: 100%;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  }
+
+  @media (max-width: 768px) {
+    .hero-heading2 {
+      font-size: 42px;
+    }
+
+    .hero-subtext2 {
+      font-size: 14px;
+    }
+
+    .badge-platform {
+      font-size: 18px;
+      padding: 12px 24px;
+    }
+  }
+</style>
+
+<section class="home-section2">
+  <div class="container">
+    <div class="row align-items-center">
+      <!-- Left Column - Image -->
+      <div class="col-md-6 mb-4 mb-md-0 text-center">
+        <img src="https://cdn.shopify.com/s/files/1/0731/8090/5746/files/4-1.webp?v=1749204628" alt="Trading Simulation" class="left-img img-fluid">
+      </div>
+
+      <!-- Right Column - Text -->
+      <div class="col-md-6 text-center text-md-start">
+        <div class="badge-platform">LEARN FASTER</div>
+        <h2 class="hero-heading2">
+          A Smarter Way To<br><span>Master Forex Trading</span>
+        </h2>
+        <ul class="hero-subtext2">
+    <li>Practice with 20+ years of historical data</li>
+<li>Simulate real market conditions without risking money</li>
+<li>Gain confidence and master your strategy before investing</li>
+</ul>
+        <a href="https://mt5simulator.com/pages/buy-now" class="btn btn-buy1">Buy Now</a>
+      </div>
+    </div>
+  </div>
+</section>
+  </div>
+</div>
+
+
+</section><section id="shopify-section-template--25010264637714__custom_liquid_TJfhHD" class="shopify-section section"><style data-shopify>.section-template--25010264637714__custom_liquid_TJfhHD-padding {
+    padding-top: calc(0px * 0.75);
+    padding-bottom: calc(0px  * 0.75);
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-template--25010264637714__custom_liquid_TJfhHD-padding {
+      padding-top: 0px;
+      padding-bottom: 0px;
+    }
+  }</style><div class="color-scheme-1 gradient">
+  <div class="section-template--25010264637714__custom_liquid_TJfhHD-padding">
+    <!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+   .carousel-wrapper {
+      overflow: hidden;
+      position: relative;
+      width: 100%;
+      color: #ffffff;
+text-align:left;
+    }
+
+    .carousel-track {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+    }
+
+    .carousel-item-custom {
+      flex: 0 0 100%;
+      max-width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    @media (min-width: 768px) {
+      .carousel-item-custom {
+        flex: 0 0 33.3333%;
+        max-width: 33.3333%;
+      }
+    }
+
+    .testimonial-card {
+      background-color: transparent;
+background-image: linear-gradient(180deg, #FFFFFF0A 0%, #FFFFFF00 100%);
+      border-style: solid;
+  border-width: 0px 0px 1px 0px;
+  border-color: #53F0AB;
+      border-radius: 12px;
+      padding: 32px;
+      height: 100%;
+      min-height: 150px;
+font-size:16px;
+font-family: "Work Sans", sans-serif;
+    }
+
+    .dot-container {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .dot {
+      height: 10px;
+      width: 10px;
+      margin: 0 5px;
+      background-color: #555;
+      border-radius: 50%;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .dot.active {
+      background-color: #1EB683;
+    }
+  .home-banner3 {
+    padding:120px 20px 120px 20px;
+    position: relative;
+    background: url(https://cdn.shopify.com/s/files/1/0731/8090/5746/files/Frame-1321319036-scaled.webp?v=1749205067);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+    flex-direction: column;
+    font-family: "Work Sans", sans-serif;
+  }
+
+  .badge-platform {
+    border-style: solid;
+    border-width: 1px 0px 0px 1px;
+margin-bottom:20px;
+    border-color: #53F0AB;
+    border-radius: 50px;
+    padding: 16px 32px;
+    background-image: linear-gradient(to right, #000, #000, #0000, #1eb683);
+    font-size: 24px;
+    font-weight: 400;
+    text-transform: uppercase;
+    color: #ffffff;
+  }
+
+  .hero-heading3 {
+    font-size: 64px;
+    font-weight: 300;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    color: #ffffff;
+  }
+
+  .hero-heading3 span {
+    font-weight: 500;
+  
+  }
+
+  .hero-subtext3 {
+    max-width: 800px;
+    font-size: 16px;
+    font-weight: 400;
+    color: #ffffff;
+    margin: 20px auto;
+  }
+
+  .btn-buy1 {
+    margin-top: 24px;
+    background-color: #1EB683;
+    padding: 12px 32px;
+    border-radius: 1000px;
+    font-weight: 500;
+    font-size: 16px;
+    transition: transform 0.3s;
+    color: white;
+    border: none;
+    display: inline-block;
+  }
+
+  .btn-buy1:hover {
+    transform: scale(1.05);
+    background-color: transparent;
+    color: #1EB683;
+    border: 1px solid #1EB683;
+    box-shadow: 0px 6px 10px rgba(30, 182, 130, 0.26);
+  }
+
+  
+
+  @media (max-width: 768px) {
+    .hero-heading3 {
+      font-size: 42px;
+    }
+
+    .hero-subtext3 {
+      font-size: 14px;
+      padding: 0 20px;
+    }
+
+    .badge-platform {
+      font-size: 18px;
+      padding: 12px 24px;
+    }
+
+  }
+</style>
+
+<div class="home-banner3">
+ <div class="badge-platform">TESTIMONIALS</div>
+        <h2 class="hero-heading3">
+          What Our <span>Users Say</span>
+        </h2>
+        <p class="hero-subtext3 mb-5">
+          Our users love how the MT5 simulator helps them refine strategies, build confidence, and master trading in a risk-free environment.</p>
+     
+  <div class="carousel-wrapper">
+    <div class="carousel-track" id="carouselTrack">
+      <!-- Duplicate first few and last few for seamless infinite effect -->
+      <div class="carousel-item-custom"><div class="testimonial-card"><p>"Simple, effective, and powerful. Highly recommended for any trader looking to level up."</p><strong>Emily</strong></div></div>
+
+      <div class="carousel-item-custom"><div class="testimonial-card"><p>"I was skeptical at first, but after using the MT5 simulator, my confidence grew massively. It's the best tool for practice."</p><strong>Amanda</strong></div></div>
+      <div class="carousel-item-custom"><div class="testimonial-card"><p>"I've used many platforms, but this MT5 simulator is a game-changer. Fast, efficient, and helps me refine strategies."</p><strong>Sarah</strong></div></div>
+      <div class="carousel-item-custom"><div class="testimonial-card"><p>"The simulator offers a real-life trading experience. The analytics make all the difference in my improvement."</p><strong>Michael</strong></div></div>
+      <div class="carousel-item-custom"><div class="testimonial-card"><p>"I can’t believe how much this tool helped me stay disciplined. It’s a core part of my daily routine now."</p><strong>John</strong></div></div>
+      <div class="carousel-item-custom"><div class="testimonial-card"><p>"Simple, effective, and powerful. Highly recommended for any trader looking to level up."</p><strong>Emily</strong></div></div>
+
+      <div class="carousel-item-custom"><div class="testimonial-card"><p>"I was skeptical at first, but after using the MT5 simulator, my confidence grew massively. It's the best tool for practice."</p><strong>Amanda</strong></div></div>
+    </div>
+  </div>
+
+  <div class="dot-container" id="dots"></div>
+
+
+<script>
+  const track = document.getElementById('carouselTrack');
+  const items = document.querySelectorAll('.carousel-item-custom');
+  const dotsContainer = document.getElementById('dots');
+
+  let slideIndex = 1; // Start from first real item
+  let slideWidth;
+  let visibleCount;
+
+  function updateSlideDimensions() {
+    visibleCount = window.innerWidth >= 768 ? 3 : 1;
+    slideWidth = items[0].offsetWidth;
+    moveToSlide(slideIndex, false);
+    createDots();
+  }
+
+  function moveToSlide(index, animate = true) {
+    if (!animate) track.style.transition = 'none';
+    else track.style.transition = 'transform 0.5s ease-in-out';
+
+    const offset = slideWidth * index;
+    track.style.transform = `translateX(-${offset}px)`;
+    updateDots(index);
+  }
+
+  function updateDots(index) {
+    const total = items.length - 4; // original items
+    const activeDot = (index - 1 + total) % total;
+
+    document.querySelectorAll('.dot').forEach((dot, i) =>
+      dot.classList.toggle('active', i === activeDot)
+    );
+  }
+
+  function createDots() {
+    dotsContainer.innerHTML = '';
+    const total = items.length - 4;
+
+    for (let i = 0; i < total; i++) {
+      const dot = document.createElement('span');
+      dot.classList.add('dot');
+      if (i === 0) dot.classList.add('active');
+      dot.addEventListener('click', () => {
+        slideIndex = i + 1;
+        moveToSlide(slideIndex);
+      });
+      dotsContainer.appendChild(dot);
+    }
+  }
+
+  function nextSlide() {
+    slideIndex++;
+    moveToSlide(slideIndex);
+
+    // Reset to start (seamless loop)
+    if (slideIndex === items.length - 2) {
+      setTimeout(() => {
+        slideIndex = 1;
+        moveToSlide(slideIndex, false);
+      }, 500);
+    }
+  }
+
+  // Initial setup
+  window.addEventListener('load', () => {
+    updateSlideDimensions();
+    moveToSlide(slideIndex, false);
+  });
+
+  window.addEventListener('resize', () => {
+    updateSlideDimensions();
+  });
+
+  // Auto slide
+  setInterval(() => {
+    nextSlide();
+  }, 4000);
+</script>   
+
+</div>
+  </div>
+</div>
+
+
+</section><section id="shopify-section-template--25010264637714__custom_liquid_PLcbXX" class="shopify-section section"><style data-shopify>.section-template--25010264637714__custom_liquid_PLcbXX-padding {
+    padding-top: calc(0px * 0.75);
+    padding-bottom: calc(0px  * 0.75);
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-template--25010264637714__custom_liquid_PLcbXX-padding {
+      padding-top: 0px;
+      padding-bottom: 0px;
+    }
+  }</style><div class="color-scheme-1 gradient">
+  <div class="section-template--25010264637714__custom_liquid_PLcbXX-padding">
+    <!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  .pricing-banner {
+    background-position: top center !important;
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
+    padding:100px 20px 100px 20px;
+    position: relative;
+    background: url(https://cdn.shopify.com/s/files/1/0731/8090/5746/files/FlooF-Home-page-1.webp?v=1749282497);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+    flex-direction: column;
+    font-family: "Work Sans", sans-serif;
+  }
+
+  .badge-platform {
+    border-style: solid;
+    border-width: 1px 0px 0px 1px;
+    border-color: #53F0AB;
+    border-radius: 50px;
+    padding: 16px 32px;
+    background-image: linear-gradient(to right, #000, #000, #0000, #1eb683);
+    font-size: 24px;
+    font-weight: 400;
+    text-transform: uppercase;
+    color: #ffffff;
+  }
+   .badge-platform1 {
+    border-style: solid;
+    border-width: 1px 1px 1px 1px;
+    border-color: #1EB68380;
+    border-radius: 50px 50px 50px 50px;
+    padding: 18px 32px 18px 32px;
+    background-image: linear-gradient(180deg, #04231824 0%, #1EB68324 100%);
+    font-size: 18px;
+    font-weight: 400;
+    text-transform: uppercase;
+    color: #ffffff;
+        transition-duration: .3s;
+  transition-property: transform;
+  transition-timing-function: ease-out;
+  display: inline-block;
+  }
+  .badge-platform1:hover{
+    background-color: #1EB683;
+  color: #ffffff;
+  border-color: #1EB683;
+  box-shadow: 0px 6px 10px 0px rgba(29.999999999999996, 181.9999999999999, 130.99999999999991, 0.26);
+   transform: translateY(-8px);
+  }
+  .badge-platform-price {
+    
+    padding: 30px 0px 0px 10px;
+    font-size: 18px;
+    font-weight: 400;
+    text-transform: uppercase;
+    color: #ffffff;
+  display: block;
+  }
+  .pricing-banner .hero-heading {
+    font-size: 90px;
+    font-weight: 300;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    color: #ffffff;
+  }
+.pricing-banner .price-col .product{font-size:10px;}
+.pricing-banner .hero-heading2 {
+    font-size: 24px;
+    margin-top:10px;
+    font-weight: 500;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    color: #ffffff;
+  }
+
+  .pricing-banner .hero-heading span {
+    font-weight: 700;
+    display: block;
+  }
+
+  .hero-subtext {
+    max-width: 800px;
+    font-size: 16px;
+    font-weight: 400;
+    color: #ffffff;
+    margin: 20px auto;
+  }
+
+  .btn-buy1 {
+    margin-top: 24px;
+    background-color: #1EB683;
+    padding: 12px 32px;
+    border-radius: 1000px;
+    font-weight: 500;
+    font-size: 16px;
+    transition: transform 0.3s;
+    color: white;
+    border: none;
+    display: inline-block;
+  }
+
+  .btn-buy1:hover {
+    transform: scale(1.05);
+    background-color: transparent;
+    color: #1EB683;
+    border: 1px solid #1EB683;
+    box-shadow: 0px 6px 10px rgba(30, 182, 130, 0.26);
+  }
+
+.uncondition-div{
+  background-color: transparent;
+  margin: 40px 0px 0px 0px;
+  padding: 32px 40px 32px 40px;
+  background-image: linear-gradient(180deg, #04231824 0%, #1EB68324 100%);
+  border-style: solid;
+  border-width: 1px 1px 1px 1px;
+  border-color: #1EB68380;
+  border-radius: 24px 24px 24px 24px;
+  text-align: left;
+}
+.uncondition-div img{width: 80px;margin-bottom:10px;}
+.uncondition-div p{color:#BED2C8;}
+.price-col{
+  background-image: url("https://cdn.shopify.com/s/files/1/0731/8090/5746/files/Frame-2147225580.webp?v=1749301888");
+  background-position: top center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 24px 24px 24px 24px;
+  border:solid 1px #FFFFFF1F;
+  text-align: left;
+  padding: 40px;
+  min-height: 753.4px;
+
+}
+.pricing-banner .hero-heading3{
+  font-family: "Work Sans", Sans-serif;
+  margin-top: 20px;
+  font-size: 48px;
+  font-weight: 700;
+  color: #fff;
+}
+.price-cut{
+  font-family: "Work Sans", Sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  text-decoration: line-through;
+  color: #E54A4A;
+}
+ .btn-buy-col {
+    margin-top: 24px;
+    background-color: #1EB683;
+    padding: 12px 32px;
+    border-radius: 1000px;
+    font-weight: 500;
+    font-size: 16px;
+    color: white;
+    border: none;
+    width: 100%;
+  }
+
+  .btn-buy-col:hover {
+    background-color: transparent;
+    color: #1EB683;
+    border: 1px solid #1EB683;
+    box-shadow: 0px 6px 10px rgba(30, 182, 130, 0.26);
+  }
+    .hero-subtext-col {
+    max-width: 800px;
+    font-size: 16px;
+    font-weight: 400;
+    color: #ffffff;
+    margin: 10px auto 20px auto;
+  }
+.feature-block{
+  margin-top: 20px;
+}
+  .feature-block li{
+color:#ffffff;
+font-size: 14px;
+font-family: "Work Sans", Sans-serif;
+position: relative;
+    padding-left: 40px;
+    list-style: none;
+    text-align: left;
+    margin-top: 15px;
+}
+
+.feature-block li:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    background: #ffffff;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .feature-block li:after {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    text-align: center;
+    color: #000000;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  
+  /* For unchecked items (the "Have The Options Of" section) */
+  .feature-block.unchecked li:after {
+    content: "";
+  }
+  
+  .feature-block.unchecked li:before {
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+
+.feature-block1{
+  margin-top: 65px;
+}
+  .feature-block1 li{
+color:#ffffff;
+font-size: 14px;
+font-family: "Work Sans", Sans-serif;
+position: relative;
+    padding-left: 40px;
+    list-style: none;
+    text-align: left;
+    margin-top: 15px;
+}
+
+.feature-block1 li:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    background: #ffffff;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .feature-block1 li:after {
+    content: "!";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    text-align: center;
+    color: #000000;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  
+  @media (max-width: 768px) {
+    .pricing-banner .hero-heading {
+      font-size: 42px;
+    }
+    .pricing-banner .hero-heading3{font-size: 30px;}
+    .price-cut{font-size: 18px;}
+    .hero-subtext {
+      font-size: 14px;
+      padding: 0 20px;
+    }
+
+    .badge-platform {
+      font-size: 18px;
+      padding: 12px 24px;
+    }
+    .badge-platform1{font-size: 14px;padding: 14px 25px 14px 25px;}
+    .badge-platform-price{font-size: 14px;padding: 20px 0px 0px 5px;}
+    .price-col{min-height: auto;}
+}
+
+
+</style>
+
+<div class="pricing-banner">
+
+<h1 class="hero-heading">
+   Choose Your <span>Plan</span>
+  
+  
+
+    <div class="container my-5">
+    <div class="row">
+  <!-- Column 1: Platinum One-Time Payment -->
+  <div class="col-md-4 mb-4">
+    <div class="price-col">
+      <div class="badge-platform1">One-Time Payment — Lifetime Access</div>
+      <div class="badge-platform-price">Best Value — No Recurring Fees</div>
+      <h3 class="hero-heading3">$299</h3>
+      <h3 class="hero-heading2 my-3">MT5 Simulator License</h3>
+      <a href="https://mt5-simulator.myshopify.com/cart/50288713367826:1?checkout" class="btn btn-buy-col">Get Lifetime Access</a>
+      <p class="hero-subtext-col text-white text-center">available instantly</p>
+      <img src="https://cdn.shopify.com/s/files/1/0731/8090/5746/files/Line-92.png?v=1749304159" class="img-fluid">
+
+      <p class="product text-white text-center mt-3">Unlock full simulator power with zero monthly hassle.</p>
+
+      <ul class="feature-block pl-0">
+        <li class="mb-6">20+ Years of Historical Data</li>
+        <li class="mb-6">80+ Symbols</li>
+        <li class="mb-6">5 Days Money Back Guarantee</li>
+        <li class="mb-6">One Lifetime License</li>
+        <li class="mb-6">Free Technical support</li>
+        <li class="mb-6">1 on 1 AnyDesk Support</li>
+        <li class="mb-6">Installation Support</li>
+        <li class="mb-6">Free upgrades to new versions</li>
+        <li class="mb-6">30% Off on Magic Keys</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Column 2: Monthly License -->
+  <div class="col-md-4 mb-4">
+    <div class="price-col">
+      <div class="badge-platform1">Monthly License: $29/month after $108 One-Time</div>
+      <h3 class="hero-heading3">
+        
+        <span style="font-weight: 700; color: #fff; margin-left: 8px;">$29/month</span>
+      </h3>
+      <h3 class="hero-heading2 my-3">MT5 Simulator Monthly License</h3>
+      <a href="https://buy.stripe.com/aEUdRR8JA5UY1gY4gm" class="btn btn-buy-col">Start Monthly Plan</a>
+      <p class="hero-subtext-col text-white text-center">available instantly</p>
+      <p class="product text-white text-center mb-2">Cancel anytime before trial ends to avoid charges.</p>
+      <p class="product text-white text-center small">No refund after 14 days free trial.</p>
+      <img src="https://cdn.shopify.com/s/files/1/0731/8090/5746/files/Line-92.png?v=1749304159" class="img-fluid">
+
+      <ul class="feature-block pl-0">
+        <li class="mb-6">1 Lifetime License</li>
+        <li class="mb-6">20+ Years of Historical Data</li>
+        <li class="mb-6">80+ Symbols</li>
+        <li class="mb-6">5 Days Money Back Guarantee</li>
+        <li class="mb-6">Free upgrades to new versions</li>
+        <li class="mb-6">Free Technical support</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Column 3: Mindset Coaching -->
+  <div class="col-md-4 mb-4">
+    <div class="price-col">
+      <div class="badge-platform1">Mindset Coaching — Limited Slots</div>
+      <div class="badge-platform-price">1-on-1 Mindset Session for Traders</div>
+      <h3 class="hero-heading3">$249 <span style="font-size: 16px;">per hour</span></h3>
+       <h3 class="product my-3">Personalized 1-on-1 Trading Mindset Boost</h3>
+      <h3 class="hero-heading2 my-3">Boost Your Trading Mindset</h3>
+      <a href="https://book.stripe.com/8x2bJ17FV3QYb8D0MabjW09" class="btn btn-buy-col">Book Your Session</a>
+      <p class="hero-subtext-col text-white text-center">Limited Slots Available</p>
+      <img src="https://cdn.shopify.com/s/files/1/0731/8090/5746/files/Line-92.png?v=1749304159" class="img-fluid">
+
+      <p class="product text-white text-center mt-3">Transform your trading mindset and confidence.</p>
+
+      <ul class="feature-block pl-0">
+        <li>1-on-1 Live Coaching Call (60 mins)</li>
+        <li>Personalized Mindset Audit</li>
+        <li>Trading Confidence & Focus Training</li>
+        <li>Emotional Control Techniques</li>
+        <li>Goal & Routine Alignment</li>
+        <li>Exclusive Mindset Resources</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+  </div> 
+</div>
+  </div>
+</div>
+
+
+</section><section id="shopify-section-template--25010264637714__custom_liquid_nhk3bG" class="shopify-section section"><style data-shopify>.section-template--25010264637714__custom_liquid_nhk3bG-padding {
+    padding-top: calc(0px * 0.75);
+    padding-bottom: calc(0px  * 0.75);
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-template--25010264637714__custom_liquid_nhk3bG-padding {
+      padding-top: 0px;
+      padding-bottom: 0px;
+    }
+  }</style><div class="color-scheme-1 gradient">
+  <div class="section-template--25010264637714__custom_liquid_nhk3bG-padding">
+    <style>
+  .home-banner4 {
+    padding:120px 20px 120px 20px;
+    background-color: #051011 !important;
+    position: relative;
+    background: url(https://cdn.shopify.com/s/files/1/0731/8090/5746/files/Frame-1321319038.webp?v=1749208622);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+    flex-direction: column;
+    font-family: "Work Sans", sans-serif;
+    background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  }
+
+  .badge-platform {
+    border-style: solid;
+    border-width: 1px 0px 0px 1px;
+    border-color: #53F0AB;
+    border-radius: 50px;
+    padding: 16px 32px;
+    background-image: linear-gradient(to right, #000, #000, #0000, #1eb683);
+    font-size: 24px;
+    font-weight: 400;
+    text-transform: uppercase;
+    color: #ffffff;
+  }
+
+  .hero-heading4 {
+    font-size: 54px;
+    font-weight: 300;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    color: #ffffff;
+    font-family: "Work Sans", sans-serif;
+  }
+
+  .hero-heading4 span {
+    font-weight: 500;
+    font-family: "Work Sans", sans-serif;
+    display: block;
+   
+  }
+
+  .hero-subtext {
+    max-width: 800px;
+    font-size: 16px;
+    font-weight: 400;
+    color: #ffffff;
+    margin: 20px auto;
+  }
+
+  .btn-buy1 {
+    margin-top: 24px;
+    background-color: #1EB683;
+    padding: 12px 32px;
+    border-radius: 1000px;
+    font-weight: 500;
+    font-size: 16px;
+    transition: transform 0.3s;
+    color: white;
+    border: none;
+    display: inline-block;
+  }
+
+  .btn-buy1:hover {
+    transform: scale(1.05);
+    background-color: transparent;
+    color: #1EB683;
+    border: 1px solid #1EB683;
+    box-shadow: 0px 6px 10px rgba(30, 182, 130, 0.26);
+  }
+
+  .video-wrapper1 {
+    position: relative;
+    margin-top: 32px;
+    width: 80%;
+    
+
+    overflow: hidden;
+   
+    
+  margin: 30px 0px 0px 0px;
+
+  height: 100%;
+  }
+
+
+  @media (max-width: 768px) {
+    .hero-heading4 {
+      font-size: 42px;
+    }
+
+    .hero-subtext {
+      font-size: 14px;
+      padding: 0 20px;
+    }
+
+    .badge-platform {
+      font-size: 18px;
+      padding: 12px 24px;
+    }
+.video-wrapper1{width:100%;}
+  }
+</style>
+
+<div class="home-banner4">
+  
+  <h1 class="hero-heading4">
+    Experience the <span> Difference Today</span>
+  </h1>
+  <p class="hero-subtext">
+    Hone your trading skills risk-free with our advanced MT5 Simulator—experience real-time markets, practice strategies, and build confidence before investing.
+  </p>
+  <a href="https://mt5simulator.com/pages/buy-now" class="btn btn-buy1">Buy Now</a>
+
+  <!-- Video section -->
+  <div class="video-wrapper1">
+  <img src="https://cdn.shopify.com/s/files/1/0731/8090/5746/files/2-1-2048x805.webp?v=1749208622" alt="MT5 Simulator Preview" style="width: 100%; height: auto; border-radius: 24px;">
+</div>
+</div>
+  </div>
+</div>
+
+
+</section>
+<style>
+  body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+
+  /* 1. Main Banner - Romantic Crimson Gradient */
+  .rolling-banner {
+    width: 100%;
+    position: fixed;
+    z-index: 99;
+    height: 70px;
+    background: linear-gradient(90deg, #9f1239 0%, #e11d48 50%, #9f1239 100%); 
+    color: #ffffff;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 -4px 15px rgba(0,0,0,0.3);
+    border-top: 2px solid #fda4af;
+  }
+
+  .banner-track {
+    display: flex;
+    width: fit-content; 
+    animation: scroll-left 45s linear infinite; /* Energetic pace */
+  }
+
+  .banner-content-group {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .text-item {
+    display: flex;
+    align-items: center;
+    font-size: 22px; /* Slightly larger since there's no coupon box */
+    font-weight: 700;
+    white-space: nowrap;
+    padding-right: 120px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  }
+
+  /* Emphasis on the 2-for-1 Deal */
+  .offer-highlight {
+    background: #ffffff;
+    color: #be123c;
+    padding: 4px 15px;
+    border-radius: 50px;
+    margin: 0 15px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+  }
+
+  /* Heart Pulse Animation */
+  .heart-pulse {
+    display: inline-block;
+    animation: heartBeat 1.5s infinite;
+    margin: 0 10px;
+  }
+
+  @keyframes heartBeat {
+    0% { transform: scale(1); }
+    14% { transform: scale(1.3); }
+    28% { transform: scale(1); }
+    42% { transform: scale(1.3); }
+    70% { transform: scale(1); }
+  }
+
+  @keyframes scroll-left {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .rolling-banner:hover .banner-track {
+    animation-play-state: paused;
+  }
+</style>
+
+<div class="rolling-banner">
+  <div class="banner-track">
+    
+    <div class="banner-content-group">
+      <div class="text-item">
+        <span class="heart-pulse">❤️</span> VALENTINE SPECIAL: <span class="offer-highlight">2 LICENSES FOR THE PRICE OF 1</span> 🏹
+      </div>
+      <div class="text-item">
+        🌹 Double Your Trading Power! <span class="offer-highlight">BUY 1 GET 1 FREE</span> 💖
+      </div>
+      <div class="text-item">
+        <span class="heart-pulse">❤️</span> LIMITED TIME: <span class="offer-highlight">GET 2 LICENSES FOR 1</span> — No Code Required! 🎁
+      </div>
+    </div>
+
+    <div class="banner-content-group">
+      <div class="text-item">
+        <span class="heart-pulse">❤️</span> VALENTINE SPECIAL: <span class="offer-highlight">2 LICENSES FOR THE PRICE OF 1</span> 🏹
+      </div>
+      <div class="text-item">
+        🌹 Double Your Trading Power! <span class="offer-highlight">BUY 1 GET 1 FREE</span> 💖
+      </div>
+      <div class="text-item">
+        <span class="heart-pulse">❤️</span> LIMITED TIME: <span class="offer-highlight">GET 2 LICENSES FOR 1</span> — No Code Required! 🎁
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const banner = document.querySelector(".rolling-banner");
+  const footer = document.querySelector("footer");
+
+  if (!banner || !footer) return;
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          banner.style.position = "absolute";
+          banner.style.bottom = footer.offsetHeight + "px";
+        } else {
+          banner.style.position = "fixed";
+          banner.style.bottom = "0";
+        }
+      });
+    },
+    { threshold: 0 }
+  );
+
+  observer.observe(footer);
+});
+</script>
+    </main>
+
+    <!-- BEGIN sections: footer-group -->
+<div id="shopify-section-sections--25010261491986__footer" class="shopify-section shopify-section-group-footer-group">
+<link href="//mt5simulator.com/cdn/shop/t/16/assets/section-footer.css?v=60318643098753476351767924187" rel="stylesheet" type="text/css" media="all" />
+<link href="//mt5simulator.com/cdn/shop/t/16/assets/component-newsletter.css?v=4727253280200485261767924187" rel="stylesheet" type="text/css" media="all" />
+<link href="//mt5simulator.com/cdn/shop/t/16/assets/component-list-menu.css?v=151968516119678728991767924187" rel="stylesheet" type="text/css" media="all" />
+<link href="//mt5simulator.com/cdn/shop/t/16/assets/component-list-payment.css?v=69253961410771838501767924187" rel="stylesheet" type="text/css" media="all" />
+<link href="//mt5simulator.com/cdn/shop/t/16/assets/component-list-social.css?v=35792976012981934991767924187" rel="stylesheet" type="text/css" media="all" />
+<!-- Bootstrap CSS --><style data-shopify>.footer {
+    margin-top: 0px;
+  }
+  .ftr-text a[href*="mailto:info@mt5simulator.com"] {
+    color: #64A320 !important;
+}
+  .ftr-text a[href*="https://wa.me/+61279122480"] {
+    color: #64A320 !important;
+}
+  
+  
+   .ftr-text p{
+  padding: 0px 20px 0 5px;}
+
+  .section-sections--25010261491986__footer-padding {
+    padding-top: 39px;
+    padding-bottom: 15px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .footer {
+      margin-top: 0px;
+    }
+
+    .section-sections--25010261491986__footer-padding {
+      padding-top: 52px;
+      padding-bottom: 20px;
+    }
+  }
+  .footer-section {
+  background: url('https://cdn.shopify.com/s/files/1/0731/8090/5746/files/Frame-1321319039.webp?v=1749209711') !important;
+    background-position: bottom center !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+    padding:120px 0 120px 0;
+}
+.footer-section h5{
+  font-size:24px;
+  font-family: "Work Sans", sans-serif;
+  font-weight:500;
+  color:#ffffff;
+}
+  .footer-section a,.footer-section p{
+  font-size:16px;
+  font-family: "Work Sans", sans-serif;
+  font-weight:300;
+    color:#BDD1C7;
+    padding-left: 0px;
+  padding-right: 0px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+  .footer-section a svg{
+    width: 30px;
+    height: 30px;
+    transition-duration: .3s;
+  transition-property: transform;
+  transition-timing-function: ease-out;
+}
+   .footer-section a svg:hover{
+    transform: translateY(-8px);
+}
+.footer-section ul{display: inline-block;}
+  .footer-section ul li{
+  font-size:16px;
+  font-family: "Work Sans", sans-serif;
+  font-weight:300;
+    color:#BDD1C7;
+    padding-left: 0px;
+  padding-right: 0px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+  .footer-section ul li p:hover {
+ border-bottom: 1px solid #53F0AB;
+  background: linear-gradient(180deg, rgba(83, 240, 171, 0.00) 49.47%, rgba(83, 240, 171, 0.40) 112.24%) !important;
+  transition: .3s ease-in-out;
+}
+.footer-section ul li a:hover {
+ border-bottom: 1px solid #53F0AB;
+  background: linear-gradient(180deg, rgba(83, 240, 171, 0.00) 49.47%, rgba(83, 240, 171, 0.40) 112.24%) !important;
+  transition: .3s ease-in-out;
+}
+  .footer-link.active {
+ border-bottom: 1px solid #53F0AB;
+  background: linear-gradient(180deg, rgba(83, 240, 171, 0.00) 49.47%, rgba(83, 240, 171, 0.40) 112.24%) !important;
+  transition: .3s ease-in-out;
+}
+.footer-section input{height:45px;font-size:16px;background-color: #FFFFFF14;
+  border-color: #FFFFFF29;
+  border-radius: 12px 12px 12px 12px;color: #FFFFFF80;}
+  .footer-section input:focus{background-color: #FFFFFF14;
+  border-color: #FFFFFF29;
+  border-radius: 12px 12px 12px 12px;color: #FFFFFF80;}
+.footer-section input::placeholder {
+  color: #FFFFFF80;
+}
+.footer-section input::-webkit-input-placeholder {
+  color: #FFFFFF80;
+}
+.footer-section input:-ms-input-placeholder {
+  color: #FFFFFF80;
+}
+.footer-section input::-moz-placeholder {
+  color: #FFFFFF80;
+}
+  .footer-section button{border-radius: 12px 12px 12px 12px;height:45px;font-size:16px;background:#1EB683;color:#ffffff;border:solid 1px #1EB683;width:200px;}
+  .footer-section button:hover{background:transparent;border:solid 1px #1EB683;color:#1EB683;}</style><footer class="footer-section " style="background: #081012;">
+  <div class="container">
+    <div class="row pl-2 text-md-start">
+      
+      <!-- Logo & Social Icons -->
+      <div class="col-md-3 mb-4">
+        <img src="https://cdn.shopify.com/s/files/1/0731/8090/5746/files/Frame-1984078466-1.webp?v=1749110774" alt="MT5 Simulator" class="mb-3" style="height: 40px;">
+        <div class="d-flex justify-content-md-start gap-3">
+          <a href="https://www.facebook.com/people/MT5-Simulator-The-Only-Simulator-for-MT5/61551837946064/"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="90" height="90" viewBox="0 0 90 90" fill="none"><rect width="90" height="90" fill="url(#pattern0_1801_758)"></rect><defs><pattern id="pattern0_1801_758" patternContentUnits="objectBoundingBox" width="1" height="1"><use xlink:href="#image0_1801_758" transform="scale(0.0111111)"></use></pattern><image id="image0_1801_758" width="90" height="90" preserveAspectRatio="none" xlink:href="data:image/png;base64,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"></image></defs></svg></a>
+          <a href="https://www.instagram.com/mt5_simulator/"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="90" height="90" viewBox="0 0 90 90" fill="none"><rect width="90" height="90" fill="url(#pattern0_1801_757)"></rect><defs><pattern id="pattern0_1801_757" patternContentUnits="objectBoundingBox" width="1" height="1"><use xlink:href="#image0_1801_757" transform="scale(0.0111111)"></use></pattern><image id="image0_1801_757" width="90" height="90" preserveAspectRatio="none" xlink:href="data:image/png;base64,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"></image></defs></svg></a>
+          <a href="https://www.youtube.com/@MT5_SIMULATOR"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="102" height="66" viewBox="0 0 102 66" fill="none"><rect width="102" height="66" fill="url(#pattern0_1801_756)"></rect><defs><pattern id="pattern0_1801_756" patternContentUnits="objectBoundingBox" width="1" height="1"><use xlink:href="#image0_1801_756" transform="scale(0.00980392 0.0151515)"></use></pattern><image id="image0_1801_756" width="102" height="66" preserveAspectRatio="none" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGYAAABCCAYAAACl4qNCAAAACXBIWXMAACE4AAAhOAFFljFgAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAR/SURBVHgB7Z1NbttGFIDfe1QbrxrmBswBYlmrWF1JTrroqu4JIp/AvoHlE9Q9gdsTJF0VaOpKXSnpRrZzAeUEZYAgcH44L+9RJC0pliEEsjTkzAdI/BElCPwwM5x584OwBP4cDqLgGxPiRwopgCg9ydkW6a4chNmlIcpr4qvRnJ+cd/62GC1ynotjjIHNm/EujBgo5sTEevhJrvmx0Zz3ewuDi174/NWgRYa35EbXcXzj9BXC9I32XBFnLxEnW+ZzY6D/Q6PZX+TLN4p5OhyGYe3DPjMfgBewLEaIdHz5KfnjppQ1V4ymkIDxBFafrbiCpCQ+erTZ/O26D+m6k71XLw9FSg+8lNskQsATvdfXffhFitELJevqgmdlIGK3/eDh0dS5yYO/L17uEvBT8KwcA/jz482Hz/LjqaxMpPwCnrUgIk568rA1cTzm9GLQAV+mrBEODV0e5EeFGCmIDsGzVuQxej/fT8X8NfxvC3xqsQAOnw8HLd1LxQRBsgUeKyDC1EWWldFP4LECQqinW31D5Ag8ViDtai3dpvWYfy5eMHisAZM79ygr+D1W8S6SLC2xsNVY4x38OzhKEmBERGxhiuF4p97sYML3XRSETJEU/mhtnKUt8QpHBWlWZn/F0jVBIuUucRqTLweuCGI290jqMKULGVdekCQWrWCWNpY/KUiCe0dSOxtBNZDCn8vfyUIFPao3u2i4XRVBBBUiF7RT377PwHtlFlQpMZNo75PyCsJQxURQYcopiMPKpphZyibIGTE5ZRHknJicKUEIfbAMZ8XkpIIebLeThNs2CXJeTI72wrdJkBczw1vYOEPAPoyHUKyNGnhSroacvD9gC1pDnBejo+G+DfAQ4X2HLer54KyYdIQc477Eo3bBQpwTkw3IOpQ6TAssxhkxZRGSU3kxZROSU1kxZRWSo2L0eb0yI5J1nI/UQ56UVcgYjCshRusg3wWXu9kYnwhKD8elzsomK4U294/7GkopxrZa+tJhkBSDEpPgciT/ygvJQRHDjDGC3aMwnBEyQQ11FiFceK6flaLtWBs1euKSEEVsjGo61ZN9WjA8vXhxIv9LGhbdG1NlmF+TPpqBdbDOa9YBZ8FYGlgr0620MhjDZxQkeAYeq6iBif3gWAvZ2dzGPOY/Ao8dMKQ52FgM87/gsQTzWt9TMQzsyxlLYKC+blMxian1wWMFZJK+bou6pTwA/A9+ptj1wjDSbru6W3T4kxr2r+BZK4xczItZiCFzeQxr7n3oNJJaKNn4ck7MdqMdm8TsgWctaGppNxpFwpjqu/y48f2zdHCpZ6XoPZ+dGPvahuXT80EX0c+RuQpSKfVmd/b83Bb/tLeJdv9BP1fmrSBlSmJ4b94iDDeGYnrDXmjoTgeB9r2gpRHrEzCZjePJMmWWxZcpGQ5aRNCSaGddAp5h1k/AL1Myn/EyJbq+jI71ZHNuDJ4tZZmSRdEQcC3rz4Ua5AowvOrgIfsI6URCOJvq2PKFfVhuLI2rEMzFejB6/k0RYMziWSbR1S1MnADFy1jY5zMwRAdd/Sn7ZQAAAABJRU5ErkJggg=="></image></defs></svg></a>
+          <a href="https://www.tiktok.com/@mt5.simulator?lang=en"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="71" height="81" viewBox="0 0 71 81" fill="none"><rect width="71" height="81" fill="url(#pattern0_1801_760)"></rect><defs><pattern id="pattern0_1801_760" patternContentUnits="objectBoundingBox" width="1" height="1"><use xlink:href="#image0_1801_760" transform="scale(0.0140845 0.0123457)"></use></pattern><image id="image0_1801_760" width="71" height="81" preserveAspectRatio="none" xlink:href="data:image/png;base64,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"></image></defs></svg></a>
+          <a href="https://x.com/MT5__SIMULATOR"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="94" height="94" viewBox="0 0 94 94" fill="none"><rect width="94" height="94" fill="url(#pattern0_1801_759)"></rect><defs><pattern id="pattern0_1801_759" patternContentUnits="objectBoundingBox" width="1" height="1"><use xlink:href="#image0_1801_759" transform="scale(0.0106383)"></use></pattern><image id="image0_1801_759" width="94" height="94" preserveAspectRatio="none" xlink:href="data:image/png;base64,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"></image></defs></svg></a>
+        </div>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="col-md-3 mb-4">
+        <h5 class="mb-3 fw-bold">Contacts</h5>
+         <ul class="list-unstyled">
+          <li><p class="mb-1">WhatsApp: +61 2 7912 2480</p></li>
+        <li><p class="mb-1">Email: <a href="mailto:info@mt5simulator.com" class="">info@mt5simulator.com</a></p></li>
+         </ul>
+      </div>
+
+      <!-- Important Links -->
+      <div class="col-md-3 mb-4">
+        <h5 class="mb-3 fw-bold">Important Links</h5>
+        <ul class="list-unstyled">
+          <li>
+                  <a href="/pages/contact"
+                   class="footer-link text-decoration-none d-block w-100 ">
+                    Contact us
+                  </a>
+                </li>
+          <li><a href="/pages/affiliate-program"
+                   class="footer-link text-decoration-none d-block w-100 ">
+                    Affiliate Program
+                  </a></li>
+          <li><a href="/pages/cancel-subscription"
+                   class="footer-link text-decoration-none d-block w-100 ">Cancel Subscriptions</a></li>
+          <li><a href="/pages/refund-policy" class="footer-link text-decoration-none d-block w-100 ">Refund policy</a></li>
+          <li><a href="/pages/privacy-policy" class="footer-link text-decoration-none d-block w-100 ">Privacy Policy</a></li>
+          <li><a href="/pages/terms-and-conditions" class="footer-link text-decoration-none d-block w-100 ">Terms and conditions</a></li>
+          <li><a href="/pages/frequently-asked-questions" class="footer-link text-decoration-none d-block w-100 ">FAQ</a></li>
+        </ul>
+      </div>
+
+      <!-- Newsletter -->
+      <div class="col-md-3 mb-4">
+        <h5 class="mb-5 fw-bold">Subscribe to Our Emails</h5>
+        <form class="mb-3">
+          <input type="email" class="form-control me-2" placeholder="Enter your email here">
+        <button type="submit" class="btn mt-3 submit-btn">Subscribe</button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+
+
+
+<style>
+  .fl_footer_logo_phone a,.fl_footer_logo_email a,.fl_footer_logo_text a {
+    text-decoration: none;
+    margin-bottom:10px;
+    color: #fff;
+}
+  .fl_footer_logo_phone a:hover,.fl_footer_logo_email a:hover,.fl_footer_logo_text a:hover {
+    color: #64A320;
+}
+ .footer-block__details-content.rte a,.footer-block__details-content.rte p {
+    text-decoration: none;
+    color: #fff;
+} 
+   .footer-block__details-content.rte a:hover {
+    color: #64A320;
+} 
+  .field::after {
+    border-bottom: 1px solid;
+    box-shadow: none;
+}
+  .field:before,.field__input:focus,.field:hover {
+    box-shadow: none;
+}
+ .field:hover.field:after, .select:hover.select:after, .select__select:hover.select__select:after, .customer .field:hover.field:after, .customer select:hover.select:after, .localization-form__select:hover.localization-form__select:after {
+    box-shadow: none;
+} 
+  button#Subscribe svg {
+    background: #64A320;
+    border-radius: 50%;
+    width: 23px;
+    height: 23px;
+    color: #fff;
+    padding: 4px;
+}
+  button#Subscribe svg:hover {
+    background: #64A320;
+}
+  li.list-social__item svg {
+    color: #fff;
+}
+  li.list-social__item svg:hover {
+    color: #64A320;
+}
+  .newsletter-form__field-wrapper .field__label, .customer .field label {
+    /* left: 0; */
+  }
+  .newsletter-form__field-wrapper .field__input:focus~.field__label, .field__input:not(:placeholder-shown)~.field__label, .field__input:-webkit-autofill~.field__label, .customer .field input:focus~label, .customer .field input:not(:placeholder-shown)~label, .customer .field input:-webkit-autofill~label{
+    /* left: 0; */
+  }
+  .newsletter-form__field-wrapper .field__input{
+    /* padding-left: 0; */
+  }
+  footer.footer.color-background-1.gradient.section-sections--20519588069672__footer-padding {
+    background: #343434;
+}
+  .footer-block h2.footer-block__heading.inline-richtext {
+    color: #fff;
+}
+  .footer-block__brand-info .list-social__item .icon{
+        height: 3.2rem;
+    width: 3.2rem;
+  }
+  small.copyright__content {
+    color: #fff;
+}
+</style>
+</div>
+<!-- END sections: footer-group -->
+
+    <ul hidden>
+      <li id="a11y-refresh-page-message">Choosing a selection results in a full page refresh.</li>
+      <li id="a11y-new-window-message">Opens in a new window.</li>
+    </ul>
+
+    <script>
+      window.shopUrl = 'https://mt5simulator.com';
+      window.routes = {
+        cart_add_url: '/cart/add',
+        cart_change_url: '/cart/change',
+        cart_update_url: '/cart/update',
+        cart_url: '/cart',
+        predictive_search_url: '/search/suggest',
+      };
+
+      window.cartStrings = {
+        error: `There was an error while updating your cart. Please try again.`,
+        quantityError: `You can only add [quantity] of this item to your cart.`,
+      };
+
+      window.variantStrings = {
+        addToCart: `Add to cart`,
+        soldOut: `Sold out`,
+        unavailable: `Unavailable`,
+        unavailable_with_option: `[value] - Unavailable`,
+      };
+
+      window.quickOrderListStrings = {
+        itemsAdded: `[quantity] items added`,
+        itemAdded: `[quantity] item added`,
+        itemsRemoved: `[quantity] items removed`,
+        itemRemoved: `[quantity] item removed`,
+        viewCart: `View cart`,
+        each: `[money]/ea`,
+        min_error: `This item has a minimum of [min]`,
+        max_error: `This item has a maximum of [max]`,
+        step_error: `You can only add this item in increments of [step]`,
+      };
+
+      window.accessibilityStrings = {
+        imageAvailable: `Image [index] is now available in gallery view`,
+        shareSuccess: `Link copied to clipboard`,
+        pauseSlideshow: `Pause slideshow`,
+        playSlideshow: `Play slideshow`,
+        recipientFormExpanded: `Gift card recipient form expanded`,
+        recipientFormCollapsed: `Gift card recipient form collapsed`,
+        countrySelectorSearchCount: `[count] countries/regions found`,
+      };
+    </script><script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery.marquee@1.6.0/jquery.marquee.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18/build/js/intlTelInput.min.js"></script>
+    
+<script>
+$(document).ready(function() {
+  let iti;
+
+  function initValentinePhone() {
+    const phoneInput = document.querySelector("#phone");
+    if (phoneInput && !phoneInput.classList.contains('iti-added')) {
+      iti = window.intlTelInput(phoneInput, {
+        initialCountry: "in",
+        separateDialCode: true,
+        autoPlaceholder: "polite",
+        utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+      });
+      phoneInput.classList.add('iti-added');
+    }
+  }
+
+  const observer = new MutationObserver(function() {
+    if (document.querySelector("#phone")) {
+      initValentinePhone();
+    }
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+  initValentinePhone();
+
+  $(document).on("submit", "#valentineForm", function(e) {
+    e.preventDefault();
+    const $form = $(this);
+    const $btn = $form.find(".v-submit-btn");
+    const originalBtnText = $btn.html();
+
+    let fullPhoneNumber = "";
+    let dialCode = "";
+    let number = $form.find("#phone").val().trim();
+
+    if (iti) {
+      const countryData = iti.getSelectedCountryData();
+      dialCode = countryData.dialCode;
+    }
+
+    if (dialCode) {
+      fullPhoneNumber = "+" + dialCode + number;
+    } else {
+      fullPhoneNumber = number;
+    }
+
+    $btn.prop('disabled', true)
+        .html('<span class="v-spinner"></span> Processing...')
+        .css('opacity', '0.7');
+
+    const formData = $form.serializeArray();
+    formData.push({ name: "full_phone", value: fullPhoneNumber });
+
+    $.ajax({
+      url: "https://signup.mt5simulator.com/process_valentine.php",
+      type: "POST",
+      data: $.param(formData),
+      dataType: 'json',
+      success: function(response) {
+        if(response.status === "success") {
+          $("#v-form-container").fadeOut(300, function() {
+            $("#v-success-msg").fadeIn();
+            $("#v-success-msg .v-submit-btn")
+              .text("Close")
+              .prop('disabled', false)
+              .css('opacity', '1');
+          });
+        } else {
+          alert("Error: " + response.message);
+          resetBtn($btn, originalBtnText);
+        }
+      },
+      error: function(xhr) {
+        console.error(xhr.responseText);
+        alert("Connection error. Please try again.");
+        resetBtn($btn, originalBtnText);
+      }
+    });
+  });
+
+  function resetBtn(btn, text) {
+    btn.prop('disabled', false).html(text).css('opacity', '1');
+  }
+
+  // --- TRIGGER MODAL IMMEDIATELY ---
+  openModal(); 
+});
+
+function openModal() {
+  const modal = document.getElementById("valentineModal");
+  if(modal) modal.style.display = "block";
+}
+
+function closeModal() {
+  const modal = document.getElementById("valentineModal");
+  if(modal) modal.style.display = "none";
+}
+</script>
+
+<script>
+// --------------------------------------------
+// 1. CAPTURE UTM PARAMETERS IN LOCAL STORAGE
+// --------------------------------------------
+(function() {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    const utm_source = urlParams.get("utm_source");
+    const utm_medium = urlParams.get("utm_medium");
+    const utm_campaign = urlParams.get("utm_campaign");
+
+    if (utm_source) localStorage.setItem("utm_source", utm_source);
+    if (utm_medium) localStorage.setItem("utm_medium", utm_medium);
+    if (utm_campaign) localStorage.setItem("utm_campaign", utm_campaign);
+})();
+
+
+// -----------------------------------------------------
+// 2. LOG VISITOR (EVEN IF THEY NEVER SUBMIT THE FORM)
+// -----------------------------------------------------
+(function() {
+    const utm_source = localStorage.getItem("utm_source") || "";
+    const utm_medium = localStorage.getItem("utm_medium") || "";
+    const utm_campaign = localStorage.getItem("utm_campaign") || "";
+
+    fetch("https://signup.mt5simulator.com/log-visit.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body:
+            "utm_source=" + encodeURIComponent(utm_source) +
+            "&utm_medium=" + encodeURIComponent(utm_medium) +
+            "&utm_campaign=" + encodeURIComponent(utm_campaign) +
+            "&page_url=" + encodeURIComponent(window.location.href) +
+            "&user_agent=" + encodeURIComponent(navigator.userAgent)
+    });
+})();
+</script>
+
+  
+  <div id="shopify-block-AVUVMWlY4Y0F6UEhId__9859414570452352049" class="shopify-block shopify-app-block"><script>
+    const shopDomainTracker = "mt5simulator.com";
+</script>
+
+</div><div id="shopify-block-Aajk0TllTV2lJZTdoT__15683396631634586217" class="shopify-block shopify-app-block"><script
+  id="chat-button-container"
+  data-horizontal-position=bottom_right
+  data-vertical-position=lowest
+  data-icon=chat_bubble
+  data-text=chat_with_us
+  data-color=#1eb683
+  data-secondary-color=#FFFFFF
+  data-ternary-color=#6A6A6A
+  
+  data-domain=mt5simulator.com
+  data-shop-domain=mt5simulator.com
+  data-external-identifier=SSBgau7IRdUsssggl74i7aDh1rvco9xj8_Hl1n5qXNc
+  
+>
+</script>
+
+
+</div></body>
+</html>
