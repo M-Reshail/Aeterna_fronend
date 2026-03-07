@@ -13,10 +13,15 @@ export const alertsService = {
   },
 
   // Paginated helper (converts page → skip for the backend)
+  // Fetches limit+1 to detect if there's a next page
   getAlertsPage: async ({ page = 1, limit = 20, priority, start_date, end_date } = {}) => {
     const skip = (page - 1) * limit;
-    const items = await alertsService.getAlerts({ skip, limit, priority, start_date, end_date });
-    return { items, page, limit };
+    const fetched = await alertsService.getAlerts({ skip, limit: limit + 1, priority, start_date, end_date });
+    const hasMore = Array.isArray(fetched) && fetched.length > limit;
+    const items = hasMore ? fetched.slice(0, limit) : (fetched || []);
+    // totalPages is estimated: if hasMore, at least page+1 exists
+    const totalPages = hasMore ? page + 1 : page;
+    return { items, page, limit, total: items.length, totalPages, hasMore };
   },
 
   // ─── GET /api/alerts/{alert_id} ───────────────────────────────────────────

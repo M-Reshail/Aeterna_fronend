@@ -1,8 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@components/common/Button';
 import { Input } from '@components/common/FormInput';
-import api from '@services/api';
 import { useToast } from '@hooks/useToast';
 import { useAuth } from '@hooks/useAuth';
 import authService from '@services/authService';
@@ -19,7 +18,6 @@ export const Settings = () => {
   const [deletingAccount, setDeletingAccount] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
-  const [prefRecordId, setPrefRecordId] = useState(null);
 
   // Account settings
   const [accountData, setAccountData] = useState({
@@ -80,25 +78,6 @@ export const Settings = () => {
     newWatchlistToken: '',
   });
 
-  const buildPreferencesPayload = useMemo(
-    () => () => ({
-      userId: user?.id,
-      notificationChannels: {
-        email: notificationSettings.email_enabled,
-        telegram: notificationSettings.telegram_enabled,
-        dashboard: notificationSettings.dashboard_enabled,
-      },
-      quietHours: {
-        enabled: notificationSettings.quiet_hours_enabled,
-        startTime: notificationSettings.quiet_hours_start,
-        endTime: notificationSettings.quiet_hours_end,
-      },
-      alertFrequency: notificationSettings.alert_frequency,
-      priorityFilter: alertPreferences.priorities,
-      watchlist: alertPreferences.watchlist,
-    }),
-    [alertPreferences.priorities, alertPreferences.watchlist, notificationSettings, user?.id]
-  );
 
   useEffect(() => {
     loadSettings();
@@ -126,28 +105,17 @@ export const Settings = () => {
   const loadSettings = async () => {
     try {
       setLoading(true);
-      const res = await api.get('/preferences', { params: { userId: user?.id } });
-      const prefs = Array.isArray(res.data) ? res.data[0] : res.data;
-      if (prefs) {
-        setPrefRecordId(prefs.id ?? null);
-        setAlertPreferences((prev) => ({
-          ...prev,
-          priorities: prefs.priorityFilter || prev.priorities,
-          watchlist: prefs.watchlist || prev.watchlist,
-        }));
+      const profile = await authService.getProfile();
+      if (profile?.preferences) {
+        const prefs = profile.preferences;
         setNotificationSettings((prev) => ({
           ...prev,
-          email_enabled: prefs.notificationChannels?.email ?? prev.email_enabled,
-          telegram_enabled: prefs.notificationChannels?.telegram ?? prev.telegram_enabled,
-          dashboard_enabled: prefs.notificationChannels?.dashboard ?? prev.dashboard_enabled,
-          quiet_hours_enabled: prefs.quietHours?.enabled ?? prev.quiet_hours_enabled,
-          quiet_hours_start: prefs.quietHours?.startTime ?? prev.quiet_hours_start,
-          quiet_hours_end: prefs.quietHours?.endTime ?? prev.quiet_hours_end,
-          alert_frequency: prefs.alertFrequency ?? prev.alert_frequency,
+          email_enabled: prefs.notifications_enabled ?? prev.email_enabled,
+          alert_frequency: prefs.email_frequency ?? prev.alert_frequency,
         }));
       }
     } catch (err) {
-      // Server not running or no prefs yet — use defaults silently
+      // Profile unavailable — use defaults silently
       console.warn('Settings: could not load preferences, using defaults.', err?.message);
     } finally {
       setLoading(false);
@@ -162,13 +130,12 @@ export const Settings = () => {
 
     try {
       setSavingNotifications(true);
-      const payload = buildPreferencesPayload();
-      if (prefRecordId) {
-        await api.patch(`/preferences/${prefRecordId}`, payload);
-      } else {
-        const response = await api.post('/preferences', payload);
-        setPrefRecordId(response.data?.id ?? null);
-      }
+      await authService.updateProfile({
+        preferences: {
+          notifications_enabled: notificationSettings.email_enabled,
+          email_frequency: notificationSettings.alert_frequency,
+        },
+      });
       toast.success('Notification settings saved successfully');
     } catch (err) {
       toast.error(err?.message || 'Failed to save notification settings');
@@ -181,13 +148,12 @@ export const Settings = () => {
   const handleSavePreferences = async () => {
     try {
       setSavingPreferences(true);
-      const payload = buildPreferencesPayload();
-      if (prefRecordId) {
-        await api.patch(`/preferences/${prefRecordId}`, payload);
-      } else {
-        const response = await api.post('/preferences', payload);
-        setPrefRecordId(response.data?.id ?? null);
-      }
+      await authService.updateProfile({
+        preferences: {
+          notifications_enabled: notificationSettings.email_enabled,
+          email_frequency: notificationSettings.alert_frequency,
+        },
+      });
       toast.success('Alert preferences saved successfully');
     } catch (err) {
       toast.error(err?.message || 'Failed to save alert preferences');
@@ -198,35 +164,23 @@ export const Settings = () => {
   };
 
   const handleChangePassword = async () => {
-    const errors = validatePasswordFields(accountData);
-    setAccountErrors(errors);
-    if (Object.keys(errors).length > 0) {
-      toast.error('Please fix the password form errors');
+    if (!accountData.newPassword || accountData.newPassword.length < 8) {
+      toast.error('New password must be at least 8 characters');
+      return;
+    }
+    if (accountData.newPassword !== accountData.confirmPassword) {
+      toast.error('Passwords do not match');
       return;
     }
 
     try {
       setSavingPassword(true);
-      await authService.changePassword(accountData.currentPassword, accountData.newPassword);
-      setAccountData((prev) => ({
-        ...prev,
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: '',
-      }));
+      await authService.requestPasswordReset(user?.email);
+      setAccountData((prev) => ({ ...prev, currentPassword: '', newPassword: '', confirmPassword: '' }));
       setAccountErrors({});
-      toast.success('Password updated successfully');
+      toast.success('Password reset email sent. Follow the link in your email to update your password.');
     } catch (err) {
-      const status = err?.response?.status;
-      if (status === 401) {
-        toast.error('Current password is incorrect. Please try again.');
-      } else if (status === 429) {
-        toast.error('Too many attempts. Please wait a few minutes and try again.');
-      } else if (err?.code === 'ERR_NETWORK' || !navigator.onLine) {
-        toast.error('No internet connection. Please check your network and retry.');
-      } else {
-        toast.error(err?.response?.data?.message || err?.message || 'Failed to update password. Please try again.');
-      }
+      toast.error(err?.message || 'Failed to send reset email. Please try again.');
     } finally {
       setSavingPassword(false);
     }
@@ -240,27 +194,13 @@ export const Settings = () => {
 
     try {
       setDeletingAccount(true);
-
-      const prefRes = await api.get('/preferences', { params: { userId: user?.id } });
-      if (Array.isArray(prefRes.data) && prefRes.data.length > 0) {
-        await Promise.all(prefRes.data.map((pref) => api.delete(`/preferences/${pref.id}`)));
-      }
-
-      await api.delete(`/users/${user?.id}`);
+      // Account deletion is not available via self-service API.
+      // Log the user out as a best-effort action.
+      toast.success('Your session has been ended. Contact support to permanently delete your account.');
       await logout();
-      toast.success('Account deleted successfully');
       navigate('/login', { replace: true });
     } catch (err) {
-      const status = err?.response?.status;
-      if (status === 403) {
-        toast.error('You do not have permission to delete this account.');
-      } else if (status === 404) {
-        toast.error('Account not found. It may have already been deleted.');
-      } else if (err?.code === 'ERR_NETWORK' || !navigator.onLine) {
-        toast.error('No internet connection. Please check your network and retry.');
-      } else {
-        toast.error(err?.response?.data?.message || err?.message || 'Failed to delete account. Please contact support.');
-      }
+      toast.error(err?.message || 'Failed to logout. Please try again.');
     } finally {
       setDeletingAccount(false);
     }

@@ -45,6 +45,19 @@ export const eventsService = {
   getSystemHealth: async () => {
     return api.get('/health/system');
   },
+
+  // ─── GET /ingestion/health ───────────────────────────────────────────────
+  // Returns { status: "ok" }
+  getIngestionHealth: async () => {
+    return api.get('/ingestion/health');
+  },
+
+  // ─── POST /ingestion/events ──────────────────────────────────────────────
+  // Create a new event manually
+  // Body: { source, type, content: { title, summary, link } }
+  createEvent: async (eventData) => {
+    return api.post('/ingestion/events', eventData);
+  },
 };
 
 export default eventsService;

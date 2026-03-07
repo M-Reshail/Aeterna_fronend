@@ -60,7 +60,7 @@ const AlertRow = React.memo(({ alert, onSelect }) => (
       </span>
     </div>
     <div className="hidden md:block flex-shrink-0 w-28 text-right">
-      <span className="text-xs text-slate-600">{formatRelativeTime(alert.timestamp || alert.createdAt)}</span>
+    <span className="text-xs text-slate-600">{formatRelativeTime(alert.created_at || alert.timestamp || alert.createdAt)}</span>
     </div>
   </button>
 ));
@@ -82,8 +82,8 @@ export const AlertHistory = () => {
   const priority = searchParams.get('priority') || '';
   const status = searchParams.get('status') || '';
   const entity = searchParams.get('entity') || '';
-  const dateFrom = searchParams.get('dateFrom') || '';
-  const dateTo = searchParams.get('dateTo') || '';
+  const startDate = searchParams.get('dateFrom') || '';
+  const endDate = searchParams.get('dateTo') || '';
 
   useEffect(() => {
     const next = new URLSearchParams(searchParams);
@@ -98,13 +98,13 @@ export const AlertHistory = () => {
       ...(priority ? { priority } : {}),
       ...(status ? { status } : {}),
       ...(entity ? { entity } : {}),
-      ...(dateFrom ? { dateFrom } : {}),
-      ...(dateTo ? { dateTo } : {}),
+      ...(startDate ? { start_date: startDate } : {}),
+      ...(endDate ? { end_date: endDate } : {}),
     }),
-    [debouncedSearch, priority, status, entity, dateFrom, dateTo]
+    [debouncedSearch, priority, status, entity, startDate, endDate]
   );
 
-  const hasFilters = Boolean(debouncedSearch || priority || status || entity || dateFrom || dateTo);
+  const hasFilters = Boolean(debouncedSearch || priority || status || entity || startDate || endDate);
 
   const { data, isLoading, isFetching, isError, refetch } = usePaginatedAlerts({
     page,
@@ -134,9 +134,10 @@ export const AlertHistory = () => {
   }, [setSearchParams]);
 
   const handleSelect = useCallback((alert) => {
+    const alertId = alert.alert_id ?? alert.id;
     setSelectedAlert(alert);
-    setSelectedIndex(alerts.findIndex((a) => a.id === alert.id));
-    markRead(alert.id);
+    setSelectedIndex(alerts.findIndex((a) => (a.alert_id ?? a.id) === alertId));
+    markRead(alertId);
   }, [alerts, markRead]);
 
   const handleNav = useCallback((dir) => {
@@ -146,7 +147,7 @@ export const AlertHistory = () => {
     const target = alerts[next];
     setSelectedAlert(target);
     setSelectedIndex(next);
-    markRead(target.id);
+    markRead(target.alert_id ?? target.id);
   }, [selectedIndex, alerts, markRead]);
 
   const handleDismiss = useCallback((id) => {
@@ -178,34 +179,12 @@ export const AlertHistory = () => {
   const handleExportCsv = useCallback(async () => {
     try {
       setIsExporting(true);
-      const exportPage = await alertsService.getAlertsPage({ page: 1, limit: 1000, ...filters });
-      const rows = exportPage.items ?? [];
-
-      const headers = ['id', 'title', 'priority', 'status', 'entity', 'source', 'createdAt'];
-      const escapeCsv = (value) => `"${String(value ?? '').replace(/"/g, '""')}"`;
-      const csvLines = [headers.join(',')];
-
-      rows.forEach((row) => {
-        csvLines.push([
-          escapeCsv(row.id),
-          escapeCsv(row.title),
-          escapeCsv(row.priority),
-          escapeCsv(row.status),
-          escapeCsv(row.entity || row.token || ''),
-          escapeCsv(row.source || (Array.isArray(row.sources) ? row.sources.join('|') : '')),
-          escapeCsv(row.createdAt || row.timestamp || ''),
-        ].join(','));
+      // Use server-side CSV export endpoint
+      await alertsService.exportAlerts({
+        ...(filters.priority ? { priority: filters.priority } : {}),
+        ...(filters.start_date ? { start_date: filters.start_date } : {}),
+        ...(filters.end_date ? { end_date: filters.end_date } : {}),
       });
-
-      const blob = new Blob([csvLines.join('\n')], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `alerts-${new Date().toISOString().slice(0, 10)}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      URL.revokeObjectURL(url);
       toast.success('CSV exported');
     } catch (error) {
       toast.error('Failed to export CSV');
@@ -246,8 +225,8 @@ export const AlertHistory = () => {
             {rawSearch && <button onClick={() => setRawSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white"><X className="w-3.5 h-3.5" /></button>}
           </div>
 
-          <input type="date" value={dateFrom} onChange={(e) => setParam('dateFrom', e.target.value)} className="w-full px-3 py-2 rounded-xl text-sm bg-[#0d0d0d] border border-[#1f1f1f] text-white" />
-          <input type="date" value={dateTo} onChange={(e) => setParam('dateTo', e.target.value)} className="w-full px-3 py-2 rounded-xl text-sm bg-[#0d0d0d] border border-[#1f1f1f] text-white" />
+          <input type="date" value={startDate} onChange={(e) => setParam('dateFrom', e.target.value)} className="w-full px-3 py-2 rounded-xl text-sm bg-[#0d0d0d] border border-[#1f1f1f] text-white" />
+          <input type="date" value={endDate} onChange={(e) => setParam('dateTo', e.target.value)} className="w-full px-3 py-2 rounded-xl text-sm bg-[#0d0d0d] border border-[#1f1f1f] text-white" />
 
           <input type="text" placeholder="Entity (BTC, ETH…)" value={entity} onChange={(e) => setParam('entity', e.target.value)} className="w-full px-3 py-2 rounded-xl text-sm bg-[#0d0d0d] border border-[#1f1f1f] text-white placeholder-slate-600" />
 
@@ -293,7 +272,7 @@ export const AlertHistory = () => {
               <p className="text-xs text-slate-600 mb-5">Try adjusting filters or date range.</p>
             </div>
           ) : (
-            alerts.map((alert) => <AlertRow key={alert.id} alert={alert} onSelect={handleSelect} />)
+            alerts.map((alert) => <AlertRow key={alert.alert_id ?? alert.id} alert={alert} onSelect={handleSelect} />)
           )}
         </div>
 

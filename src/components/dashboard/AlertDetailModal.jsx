@@ -83,13 +83,13 @@ export const AlertDetailModal = ({
     setLocalSentiment(null);
     setLocalComment('');
     setShowComment(false);
-  }, [alert?.id]);
+  }, [alert?.alert_id ?? alert?.id]);
 
   const handleSubmitFeedback = useCallback(() => {
     if (localSentiment && onFeedback) {
-      onFeedback(alert.id, localSentiment, localComment.trim());
+      onFeedback(alert.alert_id ?? alert.id, localSentiment, localComment.trim());
     }
-  }, [alert?.id, localSentiment, localComment, onFeedback]);
+  }, [alert?.alert_id, alert?.id, localSentiment, localComment, onFeedback]);
 
   // Close on Escape key
   useEffect(() => {
@@ -319,7 +319,7 @@ export const AlertDetailModal = ({
           {isUnread && (
             <button
               onClick={() => {
-                onMarkAsRead && onMarkAsRead(alert.id);
+                onMarkAsRead && onMarkAsRead(alert.alert_id ?? alert.id);
                 onClose();
               }}
               className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-semibold
@@ -332,7 +332,7 @@ export const AlertDetailModal = ({
           )}
           <button
             onClick={() => {
-              onDismiss && onDismiss(alert.id);
+              onDismiss && onDismiss(alert.alert_id ?? alert.id);
             }}
             className="flex-shrink-0 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-semibold
               bg-red-500/10 text-red-400 border border-red-500/30

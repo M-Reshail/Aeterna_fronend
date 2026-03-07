@@ -1,8 +1,8 @@
 import React, { Suspense, useEffect, useMemo, useState } from 'react';
 import {
   ResponsiveContainer,
-  LineChart,
-  Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   Tooltip,
@@ -109,22 +109,22 @@ export const Admin = () => {
           <StatCard label="Total Events" value={summary?.totalEventsIngested ?? '—'} hint="ingested" icon={Activity} />
           <StatCard label="Total Alerts" value={summary?.totalAlertsGenerated ?? '—'} hint="generated" icon={AlertTriangle} />
           <StatCard label="Active Users" value={summary?.activeUsers ?? '—'} hint="currently enabled" icon={Users} />
-          <StatCard label="System Uptime" value={summary ? `${summary.systemUptime}%` : '—'} hint="rolling" icon={ShieldCheck} />
-          <StatCard label="Error Rate" value={summary ? `${summary.errorRate}%` : '—'} hint="last window" icon={TrendingUp} />
+          <StatCard label="System Uptime" value={summary?.systemUptime ?? '—'} hint="rolling" icon={ShieldCheck} />
+          <StatCard label="Error Rate" value={summary?.errorRate != null ? `${(summary.errorRate * 100).toFixed(1)}%` : '—'} hint="last window" icon={TrendingUp} />
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
           <Suspense fallback={<ChartSkeleton />}>
             <div className={`${CARD_BASE} xl:col-span-2 h-[300px]`}>
-              <p className="text-sm font-medium text-slate-300 mb-3">Events Over Time</p>
+              <p className="text-sm font-medium text-slate-300 mb-3">Events by Source</p>
               <ResponsiveContainer width="100%" height="90%">
-                <LineChart data={data?.eventsOverTime || []}>
+                <BarChart data={data?.eventsBySource || []}>
                   <CartesianGrid stroke="#1f1f1f" strokeDasharray="3 3" />
-                  <XAxis dataKey="date" tick={{ fill: '#94a3b8', fontSize: 11 }} />
+                  <XAxis dataKey="source" tick={{ fill: '#94a3b8', fontSize: 11 }} />
                   <YAxis tick={{ fill: '#94a3b8', fontSize: 11 }} />
                   <Tooltip contentStyle={{ background: '#0f0f0f', border: '1px solid #222', color: '#e2e8f0' }} />
-                  <Line type="monotone" dataKey="value" stroke="#94a3b8" strokeWidth={2} dot={false} />
-                </LineChart>
+                  <Bar dataKey="count" fill="#64748b" radius={[3, 3, 0, 0]} />
+                </BarChart>
               </ResponsiveContainer>
             </div>
           </Suspense>
@@ -155,15 +155,15 @@ export const Admin = () => {
 
           <Suspense fallback={<ChartSkeleton />}>
             <div className={`${CARD_BASE} xl:col-span-3 h-[300px]`}>
-              <p className="text-sm font-medium text-slate-300 mb-3">User Growth</p>
+              <p className="text-sm font-medium text-slate-300 mb-3">Events by Type</p>
               <ResponsiveContainer width="100%" height="90%">
-                <LineChart data={data?.userGrowth || []}>
+                <BarChart data={data?.eventsByType || []}>
                   <CartesianGrid stroke="#1f1f1f" strokeDasharray="3 3" />
-                  <XAxis dataKey="date" tick={{ fill: '#94a3b8', fontSize: 11 }} />
+                  <XAxis dataKey="type" tick={{ fill: '#94a3b8', fontSize: 11 }} />
                   <YAxis tick={{ fill: '#94a3b8', fontSize: 11 }} />
                   <Tooltip contentStyle={{ background: '#0f0f0f', border: '1px solid #222', color: '#e2e8f0' }} />
-                  <Line type="monotone" dataKey="value" stroke="#cbd5e1" strokeWidth={2} dot={false} />
-                </LineChart>
+                  <Bar dataKey="count" fill="#94a3b8" radius={[3, 3, 0, 0]} />
+                </BarChart>
               </ResponsiveContainer>
             </div>
           </Suspense>
@@ -316,7 +316,7 @@ export const Admin = () => {
               <p><span className="text-slate-500">Email:</span> {selectedUser.email}</p>
               <p><span className="text-slate-500">Role:</span> {selectedUser.role || 'user'}</p>
               <p><span className="text-slate-500">Status:</span> {selectedUser.active === false ? 'disabled' : 'active'}</p>
-              <p><span className="text-slate-500">Created:</span> {new Date(selectedUser.createdAt).toLocaleString()}</p>
+              <p><span className="text-slate-500">Created:</span> {new Date(selectedUser.created_at || selectedUser.createdAt).toLocaleString()}</p>
             </div>
             <div className="flex justify-end">
               <button autoFocus className="px-3 py-1.5 text-sm rounded-lg border border-[#2a2a2a]" onClick={() => setSelectedUser(null)}>

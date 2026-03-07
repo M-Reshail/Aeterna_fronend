@@ -17,14 +17,15 @@ const ALERT_KEYS = {
 const PAGE_LIMIT = 10;
 
 // ─── Infinite alerts list ─────────────────────────────────────────────────────
+const normalizeAlertId = (a, id) => (a.alert_id != null ? String(a.alert_id) === String(id) : a.id === id);
+
 export const useInfiniteAlerts = (filters = {}) => {
   return useInfiniteQuery({
     queryKey: ALERT_KEYS.list(filters),
     queryFn: ({ pageParam = 1 }) =>
-      alertsService.getAlerts({ page: pageParam, limit: PAGE_LIMIT, ...filters }),
+      alertsService.getAlerts({ skip: (pageParam - 1) * PAGE_LIMIT, limit: PAGE_LIMIT, ...filters }),
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) => {
-      // json-server returns array; if returned fewer than limit, no more pages
       if (!Array.isArray(lastPage) || lastPage.length < PAGE_LIMIT) return undefined;
       return allPages.length + 1;
     },
@@ -96,7 +97,7 @@ export const useDismissAlert = () => {
         return {
           ...old,
           pages: old.pages.map((page) =>
-            Array.isArray(page) ? page.filter((a) => a.id !== alertId) : page
+            Array.isArray(page) ? page.filter((a) => !normalizeAlertId(a, alertId)) : page
           ),
         };
       });
@@ -105,12 +106,22 @@ export const useDismissAlert = () => {
   });
 };
 
-// ─── Search alerts ────────────────────────────────────────────────────────────
+// ─── Search alerts (client-side filter on recent history) ─────────────────────
 export const useSearchAlerts = (query) => {
   return useQuery({
     queryKey: ['alerts', 'search', query],
-    queryFn:  () => alertsService.searchAlerts(query),
-    enabled:  !!query && query.length >= 2,
+    queryFn: async () => {
+      const items = await alertsService.getAlerts({ skip: 0, limit: 200 });
+      if (!Array.isArray(items)) return [];
+      const q = query.toLowerCase();
+      return items.filter(
+        (a) =>
+          a.title?.toLowerCase().includes(q) ||
+          a.priority?.toLowerCase().includes(q) ||
+          a.entity?.toLowerCase().includes(q)
+      );
+    },
+    enabled: !!query && query.length >= 2,
     staleTime: 1000 * 30,
   });
 };
