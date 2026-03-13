@@ -44,7 +44,7 @@ const normalizeAlert = (alert) => ({
   id: alert.alert_id ?? alert.id,
   alert_id: alert.alert_id ?? alert.id,
   event_type: alert.event_type || inferEventType(alert.title),
-  source: alert.source || alert.entity || 'system',
+  source: alert.source || '',
   title: alert.title || 'Untitled Alert',
   content: alert.content || alert.description || alert.title || 'No details provided',
   priority: alert.priority || 'LOW',
@@ -89,6 +89,29 @@ const SORT_OPTIONS = [
 
 const PRIORITY_ORDER = { HIGH: 0, MEDIUM: 1, LOW: 2 };
 const isEventItemId = (id) => String(id).startsWith('event-');
+const FALLBACK_SOURCE_OPTIONS = ['CoinDesk', 'CoinTelegraph', 'Decrypt', 'CoinGecko'];
+const SOURCE_QUERY_BY_LABEL = {
+  CoinDesk: 'coindesk',
+  CoinTelegraph: 'cointelegraph',
+  Decrypt: 'decrypt.co',
+  CoinGecko: 'coingecko',
+};
+
+const normalizeSourceName = (source) => {
+  const raw = String(source || '').trim();
+  if (!raw) return '';
+
+  const lower = raw.toLowerCase();
+  if (lower.includes('coindesk')) return 'CoinDesk';
+  if (lower.includes('cointelegraph')) return 'CoinTelegraph';
+  if (lower.includes('decrypt')) return 'Decrypt';
+  if (lower.includes('coingecko')) return 'CoinGecko';
+
+  // Keep Data Sources clean: only show known upstream providers.
+  return '';
+};
+
+const toApiSourceParam = (sourceLabel) => SOURCE_QUERY_BY_LABEL[sourceLabel] || '';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // STAT CARD
@@ -209,12 +232,15 @@ export const Dashboard = () => {
       const sourceList = Array.isArray(selectedSources)
         ? selectedSources.filter(Boolean)
         : [];
+      const sourceApiParams = Array.from(
+        new Set(sourceList.map(toApiSourceParam).filter(Boolean))
+      );
 
       const [sourcesResult, feedResult] = await Promise.allSettled([
         eventsService.getAvailableSources({ limit: 200 }),
-        sourceList.length > 0
+        sourceApiParams.length > 0
           ? Promise.all(
-              sourceList.map((source) =>
+              sourceApiParams.map((source) =>
                 eventsService.getEvents({ skip: 0, limit: 100, source, type: 'news' })
               )
             )
@@ -227,7 +253,7 @@ export const Dashboard = () => {
 
       const apiSources = sourcesResult.status === 'fulfilled' ? sourcesResult.value : [];
 
-      const normalizedAlerts = sourceList.length > 0
+      const normalizedAlerts = sourceApiParams.length > 0
         ? (feedResult.value || [])
             .flat()
             .filter(Boolean)
@@ -237,10 +263,18 @@ export const Dashboard = () => {
       setAllAlerts(normalizedAlerts);
 
       const sourcesFromAlerts = normalizedAlerts
-        .map((item) => item.source)
+        .map((item) => normalizeSourceName(item.source))
         .filter(Boolean);
 
-      const mergedSources = Array.from(new Set([...(apiSources || []), ...sourcesFromAlerts]))
+      const mergedSources = Array.from(
+        new Set(
+          [
+            ...(apiSources || []),
+            ...sourcesFromAlerts,
+            ...FALLBACK_SOURCE_OPTIONS,
+          ].map(normalizeSourceName).filter(Boolean)
+        )
+      )
         .sort((a, b) => a.localeCompare(b));
       setSourceOptions(mergedSources);
       hasShownLoadErrorRef.current = false;
@@ -274,8 +308,9 @@ export const Dashboard = () => {
       if (!normalized?.id) return;
 
       setSourceOptions((prev) => {
-        if (!normalized.source || prev.includes(normalized.source)) return prev;
-        return [...prev, normalized.source].sort((a, b) => a.localeCompare(b));
+        const nextSource = normalizeSourceName(normalized.source);
+        if (!nextSource || prev.includes(nextSource)) return prev;
+        return [...prev, nextSource].sort((a, b) => a.localeCompare(b));
       });
 
       setAllAlerts((prev) => {
@@ -358,7 +393,7 @@ export const Dashboard = () => {
     }
     if (appliedFilters.sources?.length > 0) {
       const selectedSources = appliedFilters.sources.map((source) => String(source).toLowerCase());
-      result = result.filter((a) => selectedSources.includes(String(a.source).toLowerCase()));
+      result = result.filter((a) => selectedSources.includes(normalizeSourceName(a.source).toLowerCase()));
     }
 
     const sorted = [...result];
