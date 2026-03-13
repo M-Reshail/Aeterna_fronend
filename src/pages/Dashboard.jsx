@@ -53,6 +53,25 @@ const normalizeAlert = (alert) => ({
   entity: alert.entity || '',
 });
 
+const normalizeNewsEvent = (event) => {
+  const content = event?.content || {};
+  const title = content.title || content.name || `News from ${event?.source || 'source'}`;
+  const body = content.summary || content.alert_reasons || content.link || 'No details provided';
+
+  return {
+    id: `event-${event?.id}`,
+    event_id: event?.id,
+    event_type: String(event?.type || 'news').toUpperCase(),
+    source: event?.source || 'unknown',
+    title,
+    content: body,
+    priority: content.quality_score >= 70 ? 'HIGH' : content.quality_score >= 50 ? 'MEDIUM' : 'LOW',
+    status: 'new',
+    timestamp: event?.timestamp || new Date().toISOString(),
+    entity: content.id || content.symbol || content.name || '',
+  };
+};
+
 const DEFAULT_FILTERS = {
   priority: ['HIGH', 'MEDIUM', 'LOW'],
   entity: '',
@@ -69,6 +88,7 @@ const SORT_OPTIONS = [
 ];
 
 const PRIORITY_ORDER = { HIGH: 0, MEDIUM: 1, LOW: 2 };
+const isEventItemId = (id) => String(id).startsWith('event-');
 
 // ─────────────────────────────────────────────────────────────────────────────
 // STAT CARD
@@ -182,23 +202,38 @@ export const Dashboard = () => {
     toastRef.current = toast;
   }, [toast]);
 
-  const loadDashboardData = useCallback(async () => {
+  const loadDashboardData = useCallback(async (selectedSources = []) => {
     setIsLoading(true);
     setLoadError('');
     try {
-      const [alertsResult, sourcesResult] = await Promise.allSettled([
-        alertsService.getAlerts({ skip: 0, limit: 50 }),
+      const sourceList = Array.isArray(selectedSources)
+        ? selectedSources.filter(Boolean)
+        : [];
+
+      const [sourcesResult, feedResult] = await Promise.allSettled([
         eventsService.getAvailableSources({ limit: 200 }),
+        sourceList.length > 0
+          ? Promise.all(
+              sourceList.map((source) =>
+                eventsService.getEvents({ skip: 0, limit: 100, source, type: 'news' })
+              )
+            )
+          : alertsService.getAlerts({ skip: 0, limit: 50 }),
       ]);
 
-      if (alertsResult.status === 'rejected') {
-        throw alertsResult.reason;
+      if (feedResult.status === 'rejected') {
+        throw feedResult.reason;
       }
 
-      const alerts = alertsResult.value;
       const apiSources = sourcesResult.status === 'fulfilled' ? sourcesResult.value : [];
 
-      const normalizedAlerts = Array.isArray(alerts) ? alerts.map(normalizeAlert) : [];
+      const normalizedAlerts = sourceList.length > 0
+        ? (feedResult.value || [])
+            .flat()
+            .filter(Boolean)
+            .map(normalizeNewsEvent)
+        : (Array.isArray(feedResult.value) ? feedResult.value.map(normalizeAlert) : []);
+
       setAllAlerts(normalizedAlerts);
 
       const sourcesFromAlerts = normalizedAlerts
@@ -227,9 +262,11 @@ export const Dashboard = () => {
     }
   }, []);
 
+  const selectedSourcesKey = (appliedFilters.sources || []).join('|');
+
   useEffect(() => {
-    loadDashboardData();
-  }, [loadDashboardData]);
+    loadDashboardData(appliedFilters.sources || []);
+  }, [loadDashboardData, selectedSourcesKey]);
 
   useEffect(() => {
     const handleIncomingAlert = (incoming) => {
@@ -368,6 +405,7 @@ export const Dashboard = () => {
   const handleMarkAsRead = useCallback(async (id) => {
     setAllAlerts((prev) => prev.map((a) => (a.id === id ? { ...a, status: 'read' } : a)));
     setSelectedAlert((prev) => (prev?.id === id ? { ...prev, status: 'read' } : prev));
+    if (isEventItemId(id)) return;
     try {
       await alertsService.markAsRead(id);
     } catch (error) {
@@ -380,6 +418,7 @@ export const Dashboard = () => {
     const readAlert = { ...alert, status: 'read' };
     setSelectedAlert(readAlert);
     setAllAlerts((prev) => prev.map((a) => (a.id === alert.id ? { ...a, status: 'read' } : a)));
+    if (isEventItemId(alert.id)) return;
     alertsService.markAsRead(alert.id).catch(() => {
       // Keep UI optimistic; errors are non-blocking for detail view.
     });
@@ -389,6 +428,8 @@ export const Dashboard = () => {
     const previous = allAlerts;
     setAllAlerts((prev) => prev.filter((a) => a.id !== id));
     setSelectedAlert(null);
+
+    if (isEventItemId(id)) return;
 
     try {
       await alertsService.dismissAlert(id);
@@ -430,7 +471,7 @@ export const Dashboard = () => {
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    await loadDashboardData();
+    await loadDashboardData(appliedFilters.sources || []);
     setIsRefreshing(false);
   };
 
