@@ -78,6 +78,7 @@ const DEFAULT_FILTERS = {
   dateFrom: '',
   dateTo: '',
   sources: [],
+  contentFilter: 'all',
 };
 
 const SORT_OPTIONS = [
@@ -112,6 +113,43 @@ const normalizeSourceName = (source) => {
 };
 
 const toApiSourceParam = (sourceLabel) => SOURCE_QUERY_BY_LABEL[sourceLabel] || '';
+
+const PRICE_KEYWORDS = [
+  'price',
+  'surge',
+  'drop',
+  'rally',
+  'crash',
+  'ath',
+  'atl',
+  'market movement',
+  'volatility',
+  'breakout',
+  'breakdown',
+];
+
+const isPriceRelatedAlert = (item) => {
+  const eventType = String(item?.event_type || '').toLowerCase();
+  if (eventType.includes('price')) return true;
+
+  const text = `${item?.title || ''} ${item?.content || ''}`.toLowerCase();
+  return PRICE_KEYWORDS.some((keyword) => text.includes(keyword));
+};
+
+const mergeAlertsPreservingReadState = (previousAlerts, incomingAlerts, readIdsSet) => {
+  const prevById = new Map((previousAlerts || []).map((item) => [String(item.id), item]));
+
+  return (incomingAlerts || []).map((item) => {
+    const key = String(item.id);
+    const previous = prevById.get(key);
+    const shouldKeepRead = readIdsSet.has(key) || previous?.status === 'read';
+
+    return {
+      ...item,
+      status: shouldKeepRead ? 'read' : item.status,
+    };
+  });
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // STAT CARD
@@ -220,6 +258,7 @@ export const Dashboard = () => {
   const feedRef     = useRef(null);
   const toastRef = useRef(toast);
   const hasShownLoadErrorRef = useRef(false);
+  const readAlertIdsRef = useRef(new Set());
 
   useEffect(() => {
     toastRef.current = toast;
@@ -260,23 +299,26 @@ export const Dashboard = () => {
             .map(normalizeNewsEvent)
         : (Array.isArray(feedResult.value) ? feedResult.value.map(normalizeAlert) : []);
 
-      setAllAlerts(normalizedAlerts);
+      setAllAlerts((prev) => {
+        const merged = mergeAlertsPreservingReadState(prev, normalizedAlerts, readAlertIdsRef.current);
 
-      const sourcesFromAlerts = normalizedAlerts
-        .map((item) => normalizeSourceName(item.source))
-        .filter(Boolean);
+        const sourcesFromAlerts = merged
+          .map((item) => normalizeSourceName(item.source))
+          .filter(Boolean);
 
-      const mergedSources = Array.from(
-        new Set(
-          [
-            ...(apiSources || []),
-            ...sourcesFromAlerts,
-            ...FALLBACK_SOURCE_OPTIONS,
-          ].map(normalizeSourceName).filter(Boolean)
-        )
-      )
-        .sort((a, b) => a.localeCompare(b));
-      setSourceOptions(mergedSources);
+        const mergedSources = Array.from(
+          new Set(
+            [
+              ...(apiSources || []),
+              ...sourcesFromAlerts,
+              ...FALLBACK_SOURCE_OPTIONS,
+            ].map(normalizeSourceName).filter(Boolean)
+          )
+        ).sort((a, b) => a.localeCompare(b));
+
+        setSourceOptions(mergedSources);
+        return merged;
+      });
       hasShownLoadErrorRef.current = false;
     } catch (error) {
       const isCorsIssue = String(error?.message || '').toLowerCase().includes('cors');
@@ -395,6 +437,9 @@ export const Dashboard = () => {
       const selectedSources = appliedFilters.sources.map((source) => String(source).toLowerCase());
       result = result.filter((a) => selectedSources.includes(normalizeSourceName(a.source).toLowerCase()));
     }
+    if (appliedFilters.contentFilter === 'price') {
+      result = result.filter(isPriceRelatedAlert);
+    }
 
     const sorted = [...result];
     if (sortBy === 'oldest') {
@@ -438,6 +483,7 @@ export const Dashboard = () => {
   const highUnread = allAlerts.filter((a) => a.priority === 'HIGH' && a.status === 'new').length;
 
   const handleMarkAsRead = useCallback(async (id) => {
+    readAlertIdsRef.current.add(String(id));
     setAllAlerts((prev) => prev.map((a) => (a.id === id ? { ...a, status: 'read' } : a)));
     setSelectedAlert((prev) => (prev?.id === id ? { ...prev, status: 'read' } : prev));
     if (isEventItemId(id)) return;
@@ -450,6 +496,7 @@ export const Dashboard = () => {
 
   const handleOpenAlert = useCallback((alert) => {
     // Auto-mark as read on open (Gmail-style)
+    readAlertIdsRef.current.add(String(alert.id));
     const readAlert = { ...alert, status: 'read' };
     setSelectedAlert(readAlert);
     setAllAlerts((prev) => prev.map((a) => (a.id === alert.id ? { ...a, status: 'read' } : a)));
@@ -510,12 +557,20 @@ export const Dashboard = () => {
     setIsRefreshing(false);
   };
 
+  const handleApplyPriceFilter = useCallback(() => {
+    const nextFilters = { ...filters, contentFilter: 'price' };
+    setFilters(nextFilters);
+    setAppliedFilters(nextFilters);
+    setVisibleCount(8);
+  }, [filters]);
+
   const hasActiveFilters =
     appliedFilters.priority.length < 3 ||
     !!appliedFilters.entity ||
     !!appliedFilters.dateFrom ||
     !!appliedFilters.dateTo ||
-    (appliedFilters.sources?.length ?? 0) > 0;
+    (appliedFilters.sources?.length ?? 0) > 0 ||
+    appliedFilters.contentFilter === 'price';
 
   const currentSortLabel = SORT_OPTIONS.find((s) => s.value === sortBy)?.label || 'Newest First';
 
@@ -689,6 +744,15 @@ export const Dashboard = () => {
                     }}><X className="w-3 h-3" /></button>
                   </div>
                 )}
+                {appliedFilters.contentFilter === 'price' && (
+                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                    Filter: Price
+                    <button onClick={() => {
+                      const nf = { ...appliedFilters, contentFilter: 'all' };
+                      setAppliedFilters(nf); setFilters(nf);
+                    }}><X className="w-3 h-3" /></button>
+                  </div>
+                )}
               </div>
             )}
 
@@ -743,6 +807,8 @@ export const Dashboard = () => {
         onClose={() => setSelectedAlert(null)}
         onMarkAsRead={handleMarkAsRead}
         onDismiss={handleDismiss}
+        onApplyPriceFilter={handleApplyPriceFilter}
+        isPriceRelated={selectedAlert ? isPriceRelatedAlert(selectedAlert) : false}
         onFeedback={handleFeedback}
         feedbackState={selectedAlert ? feedbackMap[selectedAlert.id] : null}
       />

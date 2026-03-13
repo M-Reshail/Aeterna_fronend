@@ -68,6 +68,8 @@ export const AlertDetailModal = ({
   onClose,
   onMarkAsRead,
   onDismiss,
+  onApplyPriceFilter,
+  isPriceRelated,
   onFeedback,
   feedbackState,
 }) => {
@@ -241,6 +243,28 @@ export const AlertDetailModal = ({
             </div>
           </div>
 
+          <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div>
+                <p className="text-[11px] text-slate-500 uppercase tracking-wider">Content Filter</p>
+                <p className="text-xs text-slate-300 mt-1">
+                  {isPriceRelated ? 'This item is price-related news.' : 'This item is general news.'}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  if (onApplyPriceFilter) onApplyPriceFilter();
+                  onClose();
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-amber-500/30 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 transition-all"
+              >
+                <TrendingUp className="w-3.5 h-3.5" />
+                Price Filter
+              </button>
+            </div>
+          </div>
+
           <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] space-y-2">
             <div className="flex items-center gap-2">
               <MessageSquare className="w-3.5 h-3.5 text-slate-500" />
@@ -362,6 +386,8 @@ AlertDetailModal.propTypes = {
   onClose: PropTypes.func.isRequired,
   onMarkAsRead: PropTypes.func,
   onDismiss: PropTypes.func,
+  onApplyPriceFilter: PropTypes.func,
+  isPriceRelated: PropTypes.bool,
   onFeedback: PropTypes.func,
   feedbackState: PropTypes.shape({
     submitted: PropTypes.bool,
