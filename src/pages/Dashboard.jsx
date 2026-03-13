@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { useQueryClient } from '@tanstack/react-query';
 import Tooltip from '@components/common/Tooltip';
 import {
@@ -100,14 +101,16 @@ const StatCard = ({ icon: Icon, label, value, subValue, accentColor = 'emerald' 
 // ─────────────────────────────────────────────────────────────────────────────
 // EMPTY STATE
 // ─────────────────────────────────────────────────────────────────────────────
-const EmptyState = ({ hasFilters, onClear }) => (
+const EmptyState = ({ hasFilters, onClear, loadError }) => (
   <div className="flex flex-col items-center justify-center py-24 text-center px-8">
     <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-5">
       <Inbox className="w-8 h-8 text-slate-500" />
     </div>
     <h3 className="text-base font-bold text-white mb-2">No alerts found</h3>
     <p className="text-sm text-slate-500 max-w-xs mb-6">
-      {hasFilters
+      {loadError
+        ? loadError
+        : hasFilters
         ? 'No alerts match your current filters. Try adjusting or clearing them.'
         : 'Your alert feed is clear. New alerts will appear here in real-time.'}
     </p>
@@ -121,6 +124,12 @@ const EmptyState = ({ hasFilters, onClear }) => (
     )}
   </div>
 );
+
+EmptyState.propTypes = {
+  hasFilters: PropTypes.bool,
+  onClear: PropTypes.func,
+  loadError: PropTypes.string,
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // LOADING SKELETON
@@ -163,6 +172,7 @@ export const Dashboard = () => {
   const [recentAlertIds, setRecentAlertIds] = useState(new Set());
   const [feedbackMap, setFeedbackMap] = useState({});
   const [sourceOptions, setSourceOptions] = useState([]);
+  const [loadError, setLoadError] = useState('');
   const sortMenuRef = useRef(null);
   const feedRef     = useRef(null);
   const toastRef = useRef(toast);
@@ -174,11 +184,19 @@ export const Dashboard = () => {
 
   const loadDashboardData = useCallback(async () => {
     setIsLoading(true);
+    setLoadError('');
     try {
-      const [alerts, apiSources] = await Promise.all([
+      const [alertsResult, sourcesResult] = await Promise.allSettled([
         alertsService.getAlerts({ skip: 0, limit: 50 }),
         eventsService.getAvailableSources({ limit: 200 }),
       ]);
+
+      if (alertsResult.status === 'rejected') {
+        throw alertsResult.reason;
+      }
+
+      const alerts = alertsResult.value;
+      const apiSources = sourcesResult.status === 'fulfilled' ? sourcesResult.value : [];
 
       const normalizedAlerts = Array.isArray(alerts) ? alerts.map(normalizeAlert) : [];
       setAllAlerts(normalizedAlerts);
@@ -192,8 +210,14 @@ export const Dashboard = () => {
       setSourceOptions(mergedSources);
       hasShownLoadErrorRef.current = false;
     } catch (error) {
+      const isCorsIssue = String(error?.message || '').toLowerCase().includes('cors');
+      const message = isCorsIssue
+        ? 'Cannot load alerts: backend CORS is blocking this frontend origin.'
+        : (error?.message || 'Failed to load dashboard alerts');
+
+      setLoadError(message);
       if (!hasShownLoadErrorRef.current) {
-        toastRef.current.error(error?.message || 'Failed to load dashboard alerts');
+        toastRef.current.error(message);
         hasShownLoadErrorRef.current = true;
       }
       setAllAlerts([]);
@@ -601,7 +625,7 @@ export const Dashboard = () => {
               {isLoading ? (
                 Array.from({ length: 6 }).map((_, i) => <AlertSkeleton key={i} />)
               ) : visibleAlerts.length === 0 ? (
-                <EmptyState hasFilters={hasActiveFilters} onClear={handleClearFilters} />
+                <EmptyState hasFilters={hasActiveFilters} onClear={handleClearFilters} loadError={loadError} />
               ) : (
                 <>
                   {visibleAlerts.map((alert) => (

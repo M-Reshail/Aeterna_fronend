@@ -86,8 +86,17 @@ const request = async (method, endpoint, { body, params, formEncoded, blobRespon
 
   try {
     res = await fetch(url, options);
-  } catch {
+  } catch (err) {
     endRequest();
+    const isLikelyCors =
+      typeof window !== 'undefined' &&
+      navigator.onLine &&
+      err instanceof TypeError;
+
+    if (isLikelyCors) {
+      throw new Error('Request blocked by CORS policy. Backend must allow this frontend origin.');
+    }
+
     // Retry on network failures
     if (retryCount < MAX_RETRIES) {
       await wait(RETRY_DELAY_MS * 2 ** retryCount);
