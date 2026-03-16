@@ -1,277 +1,1088 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { useQueryClient } from '@tanstack/react-query';
+import Tooltip from '@components/common/Tooltip';
 import {
-  ChevronLeft,
-  Search,
-  Filter as FilterIcon,
-  Loader2,
+  Bell,
+  BellRing,
   AlertTriangle,
+  Activity,
+  RefreshCw,
+  Download,
+  SlidersHorizontal,
+  ChevronDown,
+  Inbox,
+  Loader2,
+  X,
   TrendingUp,
-  ExternalLink,
   Calendar,
-  Globe,
-  Zap,
-  ArrowUpRight,
-  Clock,
 } from 'lucide-react';
 import { AlertCard } from '@components/dashboard/AlertCard';
-import eventsService from '@services/eventsService';
+import { AlertDetailModal } from '@components/dashboard/AlertDetailModal';
+import { FilterSidebar } from '@components/dashboard/FilterSidebar';
+import { useSocket } from '@hooks/useSocket';
+import { WS_EVENTS } from '@utils/constants';
+import { useAuth } from '@hooks/useAuth';
 import { useToast } from '@hooks/useToast';
+import feedbackService from '@services/feedbackService';
+import alertsService from '@services/alertsService';
+import eventsService from '@services/eventsService';
 
-const News = () => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const [allNews, setAllNews] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [priorityFilter, setPriorityFilter] = useState('all');
-  const [sourceFilter, setSourceFilter] = useState('all');
-  const [sortBy, setSortBy] = useState('newest');
-  const [sourceOptions, setSourceOptions] = useState([]);
-  const feedRef = useRef(null);
+// 
+// NORMALIZERS
+// 
+const normalizeStatus = (status) => {
+  if (status === 'pending') return 'new';
+  return status || 'new';
+};
 
-  // Normalize news event
-  const normalizeNewsEvent = (event) => {
-    const content = event?.content || {};
-    const title = content.title || content.name || `News from ${event?.source || 'source'}`;
-    const body = content.summary || content.alert_reasons || content.link || 'No details provided';
+const toDisplayText = (value, fallback = '') => {
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    return trimmed || fallback;
+  }
 
-    return {
-      id: `event-${event?.id}`,
-      event_id: event?.id,
-      event_type: 'NEWS',
-      source: event?.source || 'unknown',
-      title,
-      content: body,
-      priority: content.quality_score >= 70 ? 'HIGH' : content.quality_score >= 50 ? 'MEDIUM' : 'LOW',
-      status: 'new',
-      timestamp: event?.timestamp || new Date().toISOString(),
-      entity: content.id || content.symbol || content.name || '',
-      rawContent: {
-        ...content,
-        type: event?.type,
-      },
-    };
-  };
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return String(value);
+  }
 
-  // Load news from API
-  useEffect(() => {
-    const loadNews = async () => {
-      try {
-        setIsLoading(true);
-        const news = await eventsService.getEventsByType('news', { skip: 0, limit: 200 });
-        
-        if (Array.isArray(news)) {
-          const normalized = news.map(normalizeNewsEvent);
-          setAllNews(normalized);
-          
-          // Extract unique sources
-          const sources = Array.from(
-            new Set(normalized.map(n => n.source).filter(Boolean))
-          ).sort();
-          setSourceOptions(sources);
-        }
-      } catch (error) {
-        toast.error('Failed to load news');
-        console.error('Error loading news:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  if (Array.isArray(value)) {
+    const joined = value
+      .map((item) => (typeof item === 'string' ? item.trim() : String(item ?? '')))
+      .filter(Boolean)
+      .join(', ');
+    return joined || fallback;
+  }
 
-    loadNews();
-  }, [toast]);
-
-  // Filter and sort news
-  const filtered = allNews.filter(item => {
-    const matchesSearch = 
-      item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.entity.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesPriority = priorityFilter === 'all' || item.priority === priorityFilter;
-    const matchesSource = sourceFilter === 'all' || item.source === sourceFilter;
-    
-    return matchesSearch && matchesPriority && matchesSource;
-  });
-
-  const sorted = [...filtered].sort((a, b) => {
-    switch(sortBy) {
-      case 'oldest':
-        return new Date(a.timestamp) - new Date(b.timestamp);
-      case 'priority':
-        const priorityOrder = { 'HIGH': 0, 'MEDIUM': 1, 'LOW': 2 };
-        return priorityOrder[a.priority] - priorityOrder[b.priority];
-      case 'newest':
-      default:
-        return new Date(b.timestamp) - new Date(a.timestamp);
+  if (value && typeof value === 'object') {
+    const candidate = value.summary || value.title || value.name || value.link || value.description;
+    if (typeof candidate === 'string' && candidate.trim()) {
+      return candidate.trim();
     }
-  });
+  }
 
-  const getPriorityStats = () => {
-    return {
-      high: allNews.filter(n => n.priority === 'HIGH').length,
-      medium: allNews.filter(n => n.priority === 'MEDIUM').length,
-      low: allNews.filter(n => n.priority === 'LOW').length,
-    };
+  return fallback;
+};
+
+const inferEventType = (title = '') => {
+  const lower = toDisplayText(title, '').toLowerCase();
+  if (lower.includes('price')) return 'PRICE_ALERT';
+  return 'NEWS';
+};
+
+const normalizeAlert = (alert) => ({
+  id: alert.alert_id ?? alert.id,
+  alert_id: alert.alert_id ?? alert.id,
+  event_type: toDisplayText(alert.event_type, inferEventType(alert.title)).toUpperCase(),
+  source: toDisplayText(alert.source, 'Unknown'),
+  title: toDisplayText(alert.title, 'Untitled Alert'),
+  content: toDisplayText(alert.content, toDisplayText(alert.description, toDisplayText(alert.title, 'No details provided'))),
+  priority: alert.priority || 'LOW',
+  status: normalizeStatus(alert.status),
+  timestamp: alert.created_at || alert.timestamp || alert.createdAt || new Date().toISOString(),
+  entity: toDisplayText(alert.entity, ''),
+});
+
+const normalizeNewsEvent = (event) => {
+  const content = event?.content || {};
+  const title = toDisplayText(content.title, toDisplayText(content.name, `News from ${toDisplayText(event?.source, 'source')}`));
+  const body = toDisplayText(content.summary, toDisplayText(content.alert_reasons, toDisplayText(content.link, 'No details provided')));
+
+  return {
+    id: `event-${event?.id}`,
+    event_id: event?.id,
+    event_type: String(event?.type || 'news').toUpperCase(),
+    source: toDisplayText(event?.source, 'unknown'),
+    title,
+    content: body,
+    priority: content.quality_score >= 70 ? 'HIGH' : content.quality_score >= 50 ? 'MEDIUM' : 'LOW',
+    status: 'new',
+    timestamp: event?.timestamp || new Date().toISOString(),
+    entity: toDisplayText(content.id, toDisplayText(content.symbol, toDisplayText(content.name, ''))),
+    // Preserve raw content for detailed view
+    rawContent: {
+      ...content,
+      type: event?.type,
+    },
   };
+};
 
-  const stats = getPriorityStats();
+const DEFAULT_FILTERS = {
+  priority: ['HIGH', 'MEDIUM', 'LOW'],
+  eventType: 'all',
+  entity: '',
+  dateFrom: '',
+  dateTo: '',
+  sources: [],
+  contentFilter: 'all',
+};
 
+const SORT_OPTIONS = [
+  { value: 'newest',   label: 'Newest First' },
+  { value: 'oldest',   label: 'Oldest First' },
+  { value: 'priority', label: 'Priority (High -> Low)' },
+  { value: 'unread',   label: 'Unread First' },
+];
+
+const PRIORITY_ORDER = { HIGH: 0, MEDIUM: 1, LOW: 2 };
+const isEventItemId = (id) => String(id).startsWith('event-');
+const FALLBACK_SOURCE_OPTIONS = ['CoinDesk', 'CoinTelegraph', 'Decrypt', 'CoinGecko'];
+const SOURCE_QUERY_BY_LABEL = {
+  CoinDesk: 'coindesk',
+  CoinTelegraph: 'cointelegraph',
+  Decrypt: 'decrypt.co',
+  CoinGecko: 'coingecko',
+};
+
+const normalizeSourceName = (source) => {
+  const raw = String(source || '').trim().toLowerCase();
+  if (!raw) return '';
+
+  // Match patterns: www.coindesk.com, coindesk.com, coindesk
+  if (raw.includes('coindesk')) return 'CoinDesk';
+  // Match patterns: cointelegraph.com, cointelegraph
+  if (raw.includes('cointelegraph')) return 'CoinTelegraph';
+  // Match patterns: decrypt.co, decrypt
+  if (raw.includes('decrypt')) return 'Decrypt';
+  // Match patterns: coingecko.com, coingecko
+  if (raw.includes('coingecko')) return 'CoinGecko';
+
+  // Keep Data Sources clean: only show known upstream providers.
+  return '';
+};
+
+const toApiSourceParam = (sourceLabel) => SOURCE_QUERY_BY_LABEL[sourceLabel] || '';
+
+const PRICE_KEYWORDS = [
+  'price',
+  'surge',
+  'drop',
+  'rally',
+  'crash',
+  'ath',
+  'atl',
+  'market movement',
+  'volatility',
+  'breakout',
+  'breakdown',
+];
+
+const isPriceRelatedAlert = (item) => {
+  const eventType = String(item?.event_type || '').toLowerCase();
+  if (eventType.includes('price')) return true;
+
+  const text = `${item?.title || ''} ${item?.content || ''}`.toLowerCase();
+  return PRICE_KEYWORDS.some((keyword) => text.includes(keyword));
+};
+
+const mergeAlertsPreservingReadState = (previousAlerts, incomingAlerts, readIdsSet) => {
+  const prevById = new Map((previousAlerts || []).map((item) => [String(item.id), item]));
+
+  return (incomingAlerts || []).map((item) => {
+    const key = String(item.id);
+    const previous = prevById.get(key);
+    const shouldKeepRead = readIdsSet.has(key) || previous?.status === 'read';
+
+    return {
+      ...item,
+      status: shouldKeepRead ? 'read' : item.status,
+    };
+  });
+};
+
+// 
+// STAT CARD
+// 
+const ACCENT_COLORS = {
+  emerald: { icon: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', val: 'text-emerald-400' },
+  red:     { icon: 'text-red-400',     bg: 'bg-red-500/10',     border: 'border-red-500/20',     val: 'text-red-400'     },
+  amber:   { icon: 'text-amber-400',   bg: 'bg-amber-500/10',   border: 'border-amber-500/20',   val: 'text-amber-400'   },
+  blue:    { icon: 'text-blue-400',    bg: 'bg-blue-500/10',    border: 'border-blue-500/20',    val: 'text-blue-400'    },
+};
+
+const StatCard = ({ icon: Icon, label, value, subValue, accentColor = 'emerald' }) => {
+  const c = ACCENT_COLORS[accentColor] || ACCENT_COLORS.emerald;
   return (
-    <div className="min-h-screen w-full pt-24 sm:pt-28 pb-12 bg-gradient-to-br from-[#0f172a] via-slate-900 to-[#1a1f2e]">
-      <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 space-y-8">
-        {/* Header Section */}
-        <div className="space-y-6">
-          {/* Back Button */}
-          <button
-            onClick={() => navigate('/dashboard')}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-slate-400 hover:text-white transition-all group"
-          >
-            <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            <span className="text-sm font-medium">Back to Dashboard</span>
-          </button>
-
-          {/* Title */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-4xl font-bold text-white">Market News</h1>
-                <p className="text-sm text-slate-400 mt-1">High-impact financial news & updates</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Stats Grid */}
-          <div className="grid grid-cols-3 md:grid-cols-3 gap-3 lg:gap-4">
-            <div className="bg-gradient-to-br from-red-500/10 to-red-600/5 border border-red-500/30 rounded-xl p-4 hover:border-red-500/50 transition-all">
-              <div className="space-y-1">
-                <p className="text-xs font-semibold text-red-400 uppercase tracking-wide">High Impact</p>
-                <p className="text-3xl font-bold text-red-300">{stats.high}</p>
-                <p className="text-xs text-red-400/70">breaking news</p>
-              </div>
-            </div>
-            <div className="bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-500/30 rounded-xl p-4 hover:border-amber-500/50 transition-all">
-              <div className="space-y-1">
-                <p className="text-xs font-semibold text-amber-400 uppercase tracking-wide">Medium Impact</p>
-                <p className="text-3xl font-bold text-amber-300">{stats.medium}</p>
-                <p className="text-xs text-amber-400/70">important updates</p>
-              </div>
-            </div>
-            <div className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/30 rounded-xl p-4 hover:border-blue-500/50 transition-all">
-              <div className="space-y-1">
-                <p className="text-xs font-semibold text-blue-400 uppercase tracking-wide">Low Impact</p>
-                <p className="text-3xl font-bold text-blue-300">{stats.low}</p>
-                <p className="text-xs text-blue-400/70">minor updates</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Search & Filters */}
-        <div className="bg-gradient-to-br from-white/5 via-white/3 to-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
-          {/* Search Bar */}
-          <div className="mb-6">
-            <div className="relative">
-              <Search className="absolute left-4 top-3.5 w-5 h-5 text-slate-500" />
-              <input
-                type="text"
-                placeholder="Search news by title, content, or token..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 focus:bg-white/15 transition-all text-sm"
-              />
-            </div>
-          </div>
-
-          {/* Filter Controls */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {/* Priority Filter */}
-            <div>
-              <label className="block text-xs font-bold text-slate-300 mb-3 uppercase tracking-wide">Priority</label>
-              <select
-                value={priorityFilter}
-                onChange={(e) => setPriorityFilter(e.target.value)}
-                className="w-full px-4 py-2.5 bg-white/10 border border-white/20 rounded-lg text-white text-sm font-medium focus:outline-none focus:border-emerald-500/50 focus:bg-white/15 transition-all"
-              >
-                <option value="all">All Priorities</option>
-                <option value="HIGH">🔴 High Impact</option>
-                <option value="MEDIUM">🟠 Medium Impact</option>
-                <option value="LOW">🔵 Low Impact</option>
-              </select>
-            </div>
-
-            {/* Source Filter */}
-            <div>
-              <label className="block text-xs font-bold text-slate-300 mb-3 uppercase tracking-wide">Source</label>
-              <select
-                value={sourceFilter}
-                onChange={(e) => setSourceFilter(e.target.value)}
-                className="w-full px-4 py-2.5 bg-white/10 border border-white/20 rounded-lg text-white text-sm font-medium focus:outline-none focus:border-emerald-500/50 focus:bg-white/15 transition-all"
-              >
-                <option value="all">All Sources</option>
-                {sourceOptions.map(source => (
-                  <option key={source} value={source}>{source}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Sort */}
-            <div>
-              <label className="block text-xs font-bold text-slate-300 mb-3 uppercase tracking-wide">Sort By</label>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="w-full px-4 py-2.5 bg-white/10 border border-white/20 rounded-lg text-white text-sm font-medium focus:outline-none focus:border-emerald-500/50 focus:bg-white/15 transition-all"
-              >
-                <option value="newest">Newest First</option>
-                <option value="oldest">Oldest First</option>
-                <option value="priority">Priority (High → Low)</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Results Summary */}
-          <div className="mt-5 flex items-center justify-between">
-            <p className="text-xs text-slate-400">
-              Results: <span className="text-emerald-400 font-bold">{sorted.length}</span>
-              {(searchTerm || priorityFilter !== 'all' || sourceFilter !== 'all') && (
-                <span className="text-slate-500"> (filtered)</span>
-              )}
-            </p>
-          </div>
-        </div>
-
-        {/* News List */}
-        <div ref={feedRef} className="space-y-3">
-          {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-16">
-              <Loader2 className="w-8 h-8 text-emerald-400 animate-spin mb-3" />
-              <span className="text-slate-400">Loading news...</span>
-            </div>
-          ) : sorted.length === 0 ? (
-            <div className="text-center py-16 bg-gradient-to-br from-white/5 to-white/3 border border-white/10 rounded-2xl">
-              <Zap className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-              <p className="text-slate-300 mb-2 font-semibold">No news found</p>
-              <p className="text-xs text-slate-500">Try adjusting your filters or search terms</p>
-            </div>
-          ) : (
-            sorted.map(news => (
-              <div key={news.id} className="group">
-                <AlertCard
-                  alert={news}
-                  onViewDetails={() => {}}
-                />
-              </div>
-            ))
-          )}
+    <div className="flex items-center gap-4 p-4 rounded-2xl bg-[#080808] border border-[#1A1A1A] hover:border-[#252525] transition-all duration-300">
+      <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${c.bg} border ${c.border}`}>
+        <Icon className={`w-5 h-5 ${c.icon}`} />
+      </div>
+      <div className="min-w-0">
+        <p className="text-xs text-slate-500 uppercase tracking-wider mb-0.5">{label}</p>
+        <div className="flex items-baseline gap-2">
+          <span className={`text-2xl font-bold ${c.val}`}>{value}</span>
+          {subValue && <span className="text-xs text-slate-500">{subValue}</span>}
         </div>
       </div>
     </div>
   );
 };
 
+// 
+// EMPTY STATE
+// 
+const EmptyState = ({ hasFilters, onClear, loadError }) => (
+  <div className="flex flex-col items-center justify-center py-24 text-center px-8">
+    <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-5">
+      <Inbox className="w-8 h-8 text-slate-500" />
+    </div>
+    <h3 className="text-base font-bold text-white mb-2">No alerts found</h3>
+    <p className="text-sm text-slate-500 max-w-xs mb-6">
+      {loadError
+        ? loadError
+        : hasFilters
+        ? 'No alerts match your current filters. Try adjusting or clearing them.'
+        : 'Your alert feed is clear. New alerts will appear here in real-time.'}
+    </p>
+    {hasFilters && (
+      <button
+        onClick={onClear}
+        className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 transition-all duration-200"
+      >
+        Clear Filters
+      </button>
+    )}
+  </div>
+);
+
+EmptyState.propTypes = {
+  hasFilters: PropTypes.bool,
+  onClear: PropTypes.func,
+  loadError: PropTypes.string,
+};
+
+// 
+// LOADING SKELETON
+// 
+const AlertSkeleton = () => (
+  <div className="flex gap-4 p-4 rounded-xl bg-[#0D0D0D] border border-[#1F1F1F] animate-pulse">
+    <div className="w-10 h-10 rounded-lg bg-white/5 flex-shrink-0" />
+    <div className="flex-1 space-y-2.5">
+      <div className="flex gap-2">
+        <div className="h-4 w-14 rounded-md bg-white/5" />
+        <div className="h-4 w-20 rounded-md bg-white/5" />
+        <div className="ml-auto h-4 w-20 rounded-md bg-white/5" />
+      </div>
+      <div className="h-4 w-3/4 rounded-md bg-white/5" />
+      <div className="h-3 w-full rounded-md bg-white/5" />
+      <div className="h-3 w-2/3 rounded-md bg-white/5" />
+    </div>
+  </div>
+);
+
+// 
+// MAIN DASHBOARD
+// 
+export const News = () => {
+  const queryClient = useQueryClient();
+  const { on } = useSocket({ autoConnect: true });
+  const { user } = useAuth();
+  const toast = useToast();
+  const navigate = useNavigate();
+  const [allAlerts, setAllAlerts]         = useState([]);
+  const [filters, setFilters]             = useState(DEFAULT_FILTERS);
+  const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS);
+  const [sortBy, setSortBy]               = useState('newest');
+  const [selectedAlert, setSelectedAlert] = useState(null);
+  const [isLoading, setIsLoading]         = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [visibleCount, setVisibleCount]   = useState(8);
+  const [filterOpen, setFilterOpen]       = useState(false);
+  const [isRefreshing, setIsRefreshing]   = useState(false);
+  const [showSortMenu, setShowSortMenu]   = useState(false);
+  const [recentAlertIds, setRecentAlertIds] = useState(new Set());
+  const [feedbackMap, setFeedbackMap] = useState({});
+  const [sourceOptions, setSourceOptions] = useState([]);
+  const [loadError, setLoadError] = useState('');
+  // New state for dashboard highlights
+  const [highImpactNews, setHighImpactNews] = useState([]);
+  const [todayEvents, setTodayEvents] = useState([]);
+  const [isLoadingHighlights, setIsLoadingHighlights] = useState(true);
+  const sortMenuRef = useRef(null);
+  const feedRef     = useRef(null);
+  const toastRef = useRef(toast);
+  const hasShownLoadErrorRef = useRef(false);
+  const readAlertIdsRef = useRef(new Set());
+
+  useEffect(() => {
+    toastRef.current = toast;
+  }, [toast]);
+
+  const loadDashboardData = useCallback(async (selectedSources = [], eventType = 'all') => {
+    setIsLoading(true);
+    setLoadError('');
+    try {
+      const sourceList = Array.isArray(selectedSources)
+        ? selectedSources.filter(Boolean)
+        : [];
+      const sourceApiParams = Array.from(
+        new Set(sourceList.map(toApiSourceParam).filter(Boolean))
+      );
+
+      // ALWAYS load available sources first - independently from alerts
+      let apiSources = [];
+      try {
+        apiSources = await eventsService.getAvailableSources({ limit: 200 });
+      } catch (error) {
+        console.warn('Could not load available sources:', error.message);
+        // Continue even if sources fail - use fallback
+      }
+
+      // Determine which API endpoint to call for alerts
+      let feedResult = [];
+      let feedError = null;
+
+      try {
+        if (sourceApiParams.length > 0) {
+          // If sources selected: fetch from those sources with optional type filter
+          const type = eventType === 'PRICE_ALERT' ? 'price' : (eventType === 'NEWS' ? 'news' : undefined);
+          const results = await Promise.all(
+            sourceApiParams.map((source) =>
+              eventsService.getEvents({ skip: 0, limit: 100, source, type })
+            )
+          );
+          feedResult = results.flat().filter(Boolean);
+        } else if (eventType === 'NEWS') {
+          // If only news filter selected (no sources): fetch all news
+          feedResult = await eventsService.getEventsByType('news', { skip: 0, limit: 100 });
+          if (!Array.isArray(feedResult)) feedResult = [];
+        } else if (eventType === 'PRICE_ALERT') {
+          // If only price filter selected (no sources): fetch all price events
+          feedResult = await eventsService.getEventsByType('price', { skip: 0, limit: 100 });
+          if (!Array.isArray(feedResult)) feedResult = [];
+        } else {
+          // If no filter selected: fetch alerts
+          feedResult = await alertsService.getAlerts({ skip: 0, limit: 50 });
+          if (!Array.isArray(feedResult)) feedResult = [];
+        }
+      } catch (error) {
+        feedError = error;
+        console.warn('Could not load alerts:', error.message);
+        // Don't throw - we want to show empty state but keep sources visible
+        feedResult = [];
+      }
+
+      // Normalize based on event type
+      const normalizedAlerts = (sourceApiParams.length > 0 || (eventType !== 'all' && !sourceApiParams.length))
+        ? feedResult.flat().filter(Boolean).map(normalizeNewsEvent)
+        : feedResult.map(normalizeAlert);
+
+      setAllAlerts((prev) => {
+        const merged = mergeAlertsPreservingReadState(prev, normalizedAlerts, readAlertIdsRef.current);
+
+        // Extract sources from loaded alerts
+        const sourcesFromAlerts = merged
+          .map((item) => normalizeSourceName(item.source))
+          .filter(Boolean);
+
+        // ALWAYS include API sources and fallback options to keep data sources visible
+        const mergedSources = Array.from(
+          new Set(
+            [
+              ...(apiSources || []),
+              ...sourcesFromAlerts,
+              ...FALLBACK_SOURCE_OPTIONS,
+            ].map(normalizeSourceName).filter(Boolean)
+          )
+        ).sort((a, b) => a.localeCompare(b));
+
+        setSourceOptions(mergedSources);
+        return merged;
+      });
+
+      // Handle errors after state updates so source options are preserved
+      if (feedError && normalizedAlerts.length === 0) {
+        const errorMsg = String(feedError?.message || '').toLowerCase().includes('resource not found')
+          ? 'No alerts found for this filter. Try adjusting your filters.'
+          : (feedError?.message || 'Failed to load alerts');
+        setLoadError(errorMsg);
+      }
+
+      hasShownLoadErrorRef.current = false;
+    } catch (error) {
+      const isCorsIssue = String(error?.message || '').toLowerCase().includes('cors');
+      const message = isCorsIssue
+        ? 'Cannot load alerts: backend CORS is blocking this frontend origin.'
+        : (error?.message || 'Failed to load dashboard alerts');
+
+      setLoadError(message);
+      if (!hasShownLoadErrorRef.current) {
+        toastRef.current.error(message);
+        hasShownLoadErrorRef.current = true;
+      }
+      // Clear alerts on error but PRESERVE source options
+      setAllAlerts([]);
+      // DON'T clear sources - they should remain visible
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Load high-impact news for dashboard highlights
+  const loadDashboardHighlights = useCallback(async () => {
+    try {
+      setIsLoadingHighlights(true);
+      
+      // Load high-impact news
+      let news = [];
+      try {
+        const newsData = await eventsService.getEventsByType('news', { skip: 0, limit: 50 });
+        if (Array.isArray(newsData)) {
+          news = newsData
+            .map(normalizeNewsEvent)
+            .filter(n => n.priority === 'HIGH')
+            .slice(0, 3); // Show only top 3 high-impact news
+        }
+      } catch (error) {
+        console.warn('Could not load high-impact news:', error.message);
+      }
+      
+      setHighImpactNews(news);
+      
+      // Mock economic events for today
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      
+      const mockEvents = [
+        {
+          id: 'event-1',
+          title: 'US Federal Funds Rate Decision',
+          country: 'USA',
+          impact: 'HIGH',
+          time: '18:00',
+          category: 'Rates',
+        },
+        {
+          id: 'event-2',
+          title: 'Eurozone Inflation Rate',
+          country: 'Eurozone',
+          impact: 'HIGH',
+          time: '10:00',
+          category: 'Inflation',
+        },
+        {
+          id: 'event-3',
+          title: 'UK Unemployment Rate',
+          country: 'United Kingdom',
+          impact: 'MEDIUM',
+          time: '09:30',
+          category: 'Employment',
+        },
+      ];
+      
+      setTodayEvents(mockEvents);
+    } catch (error) {
+      console.error('Error loading dashboard highlights:', error);
+    } finally {
+      setIsLoadingHighlights(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadDashboardHighlights();
+  }, [loadDashboardHighlights]);
+
+  const selectedSourcesKey = (appliedFilters.sources || []).join('|');
+  const eventTypeKey = appliedFilters.eventType || 'all';
+
+  useEffect(() => {
+    loadDashboardData(appliedFilters.sources || [], appliedFilters.eventType || 'all');
+  }, [loadDashboardData, selectedSourcesKey, eventTypeKey]);
+
+  useEffect(() => {
+    const handleIncomingAlert = (incoming) => {
+      const normalized = normalizeAlert(incoming || {});
+      if (!normalized?.id) return;
+
+      setSourceOptions((prev) => {
+        const nextSource = normalizeSourceName(normalized.source);
+        if (!nextSource || prev.includes(nextSource)) return prev;
+        return [...prev, nextSource].sort((a, b) => a.localeCompare(b));
+      });
+
+      setAllAlerts((prev) => {
+        if (prev.some((item) => item.id === normalized.id)) return prev;
+        return [normalized, ...prev];
+      });
+
+      setRecentAlertIds((prev) => {
+        const next = new Set(prev);
+        next.add(normalized.id);
+        return next;
+      });
+
+      setTimeout(() => {
+        setRecentAlertIds((prev) => {
+          const next = new Set(prev);
+          next.delete(normalized.id);
+          return next;
+        });
+      }, 1800);
+
+      if (normalized.priority === 'HIGH' && typeof window !== 'undefined' && 'Notification' in window) {
+        const permission = Notification.permission;
+        if (permission === 'granted') {
+          new Notification(normalized.title || 'New high priority alert', {
+            body: normalized.content || normalized.source || 'Tap to view details',
+          });
+        } else if (permission === 'default' && !localStorage.getItem('alerts_notification_prompted')) {
+          localStorage.setItem('alerts_notification_prompted', '1');
+          Notification.requestPermission();
+        }
+      }
+
+      queryClient.invalidateQueries({ queryKey: ['alerts'] });
+    };
+
+    const unsubNewAlert = on(WS_EVENTS.NEW_ALERT, handleIncomingAlert);
+    const unsubAlert = on('alert', handleIncomingAlert);
+
+    return () => {
+      if (typeof unsubNewAlert === 'function') unsubNewAlert();
+      if (typeof unsubAlert === 'function') unsubAlert();
+    };
+  }, [on, queryClient]);
+
+  // Close sort menu on outside click
+  useEffect(() => {
+    const handler = (e) => {
+      if (sortMenuRef.current && !sortMenuRef.current.contains(e.target)) {
+        setShowSortMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  // Apply filters + sort (memo)
+  const filtered = useMemo(() => {
+    let result = allAlerts;
+
+    if (appliedFilters.priority.length < 3) {
+      result = result.filter((a) => appliedFilters.priority.includes(a.priority));
+    }
+    if (appliedFilters.eventType && appliedFilters.eventType !== 'all') {
+      if (appliedFilters.eventType === 'PRICE_ALERT') {
+        result = result.filter(isPriceRelatedAlert);
+      } else if (appliedFilters.eventType === 'NEWS') {
+        result = result.filter((a) => !isPriceRelatedAlert(a));
+      }
+    }
+    if (appliedFilters.entity) {
+      const term = appliedFilters.entity.toLowerCase();
+      result = result.filter(
+        (a) =>
+          a.entity?.toLowerCase().includes(term) ||
+          a.title?.toLowerCase().includes(term) ||
+          a.source?.toLowerCase().includes(term)
+      );
+    }
+    if (appliedFilters.dateFrom) {
+      const from = new Date(appliedFilters.dateFrom);
+      result = result.filter((a) => new Date(a.timestamp) >= from);
+    }
+    if (appliedFilters.dateTo) {
+      const to = new Date(appliedFilters.dateTo + 'T23:59:59');
+      result = result.filter((a) => new Date(a.timestamp) <= to);
+    }
+    if (appliedFilters.sources?.length > 0) {
+      const selectedSources = appliedFilters.sources.map((source) => String(source).toLowerCase());
+      result = result.filter((a) => selectedSources.includes(normalizeSourceName(a.source).toLowerCase()));
+    }
+    if (appliedFilters.contentFilter === 'price') {
+      result = result.filter(isPriceRelatedAlert);
+    }
+
+    const sorted = [...result];
+    if (sortBy === 'oldest') {
+      sorted.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    } else if (sortBy === 'priority') {
+      // Sort by priority first, then by recency (newest first)
+      sorted.sort((a, b) => {
+        const priorityDiff = (PRIORITY_ORDER[a.priority] ?? 3) - (PRIORITY_ORDER[b.priority] ?? 3);
+        if (priorityDiff !== 0) return priorityDiff;
+        return new Date(b.timestamp) - new Date(a.timestamp);
+      });
+    } else if (sortBy === 'unread') {
+      sorted.sort((a, b) => {
+        if (a.status === 'new' && b.status !== 'new') return -1;
+        if (a.status !== 'new' && b.status === 'new') return 1;
+        // Then by priority, then by recency
+        const priorityDiff = (PRIORITY_ORDER[a.priority] ?? 3) - (PRIORITY_ORDER[b.priority] ?? 3);
+        if (priorityDiff !== 0) return priorityDiff;
+        return new Date(b.timestamp) - new Date(a.timestamp);
+      });
+    } else {
+      // Default 'newest': sort by priority first (HIGH first), then by recency
+      sorted.sort((a, b) => {
+        const priorityDiff = (PRIORITY_ORDER[a.priority] ?? 3) - (PRIORITY_ORDER[b.priority] ?? 3);
+        if (priorityDiff !== 0) return priorityDiff;
+        return new Date(b.timestamp) - new Date(a.timestamp);
+      });
+    }
+    return sorted;
+  }, [allAlerts, appliedFilters, sortBy]);
+
+  // Infinite scroll
+  useEffect(() => {
+    const el = feedRef.current;
+    if (!el) return;
+    const handleScroll = () => {
+      if (el.scrollTop + el.clientHeight >= el.scrollHeight - 120 && !isLoadingMore) {
+        if (visibleCount < filtered.length) {
+          setIsLoadingMore(true);
+          setTimeout(() => {
+            setVisibleCount((prev) => Math.min(prev + 4, filtered.length));
+            setIsLoadingMore(false);
+          }, 600);
+        }
+      }
+    };
+    el.addEventListener('scroll', handleScroll);
+    return () => el.removeEventListener('scroll', handleScroll);
+  }, [filtered.length, isLoadingMore, visibleCount]);
+
+  const visibleAlerts = filtered.slice(0, visibleCount);
+  const unreadCount = allAlerts.filter((a) => a.status === 'new').length;
+  const highPriorityCount = allAlerts.filter((a) => a.priority === 'HIGH').length;
+  const highUnread = allAlerts.filter((a) => a.priority === 'HIGH' && a.status === 'new').length;
+
+  const handleMarkAsRead = useCallback(async (id) => {
+    readAlertIdsRef.current.add(String(id));
+    setAllAlerts((prev) => prev.map((a) => (a.id === id ? { ...a, status: 'read' } : a)));
+    setSelectedAlert((prev) => (prev?.id === id ? { ...prev, status: 'read' } : prev));
+    if (isEventItemId(id)) return;
+    try {
+      await alertsService.markAsRead(id);
+    } catch (error) {
+      toast.error(error?.message || 'Failed to mark alert as read');
+    }
+  }, [toast]);
+
+  const handleOpenAlert = useCallback((alert) => {
+    // Auto-mark as read on open (Gmail-style)
+    readAlertIdsRef.current.add(String(alert.id));
+    const readAlert = { ...alert, status: 'read' };
+    setSelectedAlert(readAlert);
+    setAllAlerts((prev) => prev.map((a) => (a.id === alert.id ? { ...a, status: 'read' } : a)));
+    if (isEventItemId(alert.id)) return;
+    alertsService.markAsRead(alert.id).catch(() => {
+      // Keep UI optimistic; errors are non-blocking for detail view.
+    });
+  }, []);
+
+  const handleDismiss = useCallback(async (id) => {
+    const previous = allAlerts;
+    setAllAlerts((prev) => prev.filter((a) => a.id !== id));
+    setSelectedAlert(null);
+
+    if (isEventItemId(id)) return;
+
+    try {
+      await alertsService.dismissAlert(id);
+    } catch (error) {
+      setAllAlerts(previous);
+      toast.error(error?.message || 'Failed to dismiss alert');
+    }
+  }, [allAlerts, toast]);
+
+  const handleFeedback = useCallback(async (alertId, sentiment, comment = '') => {
+    if (!user?.id) return;
+    if (feedbackMap[alertId]?.submitted) return;
+
+    try {
+      await feedbackService.submitFeedback({
+        alertId,
+        userId: user.id,
+        sentiment,
+        comment,
+      });
+      setFeedbackMap((prev) => ({ ...prev, [alertId]: { submitted: true } }));
+      toast.success('Feedback submitted');
+    } catch (error) {
+      toast.error(error?.message || 'Feedback submission failed');
+    }
+  }, [feedbackMap, toast, user?.id]);
+
+  const handleApplyFilters = () => {
+    setAppliedFilters({ ...filters });
+    setVisibleCount(8);
+    setFilterOpen(false);
+  };
+
+  const handleClearFilters = () => {
+    setFilters(DEFAULT_FILTERS);
+    setAppliedFilters(DEFAULT_FILTERS);
+    setVisibleCount(8);
+  };
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await loadDashboardData(appliedFilters.sources || [], appliedFilters.eventType || 'all');
+    setIsRefreshing(false);
+  };
+
+  const handleApplyPriceFilter = useCallback(() => {
+    const nextFilters = { ...filters, contentFilter: 'price' };
+    setFilters(nextFilters);
+    setAppliedFilters(nextFilters);
+    setVisibleCount(8);
+  }, [filters]);
+
+  const hasActiveFilters =
+    appliedFilters.priority.length < 3 ||
+    !!appliedFilters.entity ||
+    !!appliedFilters.dateFrom ||
+    !!appliedFilters.dateTo ||
+    (appliedFilters.sources?.length ?? 0) > 0 ||
+    appliedFilters.contentFilter === 'price';
+
+  const currentSortLabel = SORT_OPTIONS.find((s) => s.value === sortBy)?.label || 'Newest First';
+
+  return (
+    <div className="min-h-screen w-full pt-24 sm:pt-28 pb-12 px-3 sm:px-4 lg:px-6" style={{ position: 'relative', zIndex: 1 }}>
+      <div className="max-w-[1400px] mx-auto space-y-4 sm:space-y-6">
+
+        {/* PAGE HEADER */}
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">News Alerts</h1>
+            <p className="text-xs sm:text-sm text-slate-500 mt-1">
+              Alerts feed with advanced filters
+            </p>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap justify-start sm:justify-end">
+            <Tooltip content="Reload latest alerts" placement="bottom">
+              <button
+                onClick={handleRefresh}
+                className={`flex items-center gap-1 sm:gap-2 px-2.5 sm:px-4 py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium bg-[#0D0D0D] border border-[#1F1F1F] text-slate-400 hover:border-emerald-500/40 hover:text-emerald-400 transition-all duration-200 ${isRefreshing ? 'text-emerald-400 border-emerald-500/40' : ''}`}
+              >
+                <RefreshCw className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                <span className="hidden sm:inline">Refresh</span>
+              </button>
+            </Tooltip>
+            <Tooltip content="Export visible alerts to CSV" placement="bottom">
+              <button className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-[#0D0D0D] border border-[#1F1F1F] text-slate-400 hover:border-white/20 hover:text-white transition-all duration-200">
+                <Download className="w-4 h-4" />
+                Export
+              </button>
+            </Tooltip>
+            {/* Mobile filter toggle */}
+            <Tooltip content="Filter alerts" placement="bottom">
+              <button
+                onClick={() => setFilterOpen((v) => !v)}
+                className={`lg:hidden flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-medium border transition-all duration-200 ${filterOpen ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-[#0D0D0D] border-[#1F1F1F] text-slate-400'}`}
+              >
+                <SlidersHorizontal className="w-3.5 h-3.5" />
+                {hasActiveFilters && (
+                  <span className="w-3 h-3 rounded-full bg-emerald-500 text-black text-[8px] font-bold flex items-center justify-center">!</span>
+                )}
+              </button>
+            </Tooltip>
+          </div>
+        </div>
+
+        {/* STATS ROW */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
+          <StatCard icon={Bell}          label="Total Alerts"    value={isLoading ? '...' : allAlerts.length}    subValue="all time"           accentColor="blue"    />
+          <StatCard icon={BellRing}      label="Unread"          value={isLoading ? '...' : unreadCount}         subValue="requires action"    accentColor="amber"   />
+          <StatCard icon={AlertTriangle} label="High Priority"   value={isLoading ? '...' : highPriorityCount}   subValue={`${highUnread} unread`}  accentColor="red"   />
+          <StatCard icon={Activity}      label="Sources Active"  value={isLoading ? '...' : sourceOptions.length} subValue="live feeds"          accentColor="emerald" />
+        </div>
+
+        {/* TODAY'S HIGHLIGHTS - High Impact News & Economic Events */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+          {/* High Impact News */}
+          <div className="bg-gradient-to-br from-emerald-500/5 to-emerald-600/5 border border-emerald-500/20 rounded-xl p-4 sm:p-5 hover:border-emerald-500/40 transition-all">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-emerald-400" />
+                High-Impact News
+              </h2>
+              <button
+                onClick={() => navigate('/news')}
+                className="text-xs px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 transition-all"
+              >
+                View All
+              </button>
+            </div>
+            {isLoadingHighlights ? (
+              <div className="space-y-2">
+                {Array.from({ length: 2 }).map((_, i) => (
+                  <div key={i} className="h-16 bg-white/5 rounded-lg animate-pulse" />
+                ))}
+              </div>
+            ) : highImpactNews.length === 0 ? (
+              <p className="text-sm text-slate-500 text-center py-6">No high-impact news today</p>
+            ) : (
+              <div className="space-y-2">
+                {highImpactNews.map(news => (
+                  <div
+                    key={news.id}
+                    className="bg-white/5 border border-white/10 rounded-lg p-3 hover:bg-white/10 hover:border-emerald-500/20 transition-all cursor-pointer group"
+                  >
+                    <div className="flex items-start gap-2">
+                      <span className="inline-block px-2 py-1 rounded text-xs font-semibold bg-red-500/20 text-red-300 flex-shrink-0 mt-0.5">
+                        HIGH
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs sm:text-sm font-semibold text-white group-hover:text-emerald-400 transition-colors line-clamp-1">
+                          {news.title}
+                        </p>
+                        <p className="text-xs text-slate-500 mt-0.5">
+                          {news.source} | {new Date(news.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Today's Economic Events */}
+          <div className="bg-gradient-to-br from-amber-500/5 to-amber-600/5 border border-amber-500/20 rounded-xl p-4 sm:p-5 hover:border-amber-500/40 transition-all">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-amber-400" />
+                Economic Events Today
+              </h2>
+              <button
+                onClick={() => navigate('/economic-events')}
+                className="text-xs px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 transition-all"
+              >
+                View All
+              </button>
+            </div>
+            {isLoadingHighlights ? (
+              <div className="space-y-2">
+                {Array.from({ length: 2 }).map((_, i) => (
+                  <div key={i} className="h-16 bg-white/5 rounded-lg animate-pulse" />
+                ))}
+              </div>
+            ) : todayEvents.length === 0 ? (
+              <p className="text-sm text-slate-500 text-center py-6">No economic events today</p>
+            ) : (
+              <div className="space-y-2">
+                {todayEvents.slice(0, 3).map(event => (
+                  <div
+                    key={event.id}
+                    className="bg-white/5 border border-white/10 rounded-lg p-3 hover:bg-white/10 hover:border-amber-500/20 transition-all cursor-pointer group"
+                  >
+                    <div className="flex items-start gap-2">
+                      <span className={`inline-block px-2 py-1 rounded text-xs font-semibold flex-shrink-0 mt-0.5 ${
+                        event.impact === 'HIGH' ? 'bg-red-500/20 text-red-300' : 'bg-amber-500/20 text-amber-300'
+                      }`}>
+                        {event.impact}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs sm:text-sm font-semibold text-white group-hover:text-amber-400 transition-colors line-clamp-1">
+                          {event.title}
+                        </p>
+                        <p className="text-xs text-slate-500 mt-0.5">
+                          {event.country} | {event.time} | {event.category}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* MAIN CONTENT: SIDEBAR + FEED */}
+        <div className="flex gap-2 sm:gap-4 items-start">
+
+          {/* FILTER SIDEBAR  Desktop */}
+          <div className="hidden lg:block w-64 xl:w-72 flex-shrink-0 sticky top-28">
+            <FilterSidebar
+              filters={filters}
+              onFiltersChange={setFilters}
+              onApply={handleApplyFilters}
+              onClear={handleClearFilters}
+              totalCount={allAlerts.length}
+              filteredCount={filtered.length}
+              sourceOptions={sourceOptions}
+            />
+          </div>
+
+          {/* FILTER SIDEBAR  Mobile overlay */}
+          {filterOpen && (
+            <div className="lg:hidden fixed inset-0 z-40" onClick={() => setFilterOpen(false)}>
+              <div className="absolute inset-0 bg-black/70" />
+              <div className="absolute bottom-0 left-0 right-0 max-h-[85vh] sm:max-h-[82vh] overflow-y-auto rounded-t-2xl" onClick={(e) => e.stopPropagation()}>
+                <FilterSidebar
+                  filters={filters}
+                  onFiltersChange={setFilters}
+                  onApply={handleApplyFilters}
+                  onClear={handleClearFilters}
+                  totalCount={allAlerts.length}
+                  filteredCount={filtered.length}
+                  sourceOptions={sourceOptions}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* ALERT FEED */}
+          <div className="flex-1 min-w-0 flex flex-col gap-2 sm:gap-3">
+
+            {/* Feed toolbar */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 flex-wrap px-1">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="text-xs sm:text-sm font-semibold text-white truncate">
+                  {isLoading ? '' : filtered.length} alerts
+                </span>
+                {hasActiveFilters && (
+                  <button
+                    onClick={handleClearFilters}
+                    className="flex items-center gap-1 text-xs text-emerald-400 hover:text-emerald-300 transition-colors"
+                  >
+                    <X className="w-3 h-3" />
+                    Clear filters
+                  </button>
+                )}
+              </div>
+
+              {/* Sort dropdown */}
+              <div ref={sortMenuRef} className="relative w-full sm:w-auto">
+                <button
+                  onClick={() => setShowSortMenu((v) => !v)}
+                  className="w-full sm:w-auto flex items-center justify-between sm:justify-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg sm:rounded-xl text-xs font-medium bg-[#0D0D0D] border border-[#1F1F1F] text-slate-400 hover:border-white/20 hover:text-white transition-all duration-200"
+                >
+                  <span className="truncate">{currentSortLabel}</span>
+                  <ChevronDown className="w-3 h-3 flex-shrink-0" />
+                </button>
+                {showSortMenu && (
+                  <div className="absolute right-0 sm:right-0 top-full mt-2 z-30 w-full sm:w-48 rounded-lg sm:rounded-xl overflow-hidden bg-[#0D0D0D] border border-[#1F1F1F] shadow-2xl">
+                    {SORT_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.value}
+                        onClick={() => { setSortBy(opt.value); setShowSortMenu(false); }}
+                        className={`w-full text-left px-4 py-2.5 text-sm transition-colors hover:bg-white/5 ${sortBy === opt.value ? 'text-emerald-400 bg-emerald-500/10' : 'text-slate-400'}`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Active filter chips */}
+            {hasActiveFilters && (
+              <div className="flex flex-wrap gap-1.5 sm:gap-2 px-1 text-xs sm:text-sm">
+                {appliedFilters.priority.length < 3 && (
+                  <div className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    Priority: {appliedFilters.priority.join(', ')}
+                    <button onClick={() => {
+                      const nf = { ...appliedFilters, priority: ['HIGH', 'MEDIUM', 'LOW'] };
+                      setAppliedFilters(nf); setFilters(nf);
+                    }}><X className="w-3 h-3" /></button>
+                  </div>
+                )}
+                {appliedFilters.entity && (
+                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                    Token: {appliedFilters.entity}
+                    <button onClick={() => {
+                      const nf = { ...appliedFilters, entity: '' };
+                      setAppliedFilters(nf); setFilters(nf);
+                    }}><X className="w-3 h-3" /></button>
+                  </div>
+                )}
+                {(appliedFilters.dateFrom || appliedFilters.dateTo) && (
+                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                    Date range active
+                    <button onClick={() => {
+                      const nf = { ...appliedFilters, dateFrom: '', dateTo: '' };
+                      setAppliedFilters(nf); setFilters(nf);
+                    }}><X className="w-3 h-3" /></button>
+                  </div>
+                )}
+                {(appliedFilters.sources?.length ?? 0) > 0 && (
+                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    Sources: {appliedFilters.sources.join(', ')}
+                    <button onClick={() => {
+                      const nf = { ...appliedFilters, sources: [] };
+                      setAppliedFilters(nf); setFilters(nf);
+                    }}><X className="w-3 h-3" /></button>
+                  </div>
+                )}
+                {appliedFilters.contentFilter === 'price' && (
+                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                    Filter: Price
+                    <button onClick={() => {
+                      const nf = { ...appliedFilters, contentFilter: 'all' };
+                      setAppliedFilters(nf); setFilters(nf);
+                    }}><X className="w-3 h-3" /></button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Feed list */}
+            <div
+              ref={feedRef}
+              className="space-y-1.5 sm:space-y-2 overflow-y-auto pr-1"
+              style={{ maxHeight: 'calc(100vh - 280px)', minHeight: '300px' }}
+            >
+              {isLoading ? (
+                Array.from({ length: 6 }).map((_, i) => <AlertSkeleton key={i} />)
+              ) : visibleAlerts.length === 0 ? (
+                <EmptyState hasFilters={hasActiveFilters} onClear={handleClearFilters} loadError={loadError} />
+              ) : (
+                <>
+                  {visibleAlerts.map((alert) => (
+                    <div
+                      key={alert.id}
+                      className={`transition-all duration-500 ${recentAlertIds.has(alert.id) ? 'opacity-100 scale-[1.01]' : 'opacity-100 scale-100'}`}
+                    >
+                      <AlertCard
+                        alert={alert}
+                        onViewDetails={handleOpenAlert}
+                        onMarkAsRead={handleMarkAsRead}
+                      />
+                    </div>
+                  ))}
+
+                  {isLoadingMore && (
+                    <div className="flex items-center justify-center py-6">
+                      <Loader2 className="w-5 h-5 text-emerald-400 animate-spin" />
+                      <span className="ml-2 text-sm text-slate-500">Loading more alerts</span>
+                    </div>
+                  )}
+
+                  {!isLoadingMore && visibleCount >= filtered.length && filtered.length > 0 && (
+                    <div className="text-center py-8">
+                      <p className="text-xs text-slate-600">All {filtered.length} alerts loaded</p>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ALERT DETAIL MODAL */}
+      <AlertDetailModal
+        alert={selectedAlert}
+        isOpen={!!selectedAlert}
+        onClose={() => setSelectedAlert(null)}
+        onMarkAsRead={handleMarkAsRead}
+        onDismiss={handleDismiss}
+        onApplyPriceFilter={handleApplyPriceFilter}
+        isPriceRelated={selectedAlert ? isPriceRelatedAlert(selectedAlert) : false}
+        onFeedback={handleFeedback}
+        feedbackState={selectedAlert ? feedbackMap[selectedAlert.id] : null}
+      />
+    </div>
+  );
+};
+
 export default News;
+

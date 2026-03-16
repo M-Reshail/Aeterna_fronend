@@ -8,6 +8,8 @@ import {
   BellRing,
   AlertTriangle,
   Activity,
+  TrendingUp,
+  Calendar,
   RefreshCw,
   Download,
   SlidersHorizontal,
@@ -293,6 +295,9 @@ export const Dashboard = () => {
   const [feedbackMap, setFeedbackMap] = useState({});
   const [sourceOptions, setSourceOptions] = useState([]);
   const [loadError, setLoadError] = useState('');
+  const [highImpactNews, setHighImpactNews] = useState([]);
+  const [todayEvents, setTodayEvents] = useState([]);
+  const [isLoadingHighlights, setIsLoadingHighlights] = useState(true);
   const sortMenuRef = useRef(null);
   const feedRef     = useRef(null);
   const toastRef = useRef(toast);
@@ -416,9 +421,67 @@ export const Dashboard = () => {
   const selectedSourcesKey = (appliedFilters.sources || []).join('|');
   const eventTypeKey = appliedFilters.eventType || 'all';
 
+  const loadDashboardHighlights = useCallback(async () => {
+    try {
+      setIsLoadingHighlights(true);
+
+      let news = [];
+      try {
+        const newsData = await eventsService.getEventsByType('news', { skip: 0, limit: 50 });
+        if (Array.isArray(newsData)) {
+          news = newsData
+            .map(normalizeNewsEvent)
+            .filter((n) => n.priority === 'HIGH')
+            .slice(0, 3);
+        }
+      } catch (error) {
+        console.warn('Could not load high-impact news:', error.message);
+      }
+
+      setHighImpactNews(news);
+
+      const mockEvents = [
+        {
+          id: 'event-1',
+          title: 'US Federal Funds Rate Decision',
+          country: 'USA',
+          impact: 'HIGH',
+          time: '18:00',
+          category: 'Rates',
+        },
+        {
+          id: 'event-2',
+          title: 'Eurozone Inflation Rate',
+          country: 'Eurozone',
+          impact: 'HIGH',
+          time: '10:00',
+          category: 'Inflation',
+        },
+        {
+          id: 'event-3',
+          title: 'UK Unemployment Rate',
+          country: 'United Kingdom',
+          impact: 'MEDIUM',
+          time: '09:30',
+          category: 'Employment',
+        },
+      ];
+
+      setTodayEvents(mockEvents);
+    } catch (error) {
+      console.error('Error loading dashboard highlights:', error);
+    } finally {
+      setIsLoadingHighlights(false);
+    }
+  }, []);
+
   useEffect(() => {
     loadDashboardData(appliedFilters.sources || [], appliedFilters.eventType || 'all');
   }, [loadDashboardData, selectedSourcesKey, eventTypeKey]);
+
+  useEffect(() => {
+    loadDashboardHighlights();
+  }, [loadDashboardHighlights]);
 
   useEffect(() => {
     const handleIncomingAlert = (incoming) => {
@@ -721,192 +784,114 @@ export const Dashboard = () => {
           <StatCard icon={Activity}      label="Sources Active"  value={isLoading ? '…' : sourceOptions.length} subValue="live feeds"          accentColor="emerald" />
         </div>
 
-        {/* MAIN CONTENT: SIDEBAR + FEED */}
-        <div className="flex gap-2 sm:gap-4 items-start">
-
-          {/* FILTER SIDEBAR — Desktop */}
-          <div className="hidden lg:block w-64 xl:w-72 flex-shrink-0 sticky top-28">
-            <FilterSidebar
-              filters={filters}
-              onFiltersChange={setFilters}
-              onApply={handleApplyFilters}
-              onClear={handleClearFilters}
-              totalCount={allAlerts.length}
-              filteredCount={filtered.length}
-              sourceOptions={sourceOptions}
-            />
-          </div>
-
-          {/* FILTER SIDEBAR — Mobile overlay */}
-          {filterOpen && (
-            <div className="lg:hidden fixed inset-0 z-40" onClick={() => setFilterOpen(false)}>
-              <div className="absolute inset-0 bg-black/70" />
-              <div className="absolute bottom-0 left-0 right-0 max-h-[85vh] sm:max-h-[82vh] overflow-y-auto rounded-t-2xl" onClick={(e) => e.stopPropagation()}>
-                <FilterSidebar
-                  filters={filters}
-                  onFiltersChange={setFilters}
-                  onApply={handleApplyFilters}
-                  onClear={handleClearFilters}
-                  totalCount={allAlerts.length}
-                  filteredCount={filtered.length}
-                  sourceOptions={sourceOptions}
-                />
-              </div>
+        {/* TODAY'S HIGHLIGHTS */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+          <div className="bg-gradient-to-br from-emerald-500/5 to-emerald-600/5 border border-emerald-500/20 rounded-xl p-4 sm:p-5 hover:border-emerald-500/40 transition-all">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-emerald-400" />
+                High-Impact News
+              </h2>
+              <button
+                onClick={() => navigate('/news')}
+                className="text-xs px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 transition-all"
+              >
+                View All Alerts
+              </button>
             </div>
-          )}
-
-          {/* ALERT FEED */}
-          <div className="flex-1 min-w-0 flex flex-col gap-2 sm:gap-3">
-
-            {/* Feed toolbar */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 flex-wrap px-1">
-              <div className="flex items-center gap-2 min-w-0">
-                <span className="text-xs sm:text-sm font-semibold text-white truncate">
-                  {isLoading ? '…' : filtered.length} alerts
-                </span>
-                {hasActiveFilters && (
-                  <button
-                    onClick={handleClearFilters}
-                    className="flex items-center gap-1 text-xs text-emerald-400 hover:text-emerald-300 transition-colors"
+            {isLoadingHighlights ? (
+              <div className="space-y-2">
+                {Array.from({ length: 2 }).map((_, i) => (
+                  <div key={i} className="h-16 bg-white/5 rounded-lg animate-pulse" />
+                ))}
+              </div>
+            ) : highImpactNews.length === 0 ? (
+              <p className="text-sm text-slate-500 text-center py-6">No high-impact news today</p>
+            ) : (
+              <div className="space-y-2">
+                {highImpactNews.map((news) => (
+                  <div
+                    key={news.id}
+                    className="bg-white/5 border border-white/10 rounded-lg p-3 hover:bg-white/10 hover:border-emerald-500/20 transition-all"
                   >
-                    <X className="w-3 h-3" />
-                    Clear filters
-                  </button>
-                )}
-              </div>
-
-              {/* Sort dropdown */}
-              <div ref={sortMenuRef} className="relative w-full sm:w-auto">
-                <button
-                  onClick={() => setShowSortMenu((v) => !v)}
-                  className="w-full sm:w-auto flex items-center justify-between sm:justify-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg sm:rounded-xl text-xs font-medium bg-[#0D0D0D] border border-[#1F1F1F] text-slate-400 hover:border-white/20 hover:text-white transition-all duration-200"
-                >
-                  <span className="truncate">{currentSortLabel}</span>
-                  <ChevronDown className="w-3 h-3 flex-shrink-0" />
-                </button>
-                {showSortMenu && (
-                  <div className="absolute right-0 sm:right-0 top-full mt-2 z-30 w-full sm:w-48 rounded-lg sm:rounded-xl overflow-hidden bg-[#0D0D0D] border border-[#1F1F1F] shadow-2xl">
-                    {SORT_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.value}
-                        onClick={() => { setSortBy(opt.value); setShowSortMenu(false); }}
-                        className={`w-full text-left px-4 py-2.5 text-sm transition-colors hover:bg-white/5 ${sortBy === opt.value ? 'text-emerald-400 bg-emerald-500/10' : 'text-slate-400'}`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
+                    <div className="flex items-start gap-2">
+                      <span className="inline-block px-2 py-1 rounded text-xs font-semibold bg-red-500/20 text-red-300 flex-shrink-0 mt-0.5">
+                        HIGH
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs sm:text-sm font-semibold text-white line-clamp-1">{news.title}</p>
+                        <p className="text-xs text-slate-500 mt-0.5">
+                          {news.source} • {new Date(news.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                )}
-              </div>
-            </div>
-
-            {/* Active filter chips */}
-            {hasActiveFilters && (
-              <div className="flex flex-wrap gap-1.5 sm:gap-2 px-1 text-xs sm:text-sm">
-                {appliedFilters.priority.length < 3 && (
-                  <div className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    Priority: {appliedFilters.priority.join(', ')}
-                    <button onClick={() => {
-                      const nf = { ...appliedFilters, priority: ['HIGH', 'MEDIUM', 'LOW'] };
-                      setAppliedFilters(nf); setFilters(nf);
-                    }}><X className="w-3 h-3" /></button>
-                  </div>
-                )}
-                {appliedFilters.entity && (
-                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                    Token: {appliedFilters.entity}
-                    <button onClick={() => {
-                      const nf = { ...appliedFilters, entity: '' };
-                      setAppliedFilters(nf); setFilters(nf);
-                    }}><X className="w-3 h-3" /></button>
-                  </div>
-                )}
-                {(appliedFilters.dateFrom || appliedFilters.dateTo) && (
-                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs bg-purple-500/10 text-purple-400 border border-purple-500/20">
-                    Date range active
-                    <button onClick={() => {
-                      const nf = { ...appliedFilters, dateFrom: '', dateTo: '' };
-                      setAppliedFilters(nf); setFilters(nf);
-                    }}><X className="w-3 h-3" /></button>
-                  </div>
-                )}
-                {(appliedFilters.sources?.length ?? 0) > 0 && (
-                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    Sources: {appliedFilters.sources.join(', ')}
-                    <button onClick={() => {
-                      const nf = { ...appliedFilters, sources: [] };
-                      setAppliedFilters(nf); setFilters(nf);
-                    }}><X className="w-3 h-3" /></button>
-                  </div>
-                )}
-                {appliedFilters.contentFilter === 'price' && (
-                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                    Filter: Price
-                    <button onClick={() => {
-                      const nf = { ...appliedFilters, contentFilter: 'all' };
-                      setAppliedFilters(nf); setFilters(nf);
-                    }}><X className="w-3 h-3" /></button>
-                  </div>
-                )}
+                ))}
               </div>
             )}
+          </div>
 
-            {/* Feed list */}
-            <div
-              ref={feedRef}
-              className="space-y-1.5 sm:space-y-2 overflow-y-auto pr-1"
-              style={{ maxHeight: 'calc(100vh - 280px)', minHeight: '300px' }}
-            >
-              {isLoading ? (
-                Array.from({ length: 6 }).map((_, i) => <AlertSkeleton key={i} />)
-              ) : visibleAlerts.length === 0 ? (
-                <EmptyState hasFilters={hasActiveFilters} onClear={handleClearFilters} loadError={loadError} />
-              ) : (
-                <>
-                  {visibleAlerts.map((alert) => (
-                    <div
-                      key={alert.id}
-                      className={`transition-all duration-500 ${recentAlertIds.has(alert.id) ? 'opacity-100 scale-[1.01]' : 'opacity-100 scale-100'}`}
-                    >
-                      <AlertCard
-                        alert={alert}
-                        onViewDetails={handleOpenAlert}
-                        onMarkAsRead={handleMarkAsRead}
-                      />
-                    </div>
-                  ))}
-
-                  {isLoadingMore && (
-                    <div className="flex items-center justify-center py-6">
-                      <Loader2 className="w-5 h-5 text-emerald-400 animate-spin" />
-                      <span className="ml-2 text-sm text-slate-500">Loading more alerts…</span>
-                    </div>
-                  )}
-
-                  {!isLoadingMore && visibleCount >= filtered.length && filtered.length > 0 && (
-                    <div className="text-center py-8">
-                      <p className="text-xs text-slate-600">All {filtered.length} alerts loaded</p>
-                    </div>
-                  )}
-                </>
-              )}
+          <div className="bg-gradient-to-br from-amber-500/5 to-amber-600/5 border border-amber-500/20 rounded-xl p-4 sm:p-5 hover:border-amber-500/40 transition-all">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-amber-400" />
+                Economic Events Today
+              </h2>
+              <button
+                onClick={() => navigate('/economic-events')}
+                className="text-xs px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 transition-all"
+              >
+                View Events
+              </button>
             </div>
+            {isLoadingHighlights ? (
+              <div className="space-y-2">
+                {Array.from({ length: 2 }).map((_, i) => (
+                  <div key={i} className="h-16 bg-white/5 rounded-lg animate-pulse" />
+                ))}
+              </div>
+            ) : todayEvents.length === 0 ? (
+              <p className="text-sm text-slate-500 text-center py-6">No economic events today</p>
+            ) : (
+              <div className="space-y-2">
+                {todayEvents.slice(0, 3).map((event) => (
+                  <div
+                    key={event.id}
+                    className="bg-white/5 border border-white/10 rounded-lg p-3 hover:bg-white/10 hover:border-amber-500/20 transition-all"
+                  >
+                    <div className="flex items-start gap-2">
+                      <span className={`inline-block px-2 py-1 rounded text-xs font-semibold flex-shrink-0 mt-0.5 ${
+                        event.impact === 'HIGH' ? 'bg-red-500/20 text-red-300' : 'bg-amber-500/20 text-amber-300'
+                      }`}>
+                        {event.impact}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs sm:text-sm font-semibold text-white line-clamp-1">{event.title}</p>
+                        <p className="text-xs text-slate-500 mt-0.5">
+                          {event.country} • {event.time} • {event.category}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
-      </div>
 
-      {/* ALERT DETAIL MODAL */}
-      <AlertDetailModal
-        alert={selectedAlert}
-        isOpen={!!selectedAlert}
-        onClose={() => setSelectedAlert(null)}
-        onMarkAsRead={handleMarkAsRead}
-        onDismiss={handleDismiss}
-        onApplyPriceFilter={handleApplyPriceFilter}
-        isPriceRelated={selectedAlert ? isPriceRelatedAlert(selectedAlert) : false}
-        onFeedback={handleFeedback}
-        feedbackState={selectedAlert ? feedbackMap[selectedAlert.id] : null}
-      />
+        <div className="bg-[#0D0D0D] border border-[#1F1F1F] rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold text-white">Alerts and filters moved to News</p>
+            <p className="text-xs text-slate-500 mt-1">Open News in the navbar to view and filter alert feed.</p>
+          </div>
+          <button
+            onClick={() => navigate('/news')}
+            className="px-4 py-2 rounded-lg text-sm font-semibold bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 transition-all"
+          >
+            Open News Alerts
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
