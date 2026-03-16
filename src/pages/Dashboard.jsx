@@ -1,31 +1,23 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useQueryClient } from '@tanstack/react-query';
+import Tooltip from '@components/common/Tooltip';
 import {
-  LayoutDashboard,
   Bell,
-  Database,
-  BarChart3,
-  Bookmark,
-  Settings,
-  Menu,
-  Search,
-  ChevronDown,
-  RefreshCw,
-  Pin,
-  AlertCircle,
-  TrendingUp,
-  Newspaper,
+  BellRing,
+  AlertTriangle,
   Activity,
-  Filter,
-  X,
+  RefreshCw,
+  Download,
+  SlidersHorizontal,
+  ChevronDown,
+  Inbox,
   Loader2,
-  ExternalLink,
-  Star,
-  PanelLeftClose,
-  PanelLeftOpen,
+  X,
 } from 'lucide-react';
+import { AlertCard } from '@components/dashboard/AlertCard';
 import { AlertDetailModal } from '@components/dashboard/AlertDetailModal';
+import { FilterSidebar } from '@components/dashboard/FilterSidebar';
 import { useSocket } from '@hooks/useSocket';
 import { WS_EVENTS } from '@utils/constants';
 import { useAuth } from '@hooks/useAuth';
@@ -33,43 +25,10 @@ import { useToast } from '@hooks/useToast';
 import feedbackService from '@services/feedbackService';
 import alertsService from '@services/alertsService';
 import eventsService from '@services/eventsService';
-import { formatRelativeTime } from '@utils/helpers';
 
-const PRIORITY_ORDER = { HIGH: 0, MEDIUM: 1, LOW: 2 };
-const FALLBACK_SOURCE_OPTIONS = ['CoinDesk', 'CoinTelegraph', 'Decrypt', 'CoinGecko'];
-const SOURCE_QUERY_BY_LABEL = {
-  CoinDesk: 'coindesk',
-  CoinTelegraph: 'cointelegraph',
-  Decrypt: 'decrypt.co',
-  CoinGecko: 'coingecko',
-};
-const MOBILE_TABS = ['alerts', 'sources', 'analytics', 'saved', 'settings'];
-
-const NAV_ITEMS = [
-  { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { key: 'alerts', label: 'Alerts', icon: Bell },
-  { key: 'sources', label: 'Data Sources', icon: Database },
-  { key: 'analytics', label: 'Analytics', icon: BarChart3 },
-  { key: 'saved', label: 'Saved Alerts', icon: Bookmark },
-  { key: 'settings', label: 'Settings', icon: Settings },
-];
-
-const ALERT_TYPE_OPTIONS = ['all', 'NEWS', 'PRICE_ALERT', 'SENTIMENT'];
-const TIME_RANGE_OPTIONS = ['1h', '6h', '24h', '7d'];
-const SORT_OPTIONS = [
-  { value: 'newest', label: 'Time' },
-  { value: 'priority', label: 'Priority' },
-  { value: 'relevance', label: 'Relevance' },
-];
-
-const DEFAULT_FILTERS = {
-  priority: ['HIGH', 'MEDIUM', 'LOW'],
-  eventType: 'all',
-  entity: '',
-  sources: [],
-  timeRange: '24h',
-};
-
+// ─────────────────────────────────────────────────────────────────────────────
+// NORMALIZERS
+// ─────────────────────────────────────────────────────────────────────────────
 const normalizeStatus = (status) => {
   if (status === 'pending') return 'new';
   return status || 'new';
@@ -80,7 +39,11 @@ const toDisplayText = (value, fallback = '') => {
     const trimmed = value.trim();
     return trimmed || fallback;
   }
-  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return String(value);
+  }
+
   if (Array.isArray(value)) {
     const joined = value
       .map((item) => (typeof item === 'string' ? item.trim() : String(item ?? '')))
@@ -88,68 +51,40 @@ const toDisplayText = (value, fallback = '') => {
       .join(', ');
     return joined || fallback;
   }
+
   if (value && typeof value === 'object') {
     const candidate = value.summary || value.title || value.name || value.link || value.description;
-    if (typeof candidate === 'string' && candidate.trim()) return candidate.trim();
+    if (typeof candidate === 'string' && candidate.trim()) {
+      return candidate.trim();
+    }
   }
+
   return fallback;
 };
 
-const normalizeSourceName = (source) => {
-  const raw = String(source || '').trim().toLowerCase();
-  if (!raw) return '';
-  if (raw.includes('coindesk')) return 'CoinDesk';
-  if (raw.includes('cointelegraph')) return 'CoinTelegraph';
-  if (raw.includes('decrypt')) return 'Decrypt';
-  if (raw.includes('coingecko')) return 'CoinGecko';
-  return '';
-};
-
-const toApiSourceParam = (sourceLabel) => SOURCE_QUERY_BY_LABEL[sourceLabel] || '';
-const isEventItemId = (id) => String(id).startsWith('event-');
-
-const inferAlertType = (alert) => {
-  const type = String(alert?.event_type || '').toUpperCase();
-  if (type.includes('PRICE')) return 'PRICE_ALERT';
-  const text = `${alert?.title || ''} ${alert?.content || ''}`.toLowerCase();
-  if (text.includes('sentiment') || text.includes('fear') || text.includes('greed')) return 'SENTIMENT';
+const inferEventType = (title = '') => {
+  const lower = toDisplayText(title, '').toLowerCase();
+  if (lower.includes('price')) return 'PRICE_ALERT';
   return 'NEWS';
-};
-
-const parseTimeRangeHours = (range) => {
-  if (range === '1h') return 1;
-  if (range === '6h') return 6;
-  if (range === '24h') return 24;
-  return 24 * 7;
 };
 
 const normalizeAlert = (alert) => ({
   id: alert.alert_id ?? alert.id,
   alert_id: alert.alert_id ?? alert.id,
-  event_type: toDisplayText(alert.event_type, 'NEWS').toUpperCase(),
+  event_type: toDisplayText(alert.event_type, inferEventType(alert.title)).toUpperCase(),
   source: toDisplayText(alert.source, 'Unknown'),
   title: toDisplayText(alert.title, 'Untitled Alert'),
-  content: toDisplayText(
-    alert.content,
-    toDisplayText(alert.description, toDisplayText(alert.title, 'No details provided'))
-  ),
+  content: toDisplayText(alert.content, toDisplayText(alert.description, toDisplayText(alert.title, 'No details provided'))),
   priority: alert.priority || 'LOW',
   status: normalizeStatus(alert.status),
   timestamp: alert.created_at || alert.timestamp || alert.createdAt || new Date().toISOString(),
   entity: toDisplayText(alert.entity, ''),
-  rawContent: alert.rawContent || null,
 });
 
 const normalizeNewsEvent = (event) => {
   const content = event?.content || {};
-  const title = toDisplayText(
-    content.title,
-    toDisplayText(content.name, `News from ${toDisplayText(event?.source, 'source')}`)
-  );
-  const body = toDisplayText(
-    content.summary,
-    toDisplayText(content.alert_reasons, toDisplayText(content.link, 'No details provided'))
-  );
+  const title = toDisplayText(content.title, toDisplayText(content.name, `News from ${toDisplayText(event?.source, 'source')}`));
+  const body = toDisplayText(content.summary, toDisplayText(content.alert_reasons, toDisplayText(content.link, 'No details provided')));
 
   return {
     id: `event-${event?.id}`,
@@ -162,11 +97,80 @@ const normalizeNewsEvent = (event) => {
     status: 'new',
     timestamp: event?.timestamp || new Date().toISOString(),
     entity: toDisplayText(content.id, toDisplayText(content.symbol, toDisplayText(content.name, ''))),
+    // Preserve raw content for detailed view
     rawContent: {
       ...content,
       type: event?.type,
     },
   };
+};
+
+const DEFAULT_FILTERS = {
+  priority: ['HIGH', 'MEDIUM', 'LOW'],
+  eventType: 'all',
+  entity: '',
+  dateFrom: '',
+  dateTo: '',
+  sources: [],
+  contentFilter: 'all',
+};
+
+const SORT_OPTIONS = [
+  { value: 'newest',   label: 'Newest First' },
+  { value: 'oldest',   label: 'Oldest First' },
+  { value: 'priority', label: 'Priority (High → Low)' },
+  { value: 'unread',   label: 'Unread First' },
+];
+
+const PRIORITY_ORDER = { HIGH: 0, MEDIUM: 1, LOW: 2 };
+const isEventItemId = (id) => String(id).startsWith('event-');
+const FALLBACK_SOURCE_OPTIONS = ['CoinDesk', 'CoinTelegraph', 'Decrypt', 'CoinGecko'];
+const SOURCE_QUERY_BY_LABEL = {
+  CoinDesk: 'coindesk',
+  CoinTelegraph: 'cointelegraph',
+  Decrypt: 'decrypt.co',
+  CoinGecko: 'coingecko',
+};
+
+const normalizeSourceName = (source) => {
+  const raw = String(source || '').trim().toLowerCase();
+  if (!raw) return '';
+
+  // Match patterns: www.coindesk.com, coindesk.com, coindesk
+  if (raw.includes('coindesk')) return 'CoinDesk';
+  // Match patterns: cointelegraph.com, cointelegraph
+  if (raw.includes('cointelegraph')) return 'CoinTelegraph';
+  // Match patterns: decrypt.co, decrypt
+  if (raw.includes('decrypt')) return 'Decrypt';
+  // Match patterns: coingecko.com, coingecko
+  if (raw.includes('coingecko')) return 'CoinGecko';
+
+  // Keep Data Sources clean: only show known upstream providers.
+  return '';
+};
+
+const toApiSourceParam = (sourceLabel) => SOURCE_QUERY_BY_LABEL[sourceLabel] || '';
+
+const PRICE_KEYWORDS = [
+  'price',
+  'surge',
+  'drop',
+  'rally',
+  'crash',
+  'ath',
+  'atl',
+  'market movement',
+  'volatility',
+  'breakout',
+  'breakdown',
+];
+
+const isPriceRelatedAlert = (item) => {
+  const eventType = String(item?.event_type || '').toLowerCase();
+  if (eventType.includes('price')) return true;
+
+  const text = `${item?.title || ''} ${item?.content || ''}`.toLowerCase();
+  return PRICE_KEYWORDS.some((keyword) => text.includes(keyword));
 };
 
 const mergeAlertsPreservingReadState = (previousAlerts, incomingAlerts, readIdsSet) => {
@@ -184,383 +188,246 @@ const mergeAlertsPreservingReadState = (previousAlerts, incomingAlerts, readIdsS
   });
 };
 
-const priorityStyles = {
-  HIGH: 'border-l-red-500 bg-red-500/10 text-red-300',
-  MEDIUM: 'border-l-amber-500 bg-amber-500/10 text-amber-300',
-  LOW: 'border-l-blue-500 bg-blue-500/10 text-blue-300',
+// ─────────────────────────────────────────────────────────────────────────────
+// STAT CARD
+// ─────────────────────────────────────────────────────────────────────────────
+const ACCENT_COLORS = {
+  emerald: { icon: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', val: 'text-emerald-400' },
+  red:     { icon: 'text-red-400',     bg: 'bg-red-500/10',     border: 'border-red-500/20',     val: 'text-red-400'     },
+  amber:   { icon: 'text-amber-400',   bg: 'bg-amber-500/10',   border: 'border-amber-500/20',   val: 'text-amber-400'   },
+  blue:    { icon: 'text-blue-400',    bg: 'bg-blue-500/10',    border: 'border-blue-500/20',    val: 'text-blue-400'    },
 };
 
-const AlertFeedCard = ({
-  alert,
-  isPinned,
-  isBookmarked,
-  isImportant,
-  onOpen,
-  onBookmark,
-  onPin,
-  onImportant,
-}) => {
-  const [touchStartX, setTouchStartX] = useState(null);
-  const [touchEndX, setTouchEndX] = useState(null);
-  const type = inferAlertType(alert);
-  const sourceLabel = normalizeSourceName(alert.source) || alert.source;
-
-  const handleTouchEnd = () => {
-    if (touchStartX == null || touchEndX == null) return;
-    const diff = touchStartX - touchEndX;
-    if (diff > 60) onBookmark(alert.id);
-    if (diff < -60) onImportant(alert.id);
-    setTouchStartX(null);
-    setTouchEndX(null);
-  };
-
+const StatCard = ({ icon: Icon, label, value, subValue, accentColor = 'emerald' }) => {
+  const c = ACCENT_COLORS[accentColor] || ACCENT_COLORS.emerald;
   return (
-    <article
-      onTouchStart={(e) => setTouchStartX(e.changedTouches[0].clientX)}
-      onTouchMove={(e) => setTouchEndX(e.changedTouches[0].clientX)}
-      onTouchEnd={handleTouchEnd}
-      className="rounded-lg border border-white/5 bg-[#1e293b] shadow-lg hover:shadow-xl transition-all duration-300"
-    >
+    <div className="flex items-center gap-4 p-4 rounded-2xl bg-[#080808] border border-[#1A1A1A] hover:border-[#252525] transition-all duration-300">
+      <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${c.bg} border ${c.border}`}>
+        <Icon className={`w-5 h-5 ${c.icon}`} />
+      </div>
+      <div className="min-w-0">
+        <p className="text-xs text-slate-500 uppercase tracking-wider mb-0.5">{label}</p>
+        <div className="flex items-baseline gap-2">
+          <span className={`text-2xl font-bold ${c.val}`}>{value}</span>
+          {subValue && <span className="text-xs text-slate-500">{subValue}</span>}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// EMPTY STATE
+// ─────────────────────────────────────────────────────────────────────────────
+const EmptyState = ({ hasFilters, onClear, loadError }) => (
+  <div className="flex flex-col items-center justify-center py-24 text-center px-8">
+    <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-5">
+      <Inbox className="w-8 h-8 text-slate-500" />
+    </div>
+    <h3 className="text-base font-bold text-white mb-2">No alerts found</h3>
+    <p className="text-sm text-slate-500 max-w-xs mb-6">
+      {loadError
+        ? loadError
+        : hasFilters
+        ? 'No alerts match your current filters. Try adjusting or clearing them.'
+        : 'Your alert feed is clear. New alerts will appear here in real-time.'}
+    </p>
+    {hasFilters && (
       <button
-        type="button"
-        onClick={() => onOpen(alert)}
-        className={`w-full text-left p-3 sm:p-4 border-l-2 ${priorityStyles[alert.priority] || priorityStyles.LOW}`}
+        onClick={onClear}
+        className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 transition-all duration-200"
       >
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="h-8 w-8 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center text-xs font-bold text-slate-200">
-              {String(sourceLabel).slice(0, 2).toUpperCase()}
-            </div>
-            <span className="text-xs text-slate-300 font-semibold truncate">{sourceLabel}</span>
-          </div>
-          <span className="text-[11px] text-slate-400 whitespace-nowrap">{formatRelativeTime(alert.timestamp)}</span>
-        </div>
-
-        <h3 className="mt-2 text-sm sm:text-base font-semibold text-slate-100 line-clamp-2">{alert.title}</h3>
-        <p className="mt-1 text-xs sm:text-sm text-slate-400 line-clamp-2">{alert.content}</p>
-
-        <div className="mt-3 flex items-center flex-wrap gap-1.5">
-          {alert.entity && (
-            <span className="px-2 py-0.5 rounded-md bg-slate-800 text-[11px] text-slate-300 border border-white/10">
-              {alert.entity}
-            </span>
-          )}
-          <span className="px-2 py-0.5 rounded-md bg-blue-500/15 text-[11px] text-blue-300 border border-blue-400/20">
-            {type === 'PRICE_ALERT' ? 'Price' : type === 'SENTIMENT' ? 'Sentiment' : 'News'}
-          </span>
-          <span className="px-2 py-0.5 rounded-md bg-slate-800 text-[11px] text-slate-200 border border-white/10">
-            {alert.priority}
-          </span>
-          {isPinned && <span className="text-[10px] text-green-400">Pinned</span>}
-          {isImportant && <span className="text-[10px] text-orange-400">Important</span>}
-          {isBookmarked && <span className="text-[10px] text-blue-400">Saved</span>}
-        </div>
+        Clear Filters
       </button>
+    )}
+  </div>
+);
 
-      <div className="px-3 pb-3 sm:px-4 sm:pb-4 flex items-center gap-2 flex-wrap">
-        {alert.rawContent?.link && (
-          <a
-            href={alert.rawContent.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="h-9 px-3 inline-flex items-center gap-1 rounded-md border border-white/10 text-xs text-slate-300 hover:bg-white/5"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <ExternalLink className="w-3 h-3" />
-            Source
-          </a>
-        )}
-        <button
-          type="button"
-          onClick={() => onBookmark(alert.id)}
-          className={`h-9 px-3 inline-flex items-center gap-1 rounded-md border text-xs transition-colors ${
-            isBookmarked ? 'border-blue-400/30 text-blue-300 bg-blue-500/10' : 'border-white/10 text-slate-300 hover:bg-white/5'
-          }`}
-        >
-          <Bookmark className="w-3 h-3" />
-          Bookmark
-        </button>
-        <button
-          type="button"
-          onClick={() => onImportant(alert.id)}
-          className={`h-9 px-3 inline-flex items-center gap-1 rounded-md border text-xs transition-colors ${
-            isImportant ? 'border-orange-400/30 text-orange-300 bg-orange-500/10' : 'border-white/10 text-slate-300 hover:bg-white/5'
-          }`}
-        >
-          <Star className="w-3 h-3" />
-          Important
-        </button>
-        <button
-          type="button"
-          onClick={() => onPin(alert.id)}
-          className={`h-9 px-3 inline-flex items-center gap-1 rounded-md border text-xs transition-colors ${
-            isPinned ? 'border-green-400/30 text-green-300 bg-green-500/10' : 'border-white/10 text-slate-300 hover:bg-white/5'
-          }`}
-        >
-          <Pin className="w-3 h-3" />
-          Pin
-        </button>
+EmptyState.propTypes = {
+  hasFilters: PropTypes.bool,
+  onClear: PropTypes.func,
+  loadError: PropTypes.string,
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LOADING SKELETON
+// ─────────────────────────────────────────────────────────────────────────────
+const AlertSkeleton = () => (
+  <div className="flex gap-4 p-4 rounded-xl bg-[#0D0D0D] border border-[#1F1F1F] animate-pulse">
+    <div className="w-10 h-10 rounded-lg bg-white/5 flex-shrink-0" />
+    <div className="flex-1 space-y-2.5">
+      <div className="flex gap-2">
+        <div className="h-4 w-14 rounded-md bg-white/5" />
+        <div className="h-4 w-20 rounded-md bg-white/5" />
+        <div className="ml-auto h-4 w-20 rounded-md bg-white/5" />
       </div>
-    </article>
-  );
-};
-
-AlertFeedCard.propTypes = {
-  alert: PropTypes.object.isRequired,
-  isPinned: PropTypes.bool.isRequired,
-  isBookmarked: PropTypes.bool.isRequired,
-  isImportant: PropTypes.bool.isRequired,
-  onOpen: PropTypes.func.isRequired,
-  onBookmark: PropTypes.func.isRequired,
-  onPin: PropTypes.func.isRequired,
-  onImportant: PropTypes.func.isRequired,
-};
-
-const KpiTile = ({ label, value, trend, icon: Icon, accent }) => (
-  <div className="rounded-lg bg-[#1e293b] border border-white/5 p-4 shadow-md">
-    <div className="flex items-center justify-between">
-      <p className="text-xs text-slate-400 uppercase tracking-wider">{label}</p>
-      <Icon className={`w-4 h-4 ${accent}`} />
-    </div>
-    <div className="mt-2 flex items-end justify-between">
-      <p className="text-2xl font-bold text-[#e2e8f0]">{value}</p>
-      <span className="text-xs text-green-400">{trend}</span>
+      <div className="h-4 w-3/4 rounded-md bg-white/5" />
+      <div className="h-3 w-full rounded-md bg-white/5" />
+      <div className="h-3 w-2/3 rounded-md bg-white/5" />
     </div>
   </div>
 );
 
-KpiTile.propTypes = {
-  label: PropTypes.string.isRequired,
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  trend: PropTypes.string.isRequired,
-  icon: PropTypes.elementType.isRequired,
-  accent: PropTypes.string.isRequired,
-};
-
-const MiniActivityChart = ({ byHour }) => {
-  const max = Math.max(...byHour.map((v) => v.count), 1);
-  return (
-    <div className="h-40 flex items-end gap-1.5">
-      {byHour.map((entry) => (
-        <div key={entry.label} className="flex-1 flex flex-col items-center gap-1">
-          <div
-            className="w-full rounded-sm bg-blue-500/50 hover:bg-blue-400 transition-colors"
-            style={{ height: `${Math.max(8, (entry.count / max) * 100)}%` }}
-            title={`${entry.label}: ${entry.count}`}
-          />
-          <span className="text-[10px] text-slate-500">{entry.label}</span>
-        </div>
-      ))}
-    </div>
-  );
-};
-
-MiniActivityChart.propTypes = {
-  byHour: PropTypes.arrayOf(
-    PropTypes.shape({
-      label: PropTypes.string.isRequired,
-      count: PropTypes.number.isRequired,
-    })
-  ).isRequired,
-};
-
-const TypeDistributionChart = ({ data }) => {
-  const total = Object.values(data).reduce((sum, val) => sum + val, 0) || 1;
-  const rows = [
-    { key: 'NEWS', label: 'News', color: 'bg-blue-500', value: data.NEWS || 0 },
-    { key: 'PRICE_ALERT', label: 'Price', color: 'bg-green-500', value: data.PRICE_ALERT || 0 },
-    { key: 'SENTIMENT', label: 'Sentiment', color: 'bg-orange-500', value: data.SENTIMENT || 0 },
-  ];
-
-  return (
-    <div className="space-y-2">
-      {rows.map((row) => (
-        <div key={row.key}>
-          <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-            <span>{row.label}</span>
-            <span>{row.value}</span>
-          </div>
-          <div className="h-2 rounded bg-slate-800 overflow-hidden">
-            <div className={`${row.color} h-2`} style={{ width: `${(row.value / total) * 100}%` }} />
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-};
-
-TypeDistributionChart.propTypes = {
-  data: PropTypes.shape({
-    NEWS: PropTypes.number,
-    PRICE_ALERT: PropTypes.number,
-    SENTIMENT: PropTypes.number,
-  }).isRequired,
-};
-
-const SourceTile = ({ source, count, enabled, onToggle }) => (
-  <button
-    type="button"
-    onClick={onToggle}
-    className={`rounded-lg border p-3 text-left transition-all min-h-[44px] ${
-      enabled
-        ? 'bg-green-500/10 border-green-400/30 shadow-md'
-        : 'bg-[#1e293b] border-white/5 hover:border-white/15'
-    }`}
-  >
-    <div className="flex items-center justify-between gap-2">
-      <div className="h-8 w-8 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center text-[11px] font-bold text-slate-200">
-        {source.slice(0, 2).toUpperCase()}
-      </div>
-      <span className={`h-2.5 w-2.5 rounded-full ${enabled ? 'bg-green-400' : 'bg-slate-600'}`} />
-    </div>
-    <p className="mt-2 text-sm text-slate-100 font-medium truncate">{source}</p>
-    <p className="text-xs text-slate-400">{count} alerts</p>
-  </button>
-);
-
-SourceTile.propTypes = {
-  source: PropTypes.string.isRequired,
-  count: PropTypes.number.isRequired,
-  enabled: PropTypes.bool.isRequired,
-  onToggle: PropTypes.func.isRequired,
-};
-
-const SkeletonList = () => (
-  <div className="space-y-2">
-    {Array.from({ length: 5 }).map((_, idx) => (
-      <div key={idx} className="h-28 rounded-lg bg-[#1e293b] border border-white/5 animate-pulse" />
-    ))}
-  </div>
-);
-
+// ─────────────────────────────────────────────────────────────────────────────
+// MAIN DASHBOARD
+// ─────────────────────────────────────────────────────────────────────────────
 export const Dashboard = () => {
   const queryClient = useQueryClient();
   const { on } = useSocket({ autoConnect: true });
   const { user } = useAuth();
   const toast = useToast();
-
-  const [allAlerts, setAllAlerts] = useState([]);
-  const [selectedAlert, setSelectedAlert] = useState(null);
-  const [sourceOptions, setSourceOptions] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(10);
-  const [loadError, setLoadError] = useState('');
-
-  const [filters, setFilters] = useState(DEFAULT_FILTERS);
+  const [allAlerts, setAllAlerts]         = useState([]);
+  const [filters, setFilters]             = useState(DEFAULT_FILTERS);
   const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS);
-  const [sortBy, setSortBy] = useState('newest');
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [activeDesktopNav, setActiveDesktopNav] = useState('dashboard');
-  const [mobileTab, setMobileTab] = useState('alerts');
-  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [panelState, setPanelState] = useState({ feed: true, sources: true, activity: true });
-
-  const [pinnedIds, setPinnedIds] = useState(new Set());
-  const [bookmarkedIds, setBookmarkedIds] = useState(new Set());
-  const [importantIds, setImportantIds] = useState(new Set());
-  const [feedbackMap, setFeedbackMap] = useState({});
+  const [sortBy, setSortBy]               = useState('newest');
+  const [selectedAlert, setSelectedAlert] = useState(null);
+  const [isLoading, setIsLoading]         = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [visibleCount, setVisibleCount]   = useState(8);
+  const [filterOpen, setFilterOpen]       = useState(false);
+  const [isRefreshing, setIsRefreshing]   = useState(false);
+  const [showSortMenu, setShowSortMenu]   = useState(false);
   const [recentAlertIds, setRecentAlertIds] = useState(new Set());
-
+  const [feedbackMap, setFeedbackMap] = useState({});
+  const [sourceOptions, setSourceOptions] = useState([]);
+  const [loadError, setLoadError] = useState('');
+  const sortMenuRef = useRef(null);
+  const feedRef     = useRef(null);
   const toastRef = useRef(toast);
   const hasShownLoadErrorRef = useRef(false);
   const readAlertIdsRef = useRef(new Set());
-  const feedRef = useRef(null);
 
   useEffect(() => {
     toastRef.current = toast;
   }, [toast]);
 
-  const toggleSetValue = (setter, id) => {
-    setter((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
-
   const loadDashboardData = useCallback(async (selectedSources = [], eventType = 'all') => {
     setIsLoading(true);
     setLoadError('');
-
     try {
-      const sourceApiParams = Array.from(new Set((selectedSources || []).map(toApiSourceParam).filter(Boolean)));
+      const sourceList = Array.isArray(selectedSources)
+        ? selectedSources.filter(Boolean)
+        : [];
+      const sourceApiParams = Array.from(
+        new Set(sourceList.map(toApiSourceParam).filter(Boolean))
+      );
 
+      // ALWAYS load available sources first - independently from alerts
       let apiSources = [];
       try {
         apiSources = await eventsService.getAvailableSources({ limit: 200 });
-      } catch {
-        apiSources = [];
+      } catch (error) {
+        console.warn('Could not load available sources:', error.message);
+        // Continue even if sources fail - use fallback
       }
 
+      // Determine which API endpoint to call for alerts
       let feedResult = [];
       let feedError = null;
 
       try {
         if (sourceApiParams.length > 0) {
-          const type = eventType === 'PRICE_ALERT' ? 'price' : eventType === 'NEWS' ? 'news' : undefined;
+          // If sources selected: fetch from those sources with optional type filter
+          const type = eventType === 'PRICE_ALERT' ? 'price' : (eventType === 'NEWS' ? 'news' : undefined);
           const results = await Promise.all(
-            sourceApiParams.map((source) => eventsService.getEvents({ skip: 0, limit: 100, source, type }))
+            sourceApiParams.map((source) =>
+              eventsService.getEvents({ skip: 0, limit: 100, source, type })
+            )
           );
           feedResult = results.flat().filter(Boolean);
         } else if (eventType === 'NEWS') {
+          // If only news filter selected (no sources): fetch all news
           feedResult = await eventsService.getEventsByType('news', { skip: 0, limit: 100 });
+          if (!Array.isArray(feedResult)) feedResult = [];
         } else if (eventType === 'PRICE_ALERT') {
+          // If only price filter selected (no sources): fetch all price events
           feedResult = await eventsService.getEventsByType('price', { skip: 0, limit: 100 });
+          if (!Array.isArray(feedResult)) feedResult = [];
         } else {
-          feedResult = await alertsService.getAlerts({ skip: 0, limit: 100 });
+          // If no filter selected: fetch alerts
+          feedResult = await alertsService.getAlerts({ skip: 0, limit: 50 });
+          if (!Array.isArray(feedResult)) feedResult = [];
         }
       } catch (error) {
         feedError = error;
+        console.warn('Could not load alerts:', error.message);
+        // Don't throw - we want to show empty state but keep sources visible
+        feedResult = [];
       }
 
-      const normalizedAlerts =
-        sourceApiParams.length > 0 || (eventType !== 'all' && !sourceApiParams.length)
-          ? (feedResult || []).flat().filter(Boolean).map(normalizeNewsEvent)
-          : (feedResult || []).map(normalizeAlert);
+      // Normalize based on event type
+      const normalizedAlerts = (sourceApiParams.length > 0 || (eventType !== 'all' && !sourceApiParams.length))
+        ? feedResult.flat().filter(Boolean).map(normalizeNewsEvent)
+        : feedResult.map(normalizeAlert);
 
       setAllAlerts((prev) => {
         const merged = mergeAlertsPreservingReadState(prev, normalizedAlerts, readAlertIdsRef.current);
-        const sourcesFromAlerts = merged.map((item) => normalizeSourceName(item.source)).filter(Boolean);
+
+        // Extract sources from loaded alerts
+        const sourcesFromAlerts = merged
+          .map((item) => normalizeSourceName(item.source))
+          .filter(Boolean);
+
+        // ALWAYS include API sources and fallback options to keep data sources visible
         const mergedSources = Array.from(
-          new Set([...(apiSources || []), ...sourcesFromAlerts, ...FALLBACK_SOURCE_OPTIONS].map(normalizeSourceName).filter(Boolean))
+          new Set(
+            [
+              ...(apiSources || []),
+              ...sourcesFromAlerts,
+              ...FALLBACK_SOURCE_OPTIONS,
+            ].map(normalizeSourceName).filter(Boolean)
+          )
         ).sort((a, b) => a.localeCompare(b));
 
         setSourceOptions(mergedSources);
         return merged;
       });
 
+      // Handle errors after state updates so source options are preserved
       if (feedError && normalizedAlerts.length === 0) {
-        setLoadError(feedError?.message || 'No alerts found for selected filters');
+        const errorMsg = String(feedError?.message || '').toLowerCase().includes('resource not found')
+          ? 'No alerts found for this filter. Try adjusting your filters.'
+          : (feedError?.message || 'Failed to load alerts');
+        setLoadError(errorMsg);
       }
 
       hasShownLoadErrorRef.current = false;
     } catch (error) {
-      const message = error?.message || 'Failed to load dashboard';
+      const isCorsIssue = String(error?.message || '').toLowerCase().includes('cors');
+      const message = isCorsIssue
+        ? 'Cannot load alerts: backend CORS is blocking this frontend origin.'
+        : (error?.message || 'Failed to load dashboard alerts');
+
       setLoadError(message);
       if (!hasShownLoadErrorRef.current) {
         toastRef.current.error(message);
         hasShownLoadErrorRef.current = true;
       }
+      // Clear alerts on error but PRESERVE source options
       setAllAlerts([]);
+      // DON'T clear sources - they should remain visible
     } finally {
       setIsLoading(false);
     }
   }, []);
 
+  const selectedSourcesKey = (appliedFilters.sources || []).join('|');
+  const eventTypeKey = appliedFilters.eventType || 'all';
+
   useEffect(() => {
     loadDashboardData(appliedFilters.sources || [], appliedFilters.eventType || 'all');
-  }, [loadDashboardData, appliedFilters.sources, appliedFilters.eventType]);
+  }, [loadDashboardData, selectedSourcesKey, eventTypeKey]);
 
   useEffect(() => {
     const handleIncomingAlert = (incoming) => {
       const normalized = normalizeAlert(incoming || {});
       if (!normalized?.id) return;
+
+      setSourceOptions((prev) => {
+        const nextSource = normalizeSourceName(normalized.source);
+        if (!nextSource || prev.includes(nextSource)) return prev;
+        return [...prev, nextSource].sort((a, b) => a.localeCompare(b));
+      });
 
       setAllAlerts((prev) => {
         if (prev.some((item) => item.id === normalized.id)) return prev;
@@ -581,6 +448,18 @@ export const Dashboard = () => {
         });
       }, 1800);
 
+      if (normalized.priority === 'HIGH' && typeof window !== 'undefined' && 'Notification' in window) {
+        const permission = Notification.permission;
+        if (permission === 'granted') {
+          new Notification(normalized.title || 'New high priority alert', {
+            body: normalized.content || normalized.source || 'Tap to view details',
+          });
+        } else if (permission === 'default' && !localStorage.getItem('alerts_notification_prompted')) {
+          localStorage.setItem('alerts_notification_prompted', '1');
+          Notification.requestPermission();
+        }
+      }
+
       queryClient.invalidateQueries({ queryKey: ['alerts'] });
     };
 
@@ -593,153 +472,114 @@ export const Dashboard = () => {
     };
   }, [on, queryClient]);
 
+  // Close sort menu on outside click
   useEffect(() => {
-    const container = feedRef.current;
-    if (!container) return;
-
-    const handleScroll = () => {
-      if (container.scrollTop + container.clientHeight >= container.scrollHeight - 120 && !isLoadingMore) {
-        setIsLoadingMore(true);
-        setTimeout(() => {
-          setVisibleCount((prev) => prev + 6);
-          setIsLoadingMore(false);
-        }, 500);
+    const handler = (e) => {
+      if (sortMenuRef.current && !sortMenuRef.current.contains(e.target)) {
+        setShowSortMenu(false);
       }
     };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
-    container.addEventListener('scroll', handleScroll);
-    return () => container.removeEventListener('scroll', handleScroll);
-  }, [isLoadingMore]);
+  // Apply filters + sort (memo)
+  const filtered = useMemo(() => {
+    let result = allAlerts;
 
-  const sourceCounts = useMemo(() => {
-    const counts = {};
-    allAlerts.forEach((alert) => {
-      const key = normalizeSourceName(alert.source) || alert.source;
-      counts[key] = (counts[key] || 0) + 1;
-    });
-    return counts;
-  }, [allAlerts]);
-
-  const filteredAlerts = useMemo(() => {
-    const now = Date.now();
-    const hours = parseTimeRangeHours(appliedFilters.timeRange || '24h');
-    const threshold = now - hours * 60 * 60 * 1000;
-
-    let list = allAlerts.filter((alert) => {
-      const ts = new Date(alert.timestamp).getTime();
-      if (Number.isNaN(ts)) return true;
-      return ts >= threshold;
-    });
-
-    if ((appliedFilters.sources || []).length > 0) {
-      const selected = new Set((appliedFilters.sources || []).map((item) => item.toLowerCase()));
-      list = list.filter((alert) => selected.has((normalizeSourceName(alert.source) || '').toLowerCase()));
+    if (appliedFilters.priority.length < 3) {
+      result = result.filter((a) => appliedFilters.priority.includes(a.priority));
     }
-
     if (appliedFilters.eventType && appliedFilters.eventType !== 'all') {
-      list = list.filter((alert) => inferAlertType(alert) === appliedFilters.eventType);
+      if (appliedFilters.eventType === 'PRICE_ALERT') {
+        result = result.filter(isPriceRelatedAlert);
+      } else if (appliedFilters.eventType === 'NEWS') {
+        result = result.filter((a) => !isPriceRelatedAlert(a));
+      }
     }
-
     if (appliedFilters.entity) {
       const term = appliedFilters.entity.toLowerCase();
-      list = list.filter(
-        (alert) =>
-          (alert.title || '').toLowerCase().includes(term) ||
-          (alert.content || '').toLowerCase().includes(term) ||
-          (alert.entity || '').toLowerCase().includes(term)
+      result = result.filter(
+        (a) =>
+          a.entity?.toLowerCase().includes(term) ||
+          a.title?.toLowerCase().includes(term) ||
+          a.source?.toLowerCase().includes(term)
       );
     }
-
-    if (searchQuery.trim()) {
-      const term = searchQuery.trim().toLowerCase();
-      list = list.filter(
-        (alert) =>
-          (alert.title || '').toLowerCase().includes(term) ||
-          (alert.content || '').toLowerCase().includes(term) ||
-          (alert.source || '').toLowerCase().includes(term)
-      );
+    if (appliedFilters.dateFrom) {
+      const from = new Date(appliedFilters.dateFrom);
+      result = result.filter((a) => new Date(a.timestamp) >= from);
+    }
+    if (appliedFilters.dateTo) {
+      const to = new Date(appliedFilters.dateTo + 'T23:59:59');
+      result = result.filter((a) => new Date(a.timestamp) <= to);
+    }
+    if (appliedFilters.sources?.length > 0) {
+      const selectedSources = appliedFilters.sources.map((source) => String(source).toLowerCase());
+      result = result.filter((a) => selectedSources.includes(normalizeSourceName(a.source).toLowerCase()));
+    }
+    if (appliedFilters.contentFilter === 'price') {
+      result = result.filter(isPriceRelatedAlert);
     }
 
-    const sorted = [...list];
-    if (sortBy === 'priority') {
+    const sorted = [...result];
+    if (sortBy === 'oldest') {
+      sorted.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    } else if (sortBy === 'priority') {
+      // Sort by priority first, then by recency (newest first)
       sorted.sort((a, b) => {
-        const pa = PRIORITY_ORDER[a.priority] ?? 9;
-        const pb = PRIORITY_ORDER[b.priority] ?? 9;
-        if (pa !== pb) return pa - pb;
+        const priorityDiff = (PRIORITY_ORDER[a.priority] ?? 3) - (PRIORITY_ORDER[b.priority] ?? 3);
+        if (priorityDiff !== 0) return priorityDiff;
         return new Date(b.timestamp) - new Date(a.timestamp);
       });
-    } else if (sortBy === 'relevance') {
+    } else if (sortBy === 'unread') {
       sorted.sort((a, b) => {
-        const score = (item) => {
-          let s = 0;
-          if (importantIds.has(item.id)) s += 30;
-          if (pinnedIds.has(item.id)) s += 20;
-          if (bookmarkedIds.has(item.id)) s += 10;
-          s += item.status === 'new' ? 8 : 0;
-          s += (3 - (PRIORITY_ORDER[item.priority] ?? 3)) * 5;
-          return s;
-        };
-        return score(b) - score(a);
+        if (a.status === 'new' && b.status !== 'new') return -1;
+        if (a.status !== 'new' && b.status === 'new') return 1;
+        // Then by priority, then by recency
+        const priorityDiff = (PRIORITY_ORDER[a.priority] ?? 3) - (PRIORITY_ORDER[b.priority] ?? 3);
+        if (priorityDiff !== 0) return priorityDiff;
+        return new Date(b.timestamp) - new Date(a.timestamp);
       });
     } else {
-      sorted.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      // Default 'newest': sort by priority first (HIGH first), then by recency
+      sorted.sort((a, b) => {
+        const priorityDiff = (PRIORITY_ORDER[a.priority] ?? 3) - (PRIORITY_ORDER[b.priority] ?? 3);
+        if (priorityDiff !== 0) return priorityDiff;
+        return new Date(b.timestamp) - new Date(a.timestamp);
+      });
     }
-
-    sorted.sort((a, b) => {
-      if (pinnedIds.has(a.id) && !pinnedIds.has(b.id)) return -1;
-      if (!pinnedIds.has(a.id) && pinnedIds.has(b.id)) return 1;
-      return 0;
-    });
-
     return sorted;
-  }, [
-    allAlerts,
-    appliedFilters,
-    searchQuery,
-    sortBy,
-    bookmarkedIds,
-    importantIds,
-    pinnedIds,
-  ]);
+  }, [allAlerts, appliedFilters, sortBy]);
 
-  const visibleAlerts = filteredAlerts.slice(0, visibleCount);
-  const savedAlerts = filteredAlerts.filter((item) => bookmarkedIds.has(item.id));
-
-  const kpis = useMemo(() => {
-    const types = { NEWS: 0, PRICE_ALERT: 0, SENTIMENT: 0 };
-    filteredAlerts.forEach((alert) => {
-      types[inferAlertType(alert)] = (types[inferAlertType(alert)] || 0) + 1;
-    });
-    return {
-      total: filteredAlerts.length,
-      news: types.NEWS,
-      price: types.PRICE_ALERT,
-      sentiment: types.SENTIMENT,
-      types,
+  // Infinite scroll
+  useEffect(() => {
+    const el = feedRef.current;
+    if (!el) return;
+    const handleScroll = () => {
+      if (el.scrollTop + el.clientHeight >= el.scrollHeight - 120 && !isLoadingMore) {
+        if (visibleCount < filtered.length) {
+          setIsLoadingMore(true);
+          setTimeout(() => {
+            setVisibleCount((prev) => Math.min(prev + 4, filtered.length));
+            setIsLoadingMore(false);
+          }, 600);
+        }
+      }
     };
-  }, [filteredAlerts]);
+    el.addEventListener('scroll', handleScroll);
+    return () => el.removeEventListener('scroll', handleScroll);
+  }, [filtered.length, isLoadingMore, visibleCount]);
 
-  const byHour = useMemo(() => {
-    const now = new Date();
-    const points = [];
-    for (let i = 11; i >= 0; i -= 1) {
-      const d = new Date(now.getTime() - i * 60 * 60 * 1000);
-      const label = `${d.getHours().toString().padStart(2, '0')}:00`;
-      points.push({ label, count: 0, hour: d.getHours(), day: d.getDate() });
-    }
-
-    filteredAlerts.forEach((alert) => {
-      const t = new Date(alert.timestamp);
-      const idx = points.findIndex((p) => p.hour === t.getHours() && p.day === t.getDate());
-      if (idx >= 0) points[idx].count += 1;
-    });
-
-    return points;
-  }, [filteredAlerts]);
+  const visibleAlerts = filtered.slice(0, visibleCount);
+  const unreadCount = allAlerts.filter((a) => a.status === 'new').length;
+  const highPriorityCount = allAlerts.filter((a) => a.priority === 'HIGH').length;
+  const highUnread = allAlerts.filter((a) => a.priority === 'HIGH' && a.status === 'new').length;
 
   const handleMarkAsRead = useCallback(async (id) => {
     readAlertIdsRef.current.add(String(id));
     setAllAlerts((prev) => prev.map((a) => (a.id === id ? { ...a, status: 'read' } : a)));
+    setSelectedAlert((prev) => (prev?.id === id ? { ...prev, status: 'read' } : prev));
     if (isEventItemId(id)) return;
     try {
       await alertsService.markAsRead(id);
@@ -749,19 +589,24 @@ export const Dashboard = () => {
   }, [toast]);
 
   const handleOpenAlert = useCallback((alert) => {
+    // Auto-mark as read on open (Gmail-style)
     readAlertIdsRef.current.add(String(alert.id));
-    setSelectedAlert({ ...alert, status: 'read' });
+    const readAlert = { ...alert, status: 'read' };
+    setSelectedAlert(readAlert);
     setAllAlerts((prev) => prev.map((a) => (a.id === alert.id ? { ...a, status: 'read' } : a)));
-    if (!isEventItemId(alert.id)) {
-      alertsService.markAsRead(alert.id).catch(() => undefined);
-    }
+    if (isEventItemId(alert.id)) return;
+    alertsService.markAsRead(alert.id).catch(() => {
+      // Keep UI optimistic; errors are non-blocking for detail view.
+    });
   }, []);
 
   const handleDismiss = useCallback(async (id) => {
     const previous = allAlerts;
     setAllAlerts((prev) => prev.filter((a) => a.id !== id));
     setSelectedAlert(null);
+
     if (isEventItemId(id)) return;
+
     try {
       await alertsService.dismissAlert(id);
     } catch (error) {
@@ -788,579 +633,279 @@ export const Dashboard = () => {
     }
   }, [feedbackMap, toast, user?.id]);
 
+  const handleApplyFilters = () => {
+    setAppliedFilters({ ...filters });
+    setVisibleCount(8);
+    setFilterOpen(false);
+  };
+
+  const handleClearFilters = () => {
+    setFilters(DEFAULT_FILTERS);
+    setAppliedFilters(DEFAULT_FILTERS);
+    setVisibleCount(8);
+  };
+
   const handleRefresh = async () => {
     setIsRefreshing(true);
     await loadDashboardData(appliedFilters.sources || [], appliedFilters.eventType || 'all');
     setIsRefreshing(false);
   };
 
-  const toggleSource = (source) => {
-    const current = new Set(filters.sources || []);
-    if (current.has(source)) current.delete(source);
-    else current.add(source);
-    const next = { ...filters, sources: Array.from(current) };
-    setFilters(next);
-    setAppliedFilters(next);
-    setVisibleCount(10);
-  };
+  const handleApplyPriceFilter = useCallback(() => {
+    const nextFilters = { ...filters, contentFilter: 'price' };
+    setFilters(nextFilters);
+    setAppliedFilters(nextFilters);
+    setVisibleCount(8);
+  }, [filters]);
 
-  const applyFilterNow = (patch) => {
-    const next = { ...filters, ...patch };
-    setFilters(next);
-    setAppliedFilters(next);
-    setVisibleCount(10);
-  };
+  const hasActiveFilters =
+    appliedFilters.priority.length < 3 ||
+    !!appliedFilters.entity ||
+    !!appliedFilters.dateFrom ||
+    !!appliedFilters.dateTo ||
+    (appliedFilters.sources?.length ?? 0) > 0 ||
+    appliedFilters.contentFilter === 'price';
 
-  const topFilters = (
-    <div className="flex items-center gap-2 flex-wrap">
-      <div className="flex items-center bg-[#1e293b] border border-white/5 rounded-md p-1">
-        {ALERT_TYPE_OPTIONS.map((type) => (
-          <button
-            key={type}
-            type="button"
-            onClick={() => applyFilterNow({ eventType: type })}
-            className={`h-8 px-2.5 rounded text-xs font-medium transition-colors ${
-              (appliedFilters.eventType || 'all') === type
-                ? 'bg-blue-500 text-white'
-                : 'text-slate-300 hover:bg-white/5'
-            }`}
-          >
-            {type === 'all' ? 'All' : type === 'PRICE_ALERT' ? 'Price' : type === 'SENTIMENT' ? 'Sentiment' : 'News'}
-          </button>
-        ))}
-      </div>
+  const currentSortLabel = SORT_OPTIONS.find((s) => s.value === sortBy)?.label || 'Newest First';
 
-      <div className="flex items-center bg-[#1e293b] border border-white/5 rounded-md p-1">
-        {TIME_RANGE_OPTIONS.map((range) => (
-          <button
-            key={range}
-            type="button"
-            onClick={() => applyFilterNow({ timeRange: range })}
-            className={`h-8 px-2.5 rounded text-xs font-medium transition-colors ${
-              (appliedFilters.timeRange || '24h') === range
-                ? 'bg-green-500 text-slate-900'
-                : 'text-slate-300 hover:bg-white/5'
-            }`}
-          >
-            {range}
-          </button>
-        ))}
-      </div>
+  return (
+    <div className="min-h-screen w-full pt-24 sm:pt-28 pb-12 px-3 sm:px-4 lg:px-6" style={{ position: 'relative', zIndex: 1 }}>
+      <div className="max-w-[1400px] mx-auto space-y-4 sm:space-y-6">
 
-      <select
-        value={sortBy}
-        onChange={(e) => setSortBy(e.target.value)}
-        className="h-8 rounded-md bg-[#1e293b] border border-white/5 px-2 text-xs text-slate-200"
-      >
-        {SORT_OPTIONS.map((opt) => (
-          <option key={opt.value} value={opt.value}>{opt.label}</option>
-        ))}
-      </select>
-    </div>
-  );
-
-  const feedPanel = (
-    <section className="rounded-lg bg-[#1e293b] border border-white/5 overflow-hidden">
-      <header className="px-4 py-3 border-b border-white/5 flex items-center justify-between gap-2">
-        <div>
-          <h2 className="text-sm font-semibold text-[#e2e8f0]">Live Alert Feed</h2>
-          <p className="text-xs text-[#94a3b8]">{filteredAlerts.length} signals in range</p>
-        </div>
-        <button
-          type="button"
-          onClick={() => setPanelState((prev) => ({ ...prev, feed: !prev.feed }))}
-          className="h-8 px-2 rounded-md border border-white/10 text-slate-300 text-xs"
-        >
-          {panelState.feed ? 'Collapse' : 'Expand'}
-        </button>
-      </header>
-
-      {panelState.feed && (
-        <div ref={feedRef} className="p-3 sm:p-4 max-h-[58vh] overflow-y-auto space-y-2">
-          {isLoading ? (
-            <SkeletonList />
-          ) : loadError ? (
-            <div className="rounded-lg border border-red-400/20 bg-red-500/10 p-4 text-sm text-red-200">{loadError}</div>
-          ) : visibleAlerts.length === 0 ? (
-            <div className="rounded-lg border border-white/10 bg-slate-900/30 p-6 text-center text-sm text-slate-400">
-              No alerts for current filters.
-            </div>
-          ) : (
-            visibleAlerts.map((alert) => (
-              <div
-                key={alert.id}
-                className={`transition-all ${recentAlertIds.has(alert.id) ? 'ring-1 ring-blue-400/40 rounded-lg' : ''}`}
+        {/* PAGE HEADER */}
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Alert Dashboard</h1>
+            <p className="text-xs sm:text-sm text-slate-500 mt-1">
+              Real-time market signals from 50+ sources
+            </p>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap justify-start sm:justify-end">
+            <Tooltip content="Reload latest alerts" placement="bottom">
+              <button
+                onClick={handleRefresh}
+                className={`flex items-center gap-1 sm:gap-2 px-2.5 sm:px-4 py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium bg-[#0D0D0D] border border-[#1F1F1F] text-slate-400 hover:border-emerald-500/40 hover:text-emerald-400 transition-all duration-200 ${isRefreshing ? 'text-emerald-400 border-emerald-500/40' : ''}`}
               >
-                <AlertFeedCard
-                  alert={alert}
-                  isPinned={pinnedIds.has(alert.id)}
-                  isBookmarked={bookmarkedIds.has(alert.id)}
-                  isImportant={importantIds.has(alert.id)}
-                  onOpen={handleOpenAlert}
-                  onBookmark={(id) => toggleSetValue(setBookmarkedIds, id)}
-                  onPin={(id) => toggleSetValue(setPinnedIds, id)}
-                  onImportant={(id) => toggleSetValue(setImportantIds, id)}
+                <RefreshCw className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                <span className="hidden sm:inline">Refresh</span>
+              </button>
+            </Tooltip>
+            <Tooltip content="Export visible alerts to CSV" placement="bottom">
+              <button className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-[#0D0D0D] border border-[#1F1F1F] text-slate-400 hover:border-white/20 hover:text-white transition-all duration-200">
+                <Download className="w-4 h-4" />
+                Export
+              </button>
+            </Tooltip>
+            {/* Mobile filter toggle */}
+            <Tooltip content="Filter alerts" placement="bottom">
+              <button
+                onClick={() => setFilterOpen((v) => !v)}
+                className={`lg:hidden flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-medium border transition-all duration-200 ${filterOpen ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-[#0D0D0D] border-[#1F1F1F] text-slate-400'}`}
+              >
+                <SlidersHorizontal className="w-3.5 h-3.5" />
+                {hasActiveFilters && (
+                  <span className="w-3 h-3 rounded-full bg-emerald-500 text-black text-[8px] font-bold flex items-center justify-center">!</span>
+                )}
+              </button>
+            </Tooltip>
+          </div>
+        </div>
+
+        {/* STATS ROW */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
+          <StatCard icon={Bell}          label="Total Alerts"    value={isLoading ? '…' : allAlerts.length}    subValue="all time"           accentColor="blue"    />
+          <StatCard icon={BellRing}      label="Unread"          value={isLoading ? '…' : unreadCount}         subValue="requires action"    accentColor="amber"   />
+          <StatCard icon={AlertTriangle} label="High Priority"   value={isLoading ? '…' : highPriorityCount}   subValue={`${highUnread} unread`}  accentColor="red"   />
+          <StatCard icon={Activity}      label="Sources Active"  value={isLoading ? '…' : sourceOptions.length} subValue="live feeds"          accentColor="emerald" />
+        </div>
+
+        {/* MAIN CONTENT: SIDEBAR + FEED */}
+        <div className="flex gap-2 sm:gap-4 items-start">
+
+          {/* FILTER SIDEBAR — Desktop */}
+          <div className="hidden lg:block w-64 xl:w-72 flex-shrink-0 sticky top-28">
+            <FilterSidebar
+              filters={filters}
+              onFiltersChange={setFilters}
+              onApply={handleApplyFilters}
+              onClear={handleClearFilters}
+              totalCount={allAlerts.length}
+              filteredCount={filtered.length}
+              sourceOptions={sourceOptions}
+            />
+          </div>
+
+          {/* FILTER SIDEBAR — Mobile overlay */}
+          {filterOpen && (
+            <div className="lg:hidden fixed inset-0 z-40" onClick={() => setFilterOpen(false)}>
+              <div className="absolute inset-0 bg-black/70" />
+              <div className="absolute bottom-0 left-0 right-0 max-h-[85vh] sm:max-h-[82vh] overflow-y-auto rounded-t-2xl" onClick={(e) => e.stopPropagation()}>
+                <FilterSidebar
+                  filters={filters}
+                  onFiltersChange={setFilters}
+                  onApply={handleApplyFilters}
+                  onClear={handleClearFilters}
+                  totalCount={allAlerts.length}
+                  filteredCount={filtered.length}
+                  sourceOptions={sourceOptions}
                 />
               </div>
-            ))
-          )}
-
-          {isLoadingMore && (
-            <div className="h-10 flex items-center justify-center text-slate-400 text-xs">
-              <Loader2 className="w-4 h-4 animate-spin" />
             </div>
           )}
-        </div>
-      )}
-    </section>
-  );
 
-  const sourcePanel = (
-    <section className="rounded-lg bg-[#1e293b] border border-white/5 overflow-hidden">
-      <header className="px-4 py-3 border-b border-white/5 flex items-center justify-between">
-        <div>
-          <h2 className="text-sm font-semibold text-[#e2e8f0]">Data Sources</h2>
-          <p className="text-xs text-[#94a3b8]">Toggle providers on/off</p>
-        </div>
-        <button
-          type="button"
-          onClick={() => setPanelState((prev) => ({ ...prev, sources: !prev.sources }))}
-          className="h-8 px-2 rounded-md border border-white/10 text-slate-300 text-xs"
-        >
-          {panelState.sources ? 'Collapse' : 'Expand'}
-        </button>
-      </header>
+          {/* ALERT FEED */}
+          <div className="flex-1 min-w-0 flex flex-col gap-2 sm:gap-3">
 
-      {panelState.sources && (
-        <div className="p-3 grid grid-cols-2 xl:grid-cols-1 gap-2">
-          {sourceOptions.map((source) => (
-            <SourceTile
-              key={source}
-              source={source}
-              count={sourceCounts[source] || 0}
-              enabled={(appliedFilters.sources || []).length === 0 || (appliedFilters.sources || []).includes(source)}
-              onToggle={() => toggleSource(source)}
-            />
-          ))}
-        </div>
-      )}
-    </section>
-  );
+            {/* Feed toolbar */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 flex-wrap px-1">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="text-xs sm:text-sm font-semibold text-white truncate">
+                  {isLoading ? '…' : filtered.length} alerts
+                </span>
+                {hasActiveFilters && (
+                  <button
+                    onClick={handleClearFilters}
+                    className="flex items-center gap-1 text-xs text-emerald-400 hover:text-emerald-300 transition-colors"
+                  >
+                    <X className="w-3 h-3" />
+                    Clear filters
+                  </button>
+                )}
+              </div>
 
-  const analyticsPanel = (
-    <section className="rounded-lg bg-[#1e293b] border border-white/5 overflow-hidden">
-      <header className="px-4 py-3 border-b border-white/5 flex items-center justify-between">
-        <div>
-          <h2 className="text-sm font-semibold text-[#e2e8f0]">Activity Chart</h2>
-          <p className="text-xs text-[#94a3b8]">Alerts per hour and type distribution</p>
-        </div>
-        <button
-          type="button"
-          onClick={() => setPanelState((prev) => ({ ...prev, activity: !prev.activity }))}
-          className="h-8 px-2 rounded-md border border-white/10 text-slate-300 text-xs"
-        >
-          {panelState.activity ? 'Collapse' : 'Expand'}
-        </button>
-      </header>
+              {/* Sort dropdown */}
+              <div ref={sortMenuRef} className="relative w-full sm:w-auto">
+                <button
+                  onClick={() => setShowSortMenu((v) => !v)}
+                  className="w-full sm:w-auto flex items-center justify-between sm:justify-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg sm:rounded-xl text-xs font-medium bg-[#0D0D0D] border border-[#1F1F1F] text-slate-400 hover:border-white/20 hover:text-white transition-all duration-200"
+                >
+                  <span className="truncate">{currentSortLabel}</span>
+                  <ChevronDown className="w-3 h-3 flex-shrink-0" />
+                </button>
+                {showSortMenu && (
+                  <div className="absolute right-0 sm:right-0 top-full mt-2 z-30 w-full sm:w-48 rounded-lg sm:rounded-xl overflow-hidden bg-[#0D0D0D] border border-[#1F1F1F] shadow-2xl">
+                    {SORT_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.value}
+                        onClick={() => { setSortBy(opt.value); setShowSortMenu(false); }}
+                        className={`w-full text-left px-4 py-2.5 text-sm transition-colors hover:bg-white/5 ${sortBy === opt.value ? 'text-emerald-400 bg-emerald-500/10' : 'text-slate-400'}`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
 
-      {panelState.activity && (
-        <div className="p-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className="rounded-lg bg-slate-900/30 border border-white/5 p-3">
-            <p className="text-xs text-slate-400 mb-2">Alerts per hour</p>
-            <MiniActivityChart byHour={byHour} />
-          </div>
-          <div className="rounded-lg bg-slate-900/30 border border-white/5 p-3">
-            <p className="text-xs text-slate-400 mb-2">Distribution by type</p>
-            <TypeDistributionChart data={kpis.types} />
-          </div>
-        </div>
-      )}
-    </section>
-  );
+            {/* Active filter chips */}
+            {hasActiveFilters && (
+              <div className="flex flex-wrap gap-1.5 sm:gap-2 px-1 text-xs sm:text-sm">
+                {appliedFilters.priority.length < 3 && (
+                  <div className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    Priority: {appliedFilters.priority.join(', ')}
+                    <button onClick={() => {
+                      const nf = { ...appliedFilters, priority: ['HIGH', 'MEDIUM', 'LOW'] };
+                      setAppliedFilters(nf); setFilters(nf);
+                    }}><X className="w-3 h-3" /></button>
+                  </div>
+                )}
+                {appliedFilters.entity && (
+                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                    Token: {appliedFilters.entity}
+                    <button onClick={() => {
+                      const nf = { ...appliedFilters, entity: '' };
+                      setAppliedFilters(nf); setFilters(nf);
+                    }}><X className="w-3 h-3" /></button>
+                  </div>
+                )}
+                {(appliedFilters.dateFrom || appliedFilters.dateTo) && (
+                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                    Date range active
+                    <button onClick={() => {
+                      const nf = { ...appliedFilters, dateFrom: '', dateTo: '' };
+                      setAppliedFilters(nf); setFilters(nf);
+                    }}><X className="w-3 h-3" /></button>
+                  </div>
+                )}
+                {(appliedFilters.sources?.length ?? 0) > 0 && (
+                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    Sources: {appliedFilters.sources.join(', ')}
+                    <button onClick={() => {
+                      const nf = { ...appliedFilters, sources: [] };
+                      setAppliedFilters(nf); setFilters(nf);
+                    }}><X className="w-3 h-3" /></button>
+                  </div>
+                )}
+                {appliedFilters.contentFilter === 'price' && (
+                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                    Filter: Price
+                    <button onClick={() => {
+                      const nf = { ...appliedFilters, contentFilter: 'all' };
+                      setAppliedFilters(nf); setFilters(nf);
+                    }}><X className="w-3 h-3" /></button>
+                  </div>
+                )}
+              </div>
+            )}
 
-  const desktopView = (
-    <div className="hidden lg:grid grid-cols-[auto_1fr] min-h-screen bg-[#0f172a] text-[#e2e8f0]">
-      <aside className={`border-r border-white/5 bg-[#111b2f] transition-all ${sidebarCollapsed ? 'w-[76px]' : 'w-[240px]'}`}>
-        <div className="h-16 px-4 border-b border-white/5 flex items-center justify-between">
-          {!sidebarCollapsed && <span className="font-semibold tracking-wide">Aeterna Intel</span>}
-          <button
-            type="button"
-            onClick={() => setSidebarCollapsed((v) => !v)}
-            className="h-8 w-8 rounded-md border border-white/10 grid place-items-center text-slate-300 hover:bg-white/5"
-          >
-            {sidebarCollapsed ? <PanelLeftOpen className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
-          </button>
-        </div>
+            {/* Feed list */}
+            <div
+              ref={feedRef}
+              className="space-y-1.5 sm:space-y-2 overflow-y-auto pr-1"
+              style={{ maxHeight: 'calc(100vh - 280px)', minHeight: '300px' }}
+            >
+              {isLoading ? (
+                Array.from({ length: 6 }).map((_, i) => <AlertSkeleton key={i} />)
+              ) : visibleAlerts.length === 0 ? (
+                <EmptyState hasFilters={hasActiveFilters} onClear={handleClearFilters} loadError={loadError} />
+              ) : (
+                <>
+                  {visibleAlerts.map((alert) => (
+                    <div
+                      key={alert.id}
+                      className={`transition-all duration-500 ${recentAlertIds.has(alert.id) ? 'opacity-100 scale-[1.01]' : 'opacity-100 scale-100'}`}
+                    >
+                      <AlertCard
+                        alert={alert}
+                        onViewDetails={handleOpenAlert}
+                        onMarkAsRead={handleMarkAsRead}
+                      />
+                    </div>
+                  ))}
 
-        <nav className="p-3 space-y-1">
-          {NAV_ITEMS.map((item) => {
-            const Icon = item.icon;
-            const active = activeDesktopNav === item.key;
-            return (
-              <button
-                key={item.key}
-                type="button"
-                onClick={() => setActiveDesktopNav(item.key)}
-                className={`w-full h-10 px-3 rounded-md flex items-center ${sidebarCollapsed ? 'justify-center' : 'justify-start'} gap-2 text-sm transition-all ${
-                  active ? 'bg-blue-500/15 text-blue-300 border border-blue-400/20' : 'text-slate-300 hover:bg-white/5'
-                }`}
-              >
-                <Icon className="w-4 h-4" />
-                {!sidebarCollapsed && <span>{item.label}</span>}
-              </button>
-            );
-          })}
-        </nav>
-      </aside>
+                  {isLoadingMore && (
+                    <div className="flex items-center justify-center py-6">
+                      <Loader2 className="w-5 h-5 text-emerald-400 animate-spin" />
+                      <span className="ml-2 text-sm text-slate-500">Loading more alerts…</span>
+                    </div>
+                  )}
 
-      <main className="min-w-0">
-        <header className="h-16 px-6 border-b border-white/5 bg-[#0f172a]/95 backdrop-blur sticky top-0 z-20 flex items-center justify-between gap-3">
-          <div className="relative w-full max-w-xl">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search alerts, tokens, sources"
-              className="w-full h-10 pl-9 pr-3 rounded-md bg-[#1e293b] border border-white/5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-blue-400/40"
-            />
-          </div>
-
-          {topFilters}
-
-          <div className="flex items-center gap-2">
-            <button type="button" className="h-10 w-10 rounded-md border border-white/10 grid place-items-center text-slate-300 hover:bg-white/5">
-              <Bell className="w-4 h-4" />
-            </button>
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setShowProfileMenu((v) => !v)}
-                className="h-10 px-3 rounded-md border border-white/10 bg-[#1e293b] flex items-center gap-2 text-sm text-slate-200"
-              >
-                <span className="h-6 w-6 rounded-full bg-slate-700 grid place-items-center text-xs">{(user?.name || 'U')[0]}</span>
-                <ChevronDown className="w-3.5 h-3.5" />
-              </button>
-              {showProfileMenu && (
-                <div className="absolute right-0 mt-2 w-48 rounded-md border border-white/10 bg-[#1e293b] shadow-xl p-2 text-sm">
-                  <button type="button" className="w-full text-left h-9 px-2 rounded hover:bg-white/5">Profile</button>
-                  <button type="button" className="w-full text-left h-9 px-2 rounded hover:bg-white/5">Settings</button>
-                </div>
+                  {!isLoadingMore && visibleCount >= filtered.length && filtered.length > 0 && (
+                    <div className="text-center py-8">
+                      <p className="text-xs text-slate-600">All {filtered.length} alerts loaded</p>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
-        </header>
-
-        <div className="p-4 xl:p-6 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
-            <KpiTile label="Total Alerts Today" value={kpis.total} trend="+8.2%" icon={AlertCircle} accent="text-blue-400" />
-            <KpiTile label="News Alerts" value={kpis.news} trend="+3.1%" icon={Newspaper} accent="text-blue-400" />
-            <KpiTile label="Price Alerts" value={kpis.price} trend="+11.4%" icon={TrendingUp} accent="text-green-400" />
-            <KpiTile label="Sentiment Alerts" value={kpis.sentiment} trend="+2.6%" icon={Activity} accent="text-orange-400" />
-          </div>
-
-          <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-4">
-            <div className="space-y-4">
-              {feedPanel}
-              {analyticsPanel}
-            </div>
-            <div>{sourcePanel}</div>
-          </div>
-        </div>
-      </main>
-    </div>
-  );
-
-  const mobileHeader = (
-    <header className="sticky top-0 z-20 bg-[#0f172a]/95 backdrop-blur border-b border-white/5 px-3 py-2.5 flex items-center justify-between">
-      <h1 className="text-sm font-semibold text-slate-100">Market Dashboard</h1>
-      <div className="flex items-center gap-1.5">
-        <button type="button" className="h-10 w-10 rounded-md border border-white/10 grid place-items-center text-slate-300">
-          <Search className="w-4 h-4" />
-        </button>
-        <button type="button" className="h-10 w-10 rounded-md border border-white/10 grid place-items-center text-slate-300">
-          <Bell className="w-4 h-4" />
-        </button>
-        <button
-          type="button"
-          onClick={() => setMobileFilterOpen(true)}
-          className="h-10 w-10 rounded-md border border-white/10 grid place-items-center text-slate-300"
-        >
-          <Filter className="w-4 h-4" />
-        </button>
-      </div>
-    </header>
-  );
-
-  const mobileTabBar = (
-    <nav className="fixed bottom-0 inset-x-0 z-30 bg-[#111b2f] border-t border-white/5 h-16 grid grid-cols-5">
-      {MOBILE_TABS.map((tab) => {
-        const iconMap = {
-          alerts: Bell,
-          sources: Database,
-          analytics: BarChart3,
-          saved: Bookmark,
-          settings: Settings,
-        };
-        const Icon = iconMap[tab];
-        const active = mobileTab === tab;
-        return (
-          <button
-            key={tab}
-            type="button"
-            onClick={() => setMobileTab(tab)}
-            className={`flex flex-col items-center justify-center gap-0.5 text-[10px] ${active ? 'text-blue-300' : 'text-slate-400'}`}
-          >
-            <Icon className="w-4 h-4" />
-            <span className="capitalize">{tab}</span>
-          </button>
-        );
-      })}
-    </nav>
-  );
-
-  const mobileAlertsView = (
-    <div className="space-y-3 pb-24 px-3 pt-3">
-      <div className="grid grid-cols-2 gap-2">
-        <KpiTile label="Total" value={kpis.total} trend="+8%" icon={AlertCircle} accent="text-blue-400" />
-        <KpiTile label="Price" value={kpis.price} trend="+11%" icon={TrendingUp} accent="text-green-400" />
-      </div>
-
-      {visibleAlerts.map((alert) => (
-        <AlertFeedCard
-          key={alert.id}
-          alert={alert}
-          isPinned={pinnedIds.has(alert.id)}
-          isBookmarked={bookmarkedIds.has(alert.id)}
-          isImportant={importantIds.has(alert.id)}
-          onOpen={handleOpenAlert}
-          onBookmark={(id) => toggleSetValue(setBookmarkedIds, id)}
-          onPin={(id) => toggleSetValue(setPinnedIds, id)}
-          onImportant={(id) => toggleSetValue(setImportantIds, id)}
-        />
-      ))}
-
-      {isLoading && <SkeletonList />}
-
-      <button
-        type="button"
-        onClick={() => setMobileFilterOpen(true)}
-        className="fixed bottom-20 right-4 h-11 px-4 rounded-full bg-blue-500 text-white text-sm shadow-lg"
-      >
-        Quick Filter
-      </button>
-    </div>
-  );
-
-  const mobileSourcesView = (
-    <div className="pb-24 px-3 pt-3">
-      <div className="grid grid-cols-2 gap-2">
-        {sourceOptions.map((source) => (
-          <SourceTile
-            key={source}
-            source={source}
-            count={sourceCounts[source] || 0}
-            enabled={(appliedFilters.sources || []).length === 0 || (appliedFilters.sources || []).includes(source)}
-            onToggle={() => toggleSource(source)}
-          />
-        ))}
-      </div>
-    </div>
-  );
-
-  const mobileAnalyticsView = (
-    <div className="pb-24 px-3 pt-3">
-      <div className="overflow-x-auto flex snap-x snap-mandatory gap-3">
-        <div className="snap-start shrink-0 w-full rounded-lg bg-[#1e293b] border border-white/5 p-3">
-          <p className="text-xs text-slate-400 mb-2">Alerts over time</p>
-          <MiniActivityChart byHour={byHour} />
-        </div>
-        <div className="snap-start shrink-0 w-full rounded-lg bg-[#1e293b] border border-white/5 p-3">
-          <p className="text-xs text-slate-400 mb-2">Distribution by type</p>
-          <TypeDistributionChart data={kpis.types} />
         </div>
       </div>
-    </div>
-  );
 
-  const mobileSavedView = (
-    <div className="pb-24 px-3 pt-3 space-y-2">
-      {savedAlerts.length === 0 ? (
-        <div className="rounded-lg bg-[#1e293b] border border-white/5 p-6 text-center text-sm text-slate-400">No saved alerts yet.</div>
-      ) : (
-        savedAlerts.map((alert) => (
-          <AlertFeedCard
-            key={alert.id}
-            alert={alert}
-            isPinned={pinnedIds.has(alert.id)}
-            isBookmarked={bookmarkedIds.has(alert.id)}
-            isImportant={importantIds.has(alert.id)}
-            onOpen={handleOpenAlert}
-            onBookmark={(id) => toggleSetValue(setBookmarkedIds, id)}
-            onPin={(id) => toggleSetValue(setPinnedIds, id)}
-            onImportant={(id) => toggleSetValue(setImportantIds, id)}
-          />
-        ))
-      )}
-    </div>
-  );
-
-  const mobileSettingsView = (
-    <div className="pb-24 px-3 pt-3 space-y-2">
-      <div className="rounded-lg bg-[#1e293b] border border-white/5 p-4">
-        <p className="text-sm text-slate-100">Notification preferences</p>
-        <p className="text-xs text-slate-400 mt-1">Configure real-time alert behavior and watchlists.</p>
-      </div>
-    </div>
-  );
-
-  const mobileView = (
-    <div className="lg:hidden min-h-screen bg-[#0f172a] text-[#e2e8f0]">
-      {mobileHeader}
-      {mobileTab === 'alerts' && mobileAlertsView}
-      {mobileTab === 'sources' && mobileSourcesView}
-      {mobileTab === 'analytics' && mobileAnalyticsView}
-      {mobileTab === 'saved' && mobileSavedView}
-      {mobileTab === 'settings' && mobileSettingsView}
-      {mobileTabBar}
-    </div>
-  );
-
-  return (
-    <>
-      {desktopView}
-      {mobileView}
-
-      {mobileFilterOpen && (
-        <div className="fixed inset-0 z-40 lg:hidden" onClick={() => setMobileFilterOpen(false)}>
-          <div className="absolute inset-0 bg-black/60" />
-          <div
-            className="absolute left-0 right-0 bottom-0 rounded-t-2xl bg-[#1e293b] border-t border-white/10 p-4 space-y-4 max-h-[78vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-slate-100">Filters</h3>
-              <button type="button" onClick={() => setMobileFilterOpen(false)} className="h-8 w-8 grid place-items-center rounded-md border border-white/10">
-                <X className="w-4 h-4 text-slate-300" />
-              </button>
-            </div>
-
-            <div>
-              <p className="text-xs text-slate-400 mb-2">Alert type</p>
-              <div className="flex gap-2 flex-wrap">
-                {ALERT_TYPE_OPTIONS.map((type) => (
-                  <button
-                    key={type}
-                    type="button"
-                    onClick={() => setFilters((prev) => ({ ...prev, eventType: type }))}
-                    className={`h-11 px-3 rounded-md border text-xs ${
-                      (filters.eventType || 'all') === type
-                        ? 'bg-blue-500/20 border-blue-400/30 text-blue-200'
-                        : 'bg-slate-900/30 border-white/10 text-slate-300'
-                    }`}
-                  >
-                    {type === 'all' ? 'All' : type === 'PRICE_ALERT' ? 'Price' : type === 'SENTIMENT' ? 'Sentiment' : 'News'}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <p className="text-xs text-slate-400 mb-2">Sources</p>
-              <div className="flex gap-2 flex-wrap">
-                {sourceOptions.map((source) => {
-                  const selected = (filters.sources || []).includes(source);
-                  return (
-                    <button
-                      key={source}
-                      type="button"
-                      onClick={() => {
-                        const current = new Set(filters.sources || []);
-                        if (current.has(source)) current.delete(source);
-                        else current.add(source);
-                        setFilters((prev) => ({ ...prev, sources: Array.from(current) }));
-                      }}
-                      className={`h-11 px-3 rounded-full border text-xs ${
-                        selected
-                          ? 'bg-green-500/20 border-green-400/30 text-green-200'
-                          : 'bg-slate-900/30 border-white/10 text-slate-300'
-                      }`}
-                    >
-                      {source}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div>
-              <p className="text-xs text-slate-400 mb-2">Time range</p>
-              <div className="flex gap-2">
-                {TIME_RANGE_OPTIONS.map((range) => (
-                  <button
-                    key={range}
-                    type="button"
-                    onClick={() => setFilters((prev) => ({ ...prev, timeRange: range }))}
-                    className={`h-11 px-3 rounded-md border text-xs ${
-                      (filters.timeRange || '24h') === range
-                        ? 'bg-green-500/20 border-green-400/30 text-green-200'
-                        : 'bg-slate-900/30 border-white/10 text-slate-300'
-                    }`}
-                  >
-                    {range}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setFilters(DEFAULT_FILTERS);
-                  setAppliedFilters(DEFAULT_FILTERS);
-                  setMobileFilterOpen(false);
-                }}
-                className="flex-1 h-11 rounded-md border border-white/10 text-sm text-slate-300"
-              >
-                Reset
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setAppliedFilters({ ...filters });
-                  setVisibleCount(10);
-                  setMobileFilterOpen(false);
-                }}
-                className="flex-1 h-11 rounded-md bg-blue-500 text-white text-sm"
-              >
-                Apply
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
+      {/* ALERT DETAIL MODAL */}
       <AlertDetailModal
         alert={selectedAlert}
         isOpen={!!selectedAlert}
         onClose={() => setSelectedAlert(null)}
         onMarkAsRead={handleMarkAsRead}
         onDismiss={handleDismiss}
-        onApplyPriceFilter={() => applyFilterNow({ eventType: 'PRICE_ALERT' })}
-        isPriceRelated={selectedAlert ? inferAlertType(selectedAlert) === 'PRICE_ALERT' : false}
+        onApplyPriceFilter={handleApplyPriceFilter}
+        isPriceRelated={selectedAlert ? isPriceRelatedAlert(selectedAlert) : false}
         onFeedback={handleFeedback}
         feedbackState={selectedAlert ? feedbackMap[selectedAlert.id] : null}
       />
-
-      <button
-        type="button"
-        onClick={handleRefresh}
-        className="fixed bottom-20 lg:bottom-6 right-4 lg:right-6 z-20 h-11 px-4 rounded-full bg-[#1e293b] border border-white/10 text-xs text-slate-200 inline-flex items-center gap-2 hover:bg-slate-700/40"
-      >
-        <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
-        Refresh
-      </button>
-    </>
+    </div>
   );
 };
 
