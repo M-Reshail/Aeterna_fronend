@@ -34,8 +34,36 @@ const normalizeStatus = (status) => {
   return status || 'new';
 };
 
+const toDisplayText = (value, fallback = '') => {
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    return trimmed || fallback;
+  }
+
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return String(value);
+  }
+
+  if (Array.isArray(value)) {
+    const joined = value
+      .map((item) => (typeof item === 'string' ? item.trim() : String(item ?? '')))
+      .filter(Boolean)
+      .join(', ');
+    return joined || fallback;
+  }
+
+  if (value && typeof value === 'object') {
+    const candidate = value.summary || value.title || value.name || value.link || value.description;
+    if (typeof candidate === 'string' && candidate.trim()) {
+      return candidate.trim();
+    }
+  }
+
+  return fallback;
+};
+
 const inferEventType = (title = '') => {
-  const lower = title.toLowerCase();
+  const lower = toDisplayText(title, '').toLowerCase();
   if (lower.includes('price')) return 'PRICE_ALERT';
   return 'NEWS';
 };
@@ -43,32 +71,32 @@ const inferEventType = (title = '') => {
 const normalizeAlert = (alert) => ({
   id: alert.alert_id ?? alert.id,
   alert_id: alert.alert_id ?? alert.id,
-  event_type: alert.event_type || inferEventType(alert.title),
-  source: alert.source || '',
-  title: alert.title || 'Untitled Alert',
-  content: alert.content || alert.description || alert.title || 'No details provided',
+  event_type: toDisplayText(alert.event_type, inferEventType(alert.title)).toUpperCase(),
+  source: toDisplayText(alert.source, 'Unknown'),
+  title: toDisplayText(alert.title, 'Untitled Alert'),
+  content: toDisplayText(alert.content, toDisplayText(alert.description, toDisplayText(alert.title, 'No details provided'))),
   priority: alert.priority || 'LOW',
   status: normalizeStatus(alert.status),
   timestamp: alert.created_at || alert.timestamp || alert.createdAt || new Date().toISOString(),
-  entity: alert.entity || '',
+  entity: toDisplayText(alert.entity, ''),
 });
 
 const normalizeNewsEvent = (event) => {
   const content = event?.content || {};
-  const title = content.title || content.name || `News from ${event?.source || 'source'}`;
-  const body = content.summary || content.alert_reasons || content.link || 'No details provided';
+  const title = toDisplayText(content.title, toDisplayText(content.name, `News from ${toDisplayText(event?.source, 'source')}`));
+  const body = toDisplayText(content.summary, toDisplayText(content.alert_reasons, toDisplayText(content.link, 'No details provided')));
 
   return {
     id: `event-${event?.id}`,
     event_id: event?.id,
     event_type: String(event?.type || 'news').toUpperCase(),
-    source: event?.source || 'unknown',
+    source: toDisplayText(event?.source, 'unknown'),
     title,
     content: body,
     priority: content.quality_score >= 70 ? 'HIGH' : content.quality_score >= 50 ? 'MEDIUM' : 'LOW',
     status: 'new',
     timestamp: event?.timestamp || new Date().toISOString(),
-    entity: content.id || content.symbol || content.name || '',
+    entity: toDisplayText(content.id, toDisplayText(content.symbol, toDisplayText(content.name, ''))),
   };
 };
 

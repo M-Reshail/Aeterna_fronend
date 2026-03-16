@@ -8,6 +8,7 @@ class SocketManager {
     this.attempt = 0;
     this.listeners = new Set();
     this.bound = false;
+    this.blocked = false;
   }
 
   isSocketActive() {
@@ -26,6 +27,7 @@ class SocketManager {
     this.socket.on(WS_EVENTS.CONNECT, () => {
       this.status = 'connected';
       this.attempt = 0;
+      this.blocked = false;
       this.notify();
     });
 
@@ -40,7 +42,23 @@ class SocketManager {
       this.notify();
     });
 
-    this.socket.on('connect_error', () => {
+    this.socket.on('connect_error', (error) => {
+      const status = error?.description?.status;
+      const message = String(error?.message || '').toLowerCase();
+      const isNotFoundSocketEndpoint = status === 404 || message.includes('404');
+
+      if (isNotFoundSocketEndpoint) {
+        this.blocked = true;
+        if (this.socket?.io?.opts) {
+          this.socket.io.opts.reconnection = false;
+        }
+        this.socket?.disconnect();
+        this.status = 'disconnected';
+        this.attempt = 0;
+        this.notify();
+        return;
+      }
+
       if (this.status !== 'connected') {
         this.status = 'reconnecting';
         this.notify();
@@ -58,6 +76,7 @@ class SocketManager {
 
   connect(token) {
     if (!token) return null;
+    if (this.blocked) return null;
 
     // Avoid duplicate connect calls when multiple components mount at once.
     if (this.isSocketActive()) return this.socket;
