@@ -39,6 +39,17 @@ const SkeletonRow = () => (
   </div>
 );
 
+// Safe converter: objects → string, fallback to '—'
+const safeToString = (value, fallback = '—') => {
+  if (typeof value === 'string') return value || fallback;
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+  if (value && typeof value === 'object') {
+    // If it's an object, try to extract summary/title/description
+    return (value.summary || value.title || value.description || JSON.stringify(value).substring(0, 50)) || fallback;
+  }
+  return fallback;
+};
+
 const AlertRow = React.memo(({ alert, onSelect }) => (
   <button
     type="button"
@@ -50,9 +61,9 @@ const AlertRow = React.memo(({ alert, onSelect }) => (
     <span className={`inline-block w-1.5 h-1.5 rounded-full flex-shrink-0 ${alert.status === 'new' ? 'bg-emerald-400' : 'bg-slate-700'}`} />
     <div className="flex-1 min-w-0">
       <p className={`text-sm truncate ${alert.status === 'new' ? 'font-semibold text-white' : 'font-normal text-slate-400'}`}>
-        {alert.title}
+        {safeToString(alert.title)}
       </p>
-      <p className="text-xs text-slate-600 truncate mt-0.5">{alert.content || alert.description || '—'}</p>
+      <p className="text-xs text-slate-600 truncate mt-0.5">{safeToString(alert.content || alert.description)}</p>
     </div>
     <div className="hidden sm:block flex-shrink-0">
       <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold tracking-wide ${PRIORITY_STYLE[alert.priority] || PRIORITY_STYLE.LOW}`}>

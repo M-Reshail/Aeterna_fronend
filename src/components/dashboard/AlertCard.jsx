@@ -16,6 +16,16 @@ import {
 } from 'lucide-react';
 import { formatRelativeTime } from '@utils/helpers';
 
+// Safe converter: safely handle objects/strings in render
+const safeToString = (value, fallback = '') => {
+  if (typeof value === 'string') return value || fallback;
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+  if (value && typeof value === 'object') {
+    return (value.summary || value.title || value.description || JSON.stringify(value).substring(0, 50)) || fallback;
+  }
+  return fallback;
+};
+
 // Event type icon mapping
 const EVENT_ICONS = {
   LARGE_TRANSFER: ArrowUpDown,
@@ -143,12 +153,12 @@ export const AlertCard = ({ alert, onViewDetails, onMarkAsRead }) => {
             isUnread ? 'text-white' : 'text-slate-300'
           }`}
         >
-          {alert.title}
+          {safeToString(alert.title)}
         </h4>
 
         {/* Content preview */}
         <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
-          {alert.content}
+          {safeToString(alert.content)}
         </p>
 
         {/* Token/entity */}

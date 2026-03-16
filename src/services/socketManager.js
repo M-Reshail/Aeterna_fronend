@@ -45,12 +45,14 @@ class SocketManager {
     this.socket.on('connect_error', (error) => {
       const status = error?.description?.status;
       const message = String(error?.message || '').toLowerCase();
-      const isNotFoundSocketEndpoint = status === 404 || message.includes('404');
+      const isNotFoundSocketEndpoint = status === 404 || message.includes('404') || message.includes('econnrefused');
 
       if (isNotFoundSocketEndpoint) {
+        console.warn('⚠️ Socket.IO endpoint not found (404) — disabling reconnection attempts');
         this.blocked = true;
         if (this.socket?.io?.opts) {
           this.socket.io.opts.reconnection = false;
+          this.socket.io.opts.reconnectionAttempts = 0;
         }
         this.socket?.disconnect();
         this.status = 'disconnected';

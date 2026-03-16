@@ -62,6 +62,16 @@ const EVENT_ICONS = {
   DEFAULT: Activity,
 };
 
+// Safe converter: objects → string, prevents React #31 when backend returns object payloads
+const safeToString = (value, fallback = '—') => {
+  if (typeof value === 'string') return value || fallback;
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+  if (value && typeof value === 'object') {
+    return (value.summary || value.title || value.description || JSON.stringify(value).substring(0, 100)) || fallback;
+  }
+  return fallback;
+};
+
 export const AlertDetailModal = ({
   alert,
   isOpen,
@@ -192,11 +202,11 @@ export const AlertDetailModal = ({
         {/* Body */}
         <div className="p-6 space-y-5">
           {/* Title */}
-          <h2 id="alert-detail-title" className="text-lg font-bold text-white leading-snug">{alert.title}</h2>
+          <h2 id="alert-detail-title" className="text-lg font-bold text-white leading-snug">{safeToString(alert.title)}</h2>
 
           {/* Full content */}
           <div className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.07]">
-            <p className="text-sm text-slate-300 leading-relaxed">{alert.content}</p>
+            <p className="text-sm text-slate-300 leading-relaxed">{safeToString(alert.content)}</p>
           </div>
 
           {/* Metadata row */}
