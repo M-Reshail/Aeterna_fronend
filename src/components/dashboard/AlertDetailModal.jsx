@@ -253,6 +253,189 @@ export const AlertDetailModal = ({
             </div>
           </div>
 
+          {/* NEWS DETAILS SECTION */}
+          {alert.rawContent?.type === 'news' && alert.rawContent && (
+            <div className="p-4 rounded-xl bg-blue-500/5 border border-blue-500/20 space-y-3">
+              <h3 className="text-sm font-bold text-blue-400">📰 News Details</h3>
+              
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                {alert.rawContent.author && (
+                  <div>
+                    <p className="text-slate-500">Author</p>
+                    <p className="text-slate-300 font-medium">{alert.rawContent.author}</p>
+                  </div>
+                )}
+                {alert.rawContent.word_count && (
+                  <div>
+                    <p className="text-slate-500">Word Count</p>
+                    <p className="text-slate-300 font-medium">{alert.rawContent.word_count}</p>
+                  </div>
+                )}
+                {alert.rawContent.read_time_minutes && (
+                  <div>
+                    <p className="text-slate-500">Read Time</p>
+                    <p className="text-slate-300 font-medium">{alert.rawContent.read_time_minutes} min</p>
+                  </div>
+                )}
+                {typeof alert.rawContent.quality_score === 'number' && (
+                  <div>
+                    <p className="text-slate-500">Quality Score</p>
+                    <p className="text-slate-300 font-medium">{alert.rawContent.quality_score}%</p>
+                  </div>
+                )}
+                {alert.rawContent.has_image && (
+                  <div>
+                    <p className="text-slate-500">Image</p>
+                    <p className="text-emerald-400 font-medium">✓ Yes</p>
+                  </div>
+                )}
+              </div>
+
+              {alert.rawContent.categories && alert.rawContent.categories.length > 0 && (
+                <div>
+                  <p className="text-slate-500 text-xs mb-1">Categories</p>
+                  <div className="flex flex-wrap gap-1">
+                    {alert.rawContent.categories.map((cat, idx) => (
+                      <span key={idx} className="inline-flex px-2 py-1 rounded-md bg-blue-500/20 text-blue-300 text-xs font-medium">
+                        {cat}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {alert.rawContent.hashtags && alert.rawContent.hashtags.length > 0 && (
+                <div>
+                  <p className="text-slate-500 text-xs mb-1">Hashtags</p>
+                  <div className="flex flex-wrap gap-1">
+                    {alert.rawContent.hashtags.map((tag, idx) => (
+                      <span key={idx} className="text-blue-300 text-xs">
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {alert.rawContent.mentions && alert.rawContent.mentions.length > 0 && (
+                <div>
+                  <p className="text-slate-500 text-xs mb-1">Mentions</p>
+                  <div className="flex flex-wrap gap-1">
+                    {alert.rawContent.mentions.map((mention, idx) => (
+                      <span key={idx} className="inline-flex px-2 py-1 rounded-md bg-slate-500/20 text-slate-300 text-xs font-medium">
+                        {mention}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {alert.rawContent.link && (
+                <a
+                  href={alert.rawContent.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-blue-500/30 bg-blue-500/10 text-blue-300 hover:bg-blue-500/20 transition-all"
+                >
+                  <ExternalLink className="w-3 h-3" />
+                  Read Full Article
+                </a>
+              )}
+            </div>
+          )}
+
+          {/* PRICE DETAILS SECTION */}
+          {alert.rawContent?.type === 'price' && alert.rawContent && (
+            <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20 space-y-3">
+              <h3 className="text-sm font-bold text-amber-400">💰 Price Data</h3>
+
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                {alert.rawContent.symbol && (
+                  <div>
+                    <p className="text-slate-500">Symbol</p>
+                    <p className="text-slate-300 font-bold text-sm">{alert.rawContent.symbol}</p>
+                  </div>
+                )}
+                {alert.rawContent.current_price && (
+                  <div>
+                    <p className="text-slate-500">Current Price</p>
+                    <p className="text-slate-300 font-bold text-sm">${alert.rawContent.current_price.toLocaleString()}</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-3 gap-2 text-xs">
+                {typeof alert.rawContent.price_change_1h_pct === 'number' && (
+                  <div className="p-2 rounded-lg bg-white/[0.03] border border-white/[0.06]">
+                    <p className="text-slate-500 text-[10px]">1H Change</p>
+                    <p className={`font-bold ${alert.rawContent.price_change_1h_pct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                      {alert.rawContent.price_change_1h_pct >= 0 ? '+' : ''}{alert.rawContent.price_change_1h_pct.toFixed(2)}%
+                    </p>
+                  </div>
+                )}
+                {typeof alert.rawContent.price_change_24h_pct === 'number' && (
+                  <div className="p-2 rounded-lg bg-white/[0.03] border border-white/[0.06]">
+                    <p className="text-slate-500 text-[10px]">24H Change</p>
+                    <p className={`font-bold ${alert.rawContent.price_change_24h_pct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                      {alert.rawContent.price_change_24h_pct >= 0 ? '+' : ''}{alert.rawContent.price_change_24h_pct.toFixed(2)}%
+                    </p>
+                  </div>
+                )}
+                {typeof alert.rawContent.price_change_7d_pct === 'number' && (
+                  <div className="p-2 rounded-lg bg-white/[0.03] border border-white/[0.06]">
+                    <p className="text-slate-500 text-[10px]">7D Change</p>
+                    <p className={`font-bold ${alert.rawContent.price_change_7d_pct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                      {alert.rawContent.price_change_7d_pct >= 0 ? '+' : ''}{alert.rawContent.price_change_7d_pct.toFixed(2)}%
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                {alert.rawContent.ath && (
+                  <div>
+                    <p className="text-slate-500">All-Time High</p>
+                    <p className="text-slate-300 font-medium">${alert.rawContent.ath.toLocaleString()}</p>
+                  </div>
+                )}
+                {alert.rawContent.atl && (
+                  <div>
+                    <p className="text-slate-500">All-Time Low</p>
+                    <p className="text-slate-300 font-medium">${alert.rawContent.atl.toLocaleString()}</p>
+                  </div>
+                )}
+                {alert.rawContent.market_cap && (
+                  <div>
+                    <p className="text-slate-500">Market Cap</p>
+                    <p className="text-slate-300 font-medium">${(alert.rawContent.market_cap / 1e9).toFixed(2)}B</p>
+                  </div>
+                )}
+                {alert.rawContent.trading_volume_24h && (
+                  <div>
+                    <p className="text-slate-500">24H Volume</p>
+                    <p className="text-slate-300 font-medium">${(alert.rawContent.trading_volume_24h / 1e9).toFixed(2)}B</p>
+                  </div>
+                )}
+              </div>
+
+              {alert.rawContent.alert_reasons && (
+                <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                  <p className="text-slate-500 text-xs mb-1">Alert Reason</p>
+                  <p className="text-amber-300 text-xs font-medium">{alert.rawContent.alert_reasons}</p>
+                </div>
+              )}
+
+              {alert.rawContent.significant_moves && alert.rawContent.significant_moves.length > 0 && (
+                <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                  <p className="text-slate-500 text-xs mb-1">Significant Moves</p>
+                  {alert.rawContent.significant_moves.map((move, idx) => (
+                    <p key={idx} className="text-amber-300 text-xs font-medium">• {move}</p>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <div>

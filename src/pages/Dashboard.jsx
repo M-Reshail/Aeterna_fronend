@@ -97,6 +97,11 @@ const normalizeNewsEvent = (event) => {
     status: 'new',
     timestamp: event?.timestamp || new Date().toISOString(),
     entity: toDisplayText(content.id, toDisplayText(content.symbol, toDisplayText(content.name, ''))),
+    // Preserve raw content for detailed view
+    rawContent: {
+      ...content,
+      type: event?.type,
+    },
   };
 };
 
