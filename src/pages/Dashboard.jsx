@@ -310,53 +310,63 @@ export const Dashboard = () => {
         new Set(sourceList.map(toApiSourceParam).filter(Boolean))
       );
 
-      // Determine which API endpoint to call
-      let feedPromise;
-
-      if (sourceApiParams.length > 0) {
-        // If sources selected: fetch from those sources with optional type filter
-        const type = eventType === 'PRICE_ALERT' ? 'price' : (eventType === 'NEWS' ? 'news' : undefined);
-        feedPromise = Promise.all(
-          sourceApiParams.map((source) =>
-            eventsService.getEvents({ skip: 0, limit: 100, source, type })
-          )
-        );
-      } else if (eventType === 'NEWS') {
-        // If only news filter selected (no sources): fetch all news
-        feedPromise = eventsService.getEventsByType('news', { skip: 0, limit: 100 });
-      } else if (eventType === 'PRICE_ALERT') {
-        // If only price filter selected (no sources): fetch all price events
-        feedPromise = eventsService.getEventsByType('price', { skip: 0, limit: 100 });
-      } else {
-        // If no filter selected: fetch alerts
-        feedPromise = alertsService.getAlerts({ skip: 0, limit: 50 });
+      // ALWAYS load available sources first - independently from alerts
+      let apiSources = [];
+      try {
+        apiSources = await eventsService.getAvailableSources({ limit: 200 });
+      } catch (error) {
+        console.warn('Could not load available sources:', error.message);
+        // Continue even if sources fail - use fallback
       }
 
-      const [sourcesResult, feedResult] = await Promise.allSettled([
-        eventsService.getAvailableSources({ limit: 200 }),
-        feedPromise,
-      ]);
+      // Determine which API endpoint to call for alerts
+      let feedResult = [];
+      let feedError = null;
 
-      if (feedResult.status === 'rejected') {
-        throw feedResult.reason;
+      try {
+        if (sourceApiParams.length > 0) {
+          // If sources selected: fetch from those sources with optional type filter
+          const type = eventType === 'PRICE_ALERT' ? 'price' : (eventType === 'NEWS' ? 'news' : undefined);
+          const results = await Promise.all(
+            sourceApiParams.map((source) =>
+              eventsService.getEvents({ skip: 0, limit: 100, source, type })
+            )
+          );
+          feedResult = results.flat().filter(Boolean);
+        } else if (eventType === 'NEWS') {
+          // If only news filter selected (no sources): fetch all news
+          feedResult = await eventsService.getEventsByType('news', { skip: 0, limit: 100 });
+          if (!Array.isArray(feedResult)) feedResult = [];
+        } else if (eventType === 'PRICE_ALERT') {
+          // If only price filter selected (no sources): fetch all price events
+          feedResult = await eventsService.getEventsByType('price', { skip: 0, limit: 100 });
+          if (!Array.isArray(feedResult)) feedResult = [];
+        } else {
+          // If no filter selected: fetch alerts
+          feedResult = await alertsService.getAlerts({ skip: 0, limit: 50 });
+          if (!Array.isArray(feedResult)) feedResult = [];
+        }
+      } catch (error) {
+        feedError = error;
+        console.warn('Could not load alerts:', error.message);
+        // Don't throw - we want to show empty state but keep sources visible
+        feedResult = [];
       }
 
-      const apiSources = sourcesResult.status === 'fulfilled' ? sourcesResult.value : [];
-
-      // Normalize based on whether we got events or alerts
-      const normalizedAlerts = sourceApiParams.length > 0 || (eventType !== 'all' && !sourceApiParams.length)
-        ? (Array.isArray(feedResult.value) 
-            ? feedResult.value.flat().filter(Boolean).map(normalizeNewsEvent)
-            : (feedResult.value && feedResult.value.flat ? feedResult.value.flat().filter(Boolean).map(normalizeNewsEvent) : []))
-        : (Array.isArray(feedResult.value) ? feedResult.value.map(normalizeAlert) : []);
+      // Normalize based on event type
+      const normalizedAlerts = (sourceApiParams.length > 0 || (eventType !== 'all' && !sourceApiParams.length))
+        ? feedResult.flat().filter(Boolean).map(normalizeNewsEvent)
+        : feedResult.map(normalizeAlert);
 
       setAllAlerts((prev) => {
         const merged = mergeAlertsPreservingReadState(prev, normalizedAlerts, readAlertIdsRef.current);
 
+        // Extract sources from loaded alerts
         const sourcesFromAlerts = merged
           .map((item) => normalizeSourceName(item.source))
           .filter(Boolean);
 
+        // ALWAYS include API sources and fallback options to keep data sources visible
         const mergedSources = Array.from(
           new Set(
             [
@@ -370,6 +380,15 @@ export const Dashboard = () => {
         setSourceOptions(mergedSources);
         return merged;
       });
+
+      // Handle errors after state updates so source options are preserved
+      if (feedError && normalizedAlerts.length === 0) {
+        const errorMsg = String(feedError?.message || '').toLowerCase().includes('resource not found')
+          ? 'No alerts found for this filter. Try adjusting your filters.'
+          : (feedError?.message || 'Failed to load alerts');
+        setLoadError(errorMsg);
+      }
+
       hasShownLoadErrorRef.current = false;
     } catch (error) {
       const isCorsIssue = String(error?.message || '').toLowerCase().includes('cors');
@@ -382,8 +401,9 @@ export const Dashboard = () => {
         toastRef.current.error(message);
         hasShownLoadErrorRef.current = true;
       }
+      // Clear alerts on error but PRESERVE source options
       setAllAlerts([]);
-      setSourceOptions([]);
+      // DON'T clear sources - they should remain visible
     } finally {
       setIsLoading(false);
     }
