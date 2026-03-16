@@ -11,15 +11,17 @@ import { ToastContainer } from '@hooks/useToast';
 import RouteErrorBoundary from '@components/common/RouteErrorBoundary';
 
 // ─── Lazily-loaded pages (each becomes its own JS chunk) ──────────────────────
-const Landing      = lazy(() => import('@pages/Landing'));
-const Login        = lazy(() => import('@pages/Login'));
-const Register     = lazy(() => import('@pages/Register'));
-const Dashboard    = lazy(() => import('@pages/Dashboard'));
-const Settings     = lazy(() => import('@pages/Settings'));
-const AlertHistory = lazy(() => import('@pages/AlertHistory'));
-const NotFound     = lazy(() => import('@pages/NotFound'));
-const Admin        = lazy(() => import('@pages/Admin'));
-const ErrorPage    = lazy(() => import('@pages/ErrorPage'));
+const Landing         = lazy(() => import('@pages/Landing'));
+const Login           = lazy(() => import('@pages/Login'));
+const Register        = lazy(() => import('@pages/Register'));
+const Dashboard       = lazy(() => import('@pages/Dashboard'));
+const Settings        = lazy(() => import('@pages/Settings'));
+const AlertHistory    = lazy(() => import('@pages/AlertHistory'));
+const News            = lazy(() => import('@pages/News'));
+const EconomicEvents  = lazy(() => import('@pages/EconomicEvents'));
+const NotFound        = lazy(() => import('@pages/NotFound'));
+const Admin           = lazy(() => import('@pages/Admin'));
+const ErrorPage       = lazy(() => import('@pages/ErrorPage'));
 
 // ─── Page-level loading skeleton shown during code-split chunk fetch ───────────
 const PageLoader = () => (
@@ -116,6 +118,22 @@ function App() {
                     element={
                       <RouteErrorBoundary>
                         <ProtectedRoute><Dashboard /></ProtectedRoute>
+                      </RouteErrorBoundary>
+                    }
+                  />
+                  <Route
+                    path="/news"
+                    element={
+                      <RouteErrorBoundary>
+                        <ProtectedRoute><News /></ProtectedRoute>
+                      </RouteErrorBoundary>
+                    }
+                  />
+                  <Route
+                    path="/economic-events"
+                    element={
+                      <RouteErrorBoundary>
+                        <ProtectedRoute><EconomicEvents /></ProtectedRoute>
                       </RouteErrorBoundary>
                     }
                   />
