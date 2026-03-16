@@ -299,7 +299,7 @@ export const Dashboard = () => {
     toastRef.current = toast;
   }, [toast]);
 
-  const loadDashboardData = useCallback(async (selectedSources = []) => {
+  const loadDashboardData = useCallback(async (selectedSources = [], eventType = 'all') => {
     setIsLoading(true);
     setLoadError('');
     try {
@@ -310,15 +310,31 @@ export const Dashboard = () => {
         new Set(sourceList.map(toApiSourceParam).filter(Boolean))
       );
 
+      // Determine which API endpoint to call
+      let feedPromise;
+
+      if (sourceApiParams.length > 0) {
+        // If sources selected: fetch from those sources with optional type filter
+        const type = eventType === 'PRICE_ALERT' ? 'price' : (eventType === 'NEWS' ? 'news' : undefined);
+        feedPromise = Promise.all(
+          sourceApiParams.map((source) =>
+            eventsService.getEvents({ skip: 0, limit: 100, source, type })
+          )
+        );
+      } else if (eventType === 'NEWS') {
+        // If only news filter selected (no sources): fetch all news
+        feedPromise = eventsService.getEventsByType('news', { skip: 0, limit: 100 });
+      } else if (eventType === 'PRICE_ALERT') {
+        // If only price filter selected (no sources): fetch all price events
+        feedPromise = eventsService.getEventsByType('price', { skip: 0, limit: 100 });
+      } else {
+        // If no filter selected: fetch alerts
+        feedPromise = alertsService.getAlerts({ skip: 0, limit: 50 });
+      }
+
       const [sourcesResult, feedResult] = await Promise.allSettled([
         eventsService.getAvailableSources({ limit: 200 }),
-        sourceApiParams.length > 0
-          ? Promise.all(
-              sourceApiParams.map((source) =>
-                eventsService.getEvents({ skip: 0, limit: 100, source, type: 'news' })
-              )
-            )
-          : alertsService.getAlerts({ skip: 0, limit: 50 }),
+        feedPromise,
       ]);
 
       if (feedResult.status === 'rejected') {
@@ -327,11 +343,11 @@ export const Dashboard = () => {
 
       const apiSources = sourcesResult.status === 'fulfilled' ? sourcesResult.value : [];
 
-      const normalizedAlerts = sourceApiParams.length > 0
-        ? (feedResult.value || [])
-            .flat()
-            .filter(Boolean)
-            .map(normalizeNewsEvent)
+      // Normalize based on whether we got events or alerts
+      const normalizedAlerts = sourceApiParams.length > 0 || (eventType !== 'all' && !sourceApiParams.length)
+        ? (Array.isArray(feedResult.value) 
+            ? feedResult.value.flat().filter(Boolean).map(normalizeNewsEvent)
+            : (feedResult.value && feedResult.value.flat ? feedResult.value.flat().filter(Boolean).map(normalizeNewsEvent) : []))
         : (Array.isArray(feedResult.value) ? feedResult.value.map(normalizeAlert) : []);
 
       setAllAlerts((prev) => {
@@ -374,10 +390,11 @@ export const Dashboard = () => {
   }, []);
 
   const selectedSourcesKey = (appliedFilters.sources || []).join('|');
+  const eventTypeKey = appliedFilters.eventType || 'all';
 
   useEffect(() => {
-    loadDashboardData(appliedFilters.sources || []);
-  }, [loadDashboardData, selectedSourcesKey]);
+    loadDashboardData(appliedFilters.sources || [], appliedFilters.eventType || 'all');
+  }, [loadDashboardData, selectedSourcesKey, eventTypeKey]);
 
   useEffect(() => {
     const handleIncomingAlert = (incoming) => {
@@ -608,7 +625,7 @@ export const Dashboard = () => {
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    await loadDashboardData(appliedFilters.sources || []);
+    await loadDashboardData(appliedFilters.sources || [], appliedFilters.eventType || 'all');
     setIsRefreshing(false);
   };
 
