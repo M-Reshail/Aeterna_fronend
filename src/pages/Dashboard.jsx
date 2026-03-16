@@ -102,6 +102,7 @@ const normalizeNewsEvent = (event) => {
 
 const DEFAULT_FILTERS = {
   priority: ['HIGH', 'MEDIUM', 'LOW'],
+  eventType: 'all',
   entity: '',
   dateFrom: '',
   dateTo: '',
@@ -444,6 +445,12 @@ export const Dashboard = () => {
     if (appliedFilters.priority.length < 3) {
       result = result.filter((a) => appliedFilters.priority.includes(a.priority));
     }
+    if (appliedFilters.eventType && appliedFilters.eventType !== 'all') {
+      result = result.filter((a) => {
+        const eventType = String(a.event_type || '').toUpperCase();
+        return eventType === appliedFilters.eventType;
+      });
+    }
     if (appliedFilters.entity) {
       const term = appliedFilters.entity.toLowerCase();
       result = result.filter(
@@ -473,15 +480,28 @@ export const Dashboard = () => {
     if (sortBy === 'oldest') {
       sorted.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
     } else if (sortBy === 'priority') {
-      sorted.sort((a, b) => (PRIORITY_ORDER[a.priority] ?? 3) - (PRIORITY_ORDER[b.priority] ?? 3));
+      // Sort by priority first, then by recency (newest first)
+      sorted.sort((a, b) => {
+        const priorityDiff = (PRIORITY_ORDER[a.priority] ?? 3) - (PRIORITY_ORDER[b.priority] ?? 3);
+        if (priorityDiff !== 0) return priorityDiff;
+        return new Date(b.timestamp) - new Date(a.timestamp);
+      });
     } else if (sortBy === 'unread') {
       sorted.sort((a, b) => {
         if (a.status === 'new' && b.status !== 'new') return -1;
         if (a.status !== 'new' && b.status === 'new') return 1;
+        // Then by priority, then by recency
+        const priorityDiff = (PRIORITY_ORDER[a.priority] ?? 3) - (PRIORITY_ORDER[b.priority] ?? 3);
+        if (priorityDiff !== 0) return priorityDiff;
         return new Date(b.timestamp) - new Date(a.timestamp);
       });
     } else {
-      sorted.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      // Default 'newest': sort by priority first (HIGH first), then by recency
+      sorted.sort((a, b) => {
+        const priorityDiff = (PRIORITY_ORDER[a.priority] ?? 3) - (PRIORITY_ORDER[b.priority] ?? 3);
+        if (priorityDiff !== 0) return priorityDiff;
+        return new Date(b.timestamp) - new Date(a.timestamp);
+      });
     }
     return sorted;
   }, [allAlerts, appliedFilters, sortBy]);

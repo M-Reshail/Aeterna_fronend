@@ -50,6 +50,7 @@ export const FilterSidebar = ({
 }) => {
   const [openSections, setOpenSections] = useState({
     priority: true,
+    eventType: true,
     dateRange: true,
     entity: true,
     sources: false,
@@ -66,6 +67,12 @@ export const FilterSidebar = ({
     onFiltersChange({ ...filters, priority: updated });
   };
 
+  const handleEventTypeToggle = (value) => {
+    const current = filters.eventType || 'all';
+    const updated = current === value ? 'all' : value;
+    onFiltersChange({ ...filters, eventType: updated });
+  };
+
   const handleSourceToggle = (source) => {
     const current = filters.sources || [];
     const updated = current.includes(source)
@@ -76,6 +83,7 @@ export const FilterSidebar = ({
 
   const activeFilterCount =
     (filters.priority?.length !== 3 ? 1 : 0) +
+    (filters.eventType && filters.eventType !== 'all' ? 1 : 0) +
     (filters.dateFrom ? 1 : 0) +
     (filters.dateTo ? 1 : 0) +
     (filters.entity ? 1 : 0) +
@@ -158,6 +166,74 @@ export const FilterSidebar = ({
                     </span>
                     <span className={`text-[11px] font-bold tracking-wider ${opt.color} opacity-70`}>
                       {opt.value}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Event Type Filter (News / Price) */}
+        <div className="rounded-xl overflow-hidden">
+          <button
+            onClick={() => toggleSection('eventType')}
+            className="w-full flex items-center justify-between px-3 py-2.5 text-xs font-semibold text-slate-400 uppercase tracking-wider hover:bg-white/5 rounded-xl transition-colors"
+          >
+            <span className="flex items-center gap-2">
+              <Filter className="w-3.5 h-3.5" />
+              Alert Type
+            </span>
+            {openSections.eventType ? (
+              <ChevronUp className="w-3.5 h-3.5" />
+            ) : (
+              <ChevronDown className="w-3.5 h-3.5" />
+            )}
+          </button>
+
+          {openSections.eventType && (
+            <div className="px-3 pb-3 space-y-2">
+              {[
+                { value: 'all', label: 'All Types', icon: '📊' },
+                { value: 'NEWS', label: 'News', icon: '📰' },
+                { value: 'PRICE_ALERT', label: 'Price updates', icon: '💰' },
+              ].map((opt) => {
+                const isActive = (filters.eventType || 'all') === opt.value;
+                return (
+                  <label
+                    key={opt.value}
+                    className={`
+                      flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer
+                      border transition-all duration-200
+                      ${isActive
+                        ? 'bg-emerald-500/15 border-emerald-500/40'
+                        : 'bg-white/[0.02] border-transparent hover:bg-white/[0.04]'
+                      }
+                    `}
+                  >
+                    <div className="relative flex items-center">
+                      <input
+                        type="radio"
+                        name="eventType"
+                        checked={isActive}
+                        onChange={() => handleEventTypeToggle(opt.value)}
+                        className="sr-only"
+                      />
+                      <div
+                        className={`w-4 h-4 rounded-full flex items-center justify-center border transition-all
+                          ${isActive ? 'bg-emerald-500 border-emerald-400' : 'border-white/20 bg-white/5'}`}
+                      >
+                        {isActive && (
+                          <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 12 12">
+                            <circle cx="6" cy="6" r="2" />
+                          </svg>
+                        )}
+                      </div>
+                    </div>
+
+                    <span className="text-[13px] flex-shrink-0">{opt.icon}</span>
+                    <span className={`text-sm font-medium flex-1 ${isActive ? 'text-emerald-400' : 'text-slate-400'}`}>
+                      {opt.label}
                     </span>
                   </label>
                 );
