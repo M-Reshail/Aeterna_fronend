@@ -144,14 +144,14 @@ export const AlertDetailModal = ({
 
   return createPortal(
     <div
-      className="fixed inset-0 flex items-center justify-center p-4 animate-fadeIn"
+      className="fixed inset-0 flex items-center justify-center p-2 sm:p-4 animate-fadeIn"
       style={{ backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)', zIndex: 99999 }}
       onClick={onClose}
     >
       <div
         ref={dialogRef}
         className={`
-          relative w-full max-w-lg rounded-2xl overflow-hidden
+          relative w-full max-w-sm sm:max-w-lg rounded-2xl overflow-hidden
           bg-[#0A0A0A] border border-[#1F1F1F]
           border-t-2 ${priority.headerBorder}
           shadow-2xl animate-slideUp
@@ -160,30 +160,30 @@ export const AlertDetailModal = ({
         aria-modal="true"
         aria-labelledby="alert-detail-title"
         onClick={(e) => e.stopPropagation()}
-        style={{ maxHeight: '90vh', overflowY: 'auto' }}
+        style={{ maxHeight: '95vh', overflowY: 'auto' }}
       >
         {/* Header */}
-        <div className="flex items-start justify-between p-6 pb-4 border-b border-[#1A1A1A]">
-          <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${priority.bg} border ${priority.border}`}>
-              <IconComponent className={`w-5 h-5 ${priority.text}`} />
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-3 p-4 sm:p-6 pb-3 sm:pb-4 border-b border-[#1A1A1A]">
+          <div className="flex items-start gap-2 sm:gap-3 min-w-0 flex-1">
+            <div className={`flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center ${priority.bg} border ${priority.border}`}>
+              <IconComponent className={`w-4 h-4 sm:w-5 sm:h-5 ${priority.text}`} />
             </div>
-            <div>
-              <div className="flex items-center gap-2 mb-1">
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-1">
                 <span
-                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold tracking-widest border ${priority.bg} ${priority.text} ${priority.border}`}
+                  className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg text-[9px] sm:text-xs font-bold tracking-widest border ${priority.bg} ${priority.text} ${priority.border} flex-shrink-0`}
                 >
-                  <span className={`w-1.5 h-1.5 rounded-full ${priority.dot} animate-pulse`} />
+                  <span className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full ${priority.dot} animate-pulse`} />
                   {priority.label}
                 </span>
                 {isUnread && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold text-white bg-emerald-500/20 border border-emerald-500/30">
-                    <Radio className="w-2.5 h-2.5" />
+                  <span className="inline-flex items-center gap-0.5 px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-semibold text-white bg-emerald-500/20 border border-emerald-500/30 flex-shrink-0">
+                    <Radio className="w-2 h-2" />
                     LIVE
                   </span>
                 )}
               </div>
-              <span className="text-xs text-slate-500">
+              <span className="text-[10px] sm:text-xs text-slate-500 block">
                 {(alert.event_type || 'ALERT').replace(/_/g, ' ')} · {alert.source}
               </span>
             </div>
@@ -193,61 +193,61 @@ export const AlertDetailModal = ({
             ref={closeButtonRef}
             onClick={onClose}
             aria-label="Close alert details"
-            className="flex-shrink-0 p-2 rounded-lg text-slate-500 hover:text-white hover:bg-white/5 transition-all duration-200"
+            className="flex-shrink-0 p-1.5 sm:p-2 rounded-lg text-slate-500 hover:text-white hover:bg-white/5 transition-all duration-200"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
 
         {/* Body */}
-        <div className="p-6 space-y-5">
+        <div className="p-4 sm:p-6 space-y-3 sm:space-y-5">
           {/* Title */}
-          <h2 id="alert-detail-title" className="text-lg font-bold text-white leading-snug">{safeToString(alert.title)}</h2>
+          <h2 id="alert-detail-title" className="text-base sm:text-lg font-bold text-white leading-snug">{safeToString(alert.title)}</h2>
 
           {/* Full content */}
-          <div className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.07]">
-            <p className="text-sm text-slate-300 leading-relaxed">{safeToString(alert.content)}</p>
+          <div className="p-3 sm:p-4 rounded-lg sm:rounded-xl bg-white/[0.03] border border-white/[0.07]">
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">{safeToString(alert.content)}</p>
           </div>
 
           {/* Metadata row */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
             {/* Timestamp */}
-            <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-              <div className="flex items-center gap-2 mb-1">
-                <Clock className="w-3.5 h-3.5 text-slate-500" />
-                <span className="text-[11px] text-slate-500 uppercase tracking-wider">Time</span>
+            <div className="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-white/[0.02] border border-white/[0.06]">
+              <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
+                <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-500 flex-shrink-0" />
+                <span className="text-[9px] sm:text-[11px] text-slate-500 uppercase tracking-wider">Time</span>
               </div>
-              <p className="text-xs font-medium text-slate-300">{formatDateTime(alert.timestamp)}</p>
-              <p className="text-[11px] text-slate-500 mt-0.5">{formatRelativeTime(alert.timestamp)}</p>
+              <p className="text-[11px] sm:text-xs font-medium text-slate-300">{formatDateTime(alert.timestamp)}</p>
+              <p className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5">{formatRelativeTime(alert.timestamp)}</p>
             </div>
 
             {/* Source */}
-            <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-              <div className="flex items-center gap-2 mb-1">
-                <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
-                <span className="text-[11px] text-slate-500 uppercase tracking-wider">Source</span>
+            <div className="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-white/[0.02] border border-white/[0.06]">
+              <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
+                <ExternalLink className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-500 flex-shrink-0" />
+                <span className="text-[9px] sm:text-[11px] text-slate-500 uppercase tracking-wider">Source</span>
               </div>
-              <p className="text-xs font-bold text-slate-300">{alert.source}</p>
+              <p className="text-[11px] sm:text-xs font-bold text-slate-300 truncate">{alert.source}</p>
             </div>
 
             {/* Token */}
             {alert.entity && (
-              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                <div className="flex items-center gap-2 mb-1">
-                  <Tag className="w-3.5 h-3.5 text-slate-500" />
-                  <span className="text-[11px] text-slate-500 uppercase tracking-wider">Token</span>
+              <div className="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-white/[0.02] border border-white/[0.06]">
+                <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
+                  <Tag className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-500 flex-shrink-0" />
+                  <span className="text-[9px] sm:text-[11px] text-slate-500 uppercase tracking-wider">Token</span>
                 </div>
-                <p className="text-xs font-bold text-emerald-400">{alert.entity}</p>
+                <p className="text-[11px] sm:text-xs font-bold text-emerald-400 truncate">{alert.entity}</p>
               </div>
             )}
 
             {/* Status */}
-            <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-              <div className="flex items-center gap-2 mb-1">
-                <Activity className="w-3.5 h-3.5 text-slate-500" />
-                <span className="text-[11px] text-slate-500 uppercase tracking-wider">Status</span>
+            <div className="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-white/[0.02] border border-white/[0.06]">
+              <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
+                <Activity className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-500 flex-shrink-0" />
+                <span className="text-[9px] sm:text-[11px] text-slate-500 uppercase tracking-wider">Status</span>
               </div>
-              <p className={`text-xs font-bold ${isUnread ? 'text-amber-400' : 'text-slate-400'}`}>
+              <p className={`text-[11px] sm:text-xs font-bold ${isUnread ? 'text-amber-400' : 'text-slate-400'}`}>
                 {isUnread ? 'Unread' : 'Read'}
               </p>
             </div>
@@ -255,14 +255,14 @@ export const AlertDetailModal = ({
 
           {/* NEWS DETAILS SECTION */}
           {alert.rawContent?.type === 'news' && alert.rawContent && (
-            <div className="p-4 rounded-xl bg-blue-500/5 border border-blue-500/20 space-y-3">
-              <h3 className="text-sm font-bold text-blue-400">📰 News Details</h3>
+            <div className="p-3 sm:p-4 rounded-lg sm:rounded-xl bg-blue-500/5 border border-blue-500/20 space-y-2 sm:space-y-3">
+              <h3 className="text-xs sm:text-sm font-bold text-blue-400">📰 News Details</h3>
               
-              <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="grid grid-cols-2 gap-1.5 sm:gap-2 text-[10px] sm:text-xs">
                 {alert.rawContent.author && (
                   <div>
                     <p className="text-slate-500">Author</p>
-                    <p className="text-slate-300 font-medium">{alert.rawContent.author}</p>
+                    <p className="text-slate-300 font-medium truncate">{alert.rawContent.author}</p>
                   </div>
                 )}
                 {alert.rawContent.word_count && (
@@ -279,7 +279,7 @@ export const AlertDetailModal = ({
                 )}
                 {typeof alert.rawContent.quality_score === 'number' && (
                   <div>
-                    <p className="text-slate-500">Quality Score</p>
+                    <p className="text-slate-500">Quality</p>
                     <p className="text-slate-300 font-medium">{alert.rawContent.quality_score}%</p>
                   </div>
                 )}
@@ -293,10 +293,10 @@ export const AlertDetailModal = ({
 
               {alert.rawContent.categories && alert.rawContent.categories.length > 0 && (
                 <div>
-                  <p className="text-slate-500 text-xs mb-1">Categories</p>
+                  <p className="text-slate-500 text-[10px] sm:text-xs mb-1">Categories</p>
                   <div className="flex flex-wrap gap-1">
                     {alert.rawContent.categories.map((cat, idx) => (
-                      <span key={idx} className="inline-flex px-2 py-1 rounded-md bg-blue-500/20 text-blue-300 text-xs font-medium">
+                      <span key={idx} className="inline-flex px-1.5 sm:px-2 py-0.5 rounded-md bg-blue-500/20 text-blue-300 text-[9px] sm:text-xs font-medium">
                         {cat}
                       </span>
                     ))}
@@ -306,10 +306,10 @@ export const AlertDetailModal = ({
 
               {alert.rawContent.hashtags && alert.rawContent.hashtags.length > 0 && (
                 <div>
-                  <p className="text-slate-500 text-xs mb-1">Hashtags</p>
+                  <p className="text-slate-500 text-[10px] sm:text-xs mb-1">Hashtags</p>
                   <div className="flex flex-wrap gap-1">
                     {alert.rawContent.hashtags.map((tag, idx) => (
-                      <span key={idx} className="text-blue-300 text-xs">
+                      <span key={idx} className="text-blue-300 text-[9px] sm:text-xs">
                         #{tag}
                       </span>
                     ))}
@@ -319,10 +319,10 @@ export const AlertDetailModal = ({
 
               {alert.rawContent.mentions && alert.rawContent.mentions.length > 0 && (
                 <div>
-                  <p className="text-slate-500 text-xs mb-1">Mentions</p>
+                  <p className="text-slate-500 text-[10px] sm:text-xs mb-1">Mentions</p>
                   <div className="flex flex-wrap gap-1">
                     {alert.rawContent.mentions.map((mention, idx) => (
-                      <span key={idx} className="inline-flex px-2 py-1 rounded-md bg-slate-500/20 text-slate-300 text-xs font-medium">
+                      <span key={idx} className="inline-flex px-1.5 sm:px-2 py-0.5 rounded-md bg-slate-500/20 text-slate-300 text-[9px] sm:text-xs font-medium">
                         {mention}
                       </span>
                     ))}
@@ -335,10 +335,10 @@ export const AlertDetailModal = ({
                   href={alert.rawContent.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-blue-500/30 bg-blue-500/10 text-blue-300 hover:bg-blue-500/20 transition-all"
+                  className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold border border-blue-500/30 bg-blue-500/10 text-blue-300 hover:bg-blue-500/20 transition-all active:scale-95"
                 >
                   <ExternalLink className="w-3 h-3" />
-                  Read Full Article
+                  Read Article
                 </a>
               )}
             </div>
@@ -346,10 +346,10 @@ export const AlertDetailModal = ({
 
           {/* PRICE DETAILS SECTION */}
           {alert.rawContent?.type === 'price' && alert.rawContent && (
-            <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20 space-y-3">
-              <h3 className="text-sm font-bold text-amber-400">💰 Price Data</h3>
+            <div className="p-3 sm:p-4 rounded-lg sm:rounded-xl bg-amber-500/5 border border-amber-500/20 space-y-2 sm:space-y-3">
+              <h3 className="text-xs sm:text-sm font-bold text-amber-400">💰 Price Data</h3>
 
-              <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="grid grid-cols-2 gap-1.5 sm:gap-2 text-[10px] sm:text-xs">
                 {alert.rawContent.symbol && (
                   <div>
                     <p className="text-slate-500">Symbol</p>
@@ -364,26 +364,26 @@ export const AlertDetailModal = ({
                 )}
               </div>
 
-              <div className="grid grid-cols-3 gap-2 text-xs">
+              <div className="grid grid-cols-3 gap-1 text-[9px] sm:text-xs">
                 {typeof alert.rawContent.price_change_1h_pct === 'number' && (
-                  <div className="p-2 rounded-lg bg-white/[0.03] border border-white/[0.06]">
-                    <p className="text-slate-500 text-[10px]">1H Change</p>
+                  <div className="p-1.5 sm:p-2 rounded-lg bg-white/[0.03] border border-white/[0.06]">
+                    <p className="text-slate-500 text-[8px] sm:text-[10px]">1H</p>
                     <p className={`font-bold ${alert.rawContent.price_change_1h_pct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                       {alert.rawContent.price_change_1h_pct >= 0 ? '+' : ''}{alert.rawContent.price_change_1h_pct.toFixed(2)}%
                     </p>
                   </div>
                 )}
                 {typeof alert.rawContent.price_change_24h_pct === 'number' && (
-                  <div className="p-2 rounded-lg bg-white/[0.03] border border-white/[0.06]">
-                    <p className="text-slate-500 text-[10px]">24H Change</p>
+                  <div className="p-1.5 sm:p-2 rounded-lg bg-white/[0.03] border border-white/[0.06]">
+                    <p className="text-slate-500 text-[8px] sm:text-[10px]">24H</p>
                     <p className={`font-bold ${alert.rawContent.price_change_24h_pct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                       {alert.rawContent.price_change_24h_pct >= 0 ? '+' : ''}{alert.rawContent.price_change_24h_pct.toFixed(2)}%
                     </p>
                   </div>
                 )}
                 {typeof alert.rawContent.price_change_7d_pct === 'number' && (
-                  <div className="p-2 rounded-lg bg-white/[0.03] border border-white/[0.06]">
-                    <p className="text-slate-500 text-[10px]">7D Change</p>
+                  <div className="p-1.5 sm:p-2 rounded-lg bg-white/[0.03] border border-white/[0.06]">
+                    <p className="text-slate-500 text-[8px] sm:text-[10px]">7D</p>
                     <p className={`font-bold ${alert.rawContent.price_change_7d_pct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                       {alert.rawContent.price_change_7d_pct >= 0 ? '+' : ''}{alert.rawContent.price_change_7d_pct.toFixed(2)}%
                     </p>
@@ -391,10 +391,10 @@ export const AlertDetailModal = ({
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="grid grid-cols-2 gap-1.5 sm:gap-2 text-[10px] sm:text-xs">
                 {alert.rawContent.ath && (
                   <div>
-                    <p className="text-slate-500">All-Time High</p>
+                    <p className="text-slate-500">ATH</p>
                     <p className="text-slate-300 font-medium">${alert.rawContent.ath.toLocaleString()}</p>
                   </div>
                 )}

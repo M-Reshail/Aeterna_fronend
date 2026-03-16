@@ -669,43 +669,42 @@ export const Dashboard = () => {
   const currentSortLabel = SORT_OPTIONS.find((s) => s.value === sortBy)?.label || 'Newest First';
 
   return (
-    <div className="min-h-screen w-full pt-28 pb-12 px-4 lg:px-6" style={{ position: 'relative', zIndex: 1 }}>
-      <div className="max-w-[1400px] mx-auto space-y-6">
+    <div className="min-h-screen w-full pt-24 sm:pt-28 pb-12 px-3 sm:px-4 lg:px-6" style={{ position: 'relative', zIndex: 1 }}>
+      <div className="max-w-[1400px] mx-auto space-y-4 sm:space-y-6">
 
         {/* PAGE HEADER */}
-        <div className="flex items-start justify-between gap-4 flex-wrap">
-          <div>
-            <h1 className="text-3xl font-bold text-white tracking-tight">Alert Dashboard</h1>
-            <p className="text-sm text-slate-500 mt-1">
-              Real-time market signals aggregated from 50+ sources
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Alert Dashboard</h1>
+            <p className="text-xs sm:text-sm text-slate-500 mt-1">
+              Real-time market signals from 50+ sources
             </p>
           </div>
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap justify-start sm:justify-end">
             <Tooltip content="Reload latest alerts" placement="bottom">
               <button
                 onClick={handleRefresh}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-[#0D0D0D] border border-[#1F1F1F] text-slate-400 hover:border-emerald-500/40 hover:text-emerald-400 transition-all duration-200 ${isRefreshing ? 'text-emerald-400 border-emerald-500/40' : ''}`}
+                className={`flex items-center gap-1 sm:gap-2 px-2.5 sm:px-4 py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium bg-[#0D0D0D] border border-[#1F1F1F] text-slate-400 hover:border-emerald-500/40 hover:text-emerald-400 transition-all duration-200 ${isRefreshing ? 'text-emerald-400 border-emerald-500/40' : ''}`}
               >
-                <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-                Refresh
+                <RefreshCw className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                <span className="hidden sm:inline">Refresh</span>
               </button>
             </Tooltip>
             <Tooltip content="Export visible alerts to CSV" placement="bottom">
-              <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-[#0D0D0D] border border-[#1F1F1F] text-slate-400 hover:border-white/20 hover:text-white transition-all duration-200">
+              <button className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-[#0D0D0D] border border-[#1F1F1F] text-slate-400 hover:border-white/20 hover:text-white transition-all duration-200">
                 <Download className="w-4 h-4" />
                 Export
               </button>
             </Tooltip>
             {/* Mobile filter toggle */}
-            <Tooltip content="Filter alerts by priority, source, and date" placement="bottom">
+            <Tooltip content="Filter alerts" placement="bottom">
               <button
                 onClick={() => setFilterOpen((v) => !v)}
-                className={`lg:hidden flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border transition-all duration-200 ${filterOpen ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-[#0D0D0D] border-[#1F1F1F] text-slate-400'}`}
+                className={`lg:hidden flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-medium border transition-all duration-200 ${filterOpen ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-[#0D0D0D] border-[#1F1F1F] text-slate-400'}`}
               >
-                <SlidersHorizontal className="w-4 h-4" />
-                Filters
+                <SlidersHorizontal className="w-3.5 h-3.5" />
                 {hasActiveFilters && (
-                  <span className="w-4 h-4 rounded-full bg-emerald-500 text-black text-[10px] font-bold flex items-center justify-center">!</span>
+                  <span className="w-3 h-3 rounded-full bg-emerald-500 text-black text-[8px] font-bold flex items-center justify-center">!</span>
                 )}
               </button>
             </Tooltip>
@@ -713,7 +712,7 @@ export const Dashboard = () => {
         </div>
 
         {/* STATS ROW */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
           <StatCard icon={Bell}          label="Total Alerts"    value={isLoading ? '…' : allAlerts.length}    subValue="all time"           accentColor="blue"    />
           <StatCard icon={BellRing}      label="Unread"          value={isLoading ? '…' : unreadCount}         subValue="requires action"    accentColor="amber"   />
           <StatCard icon={AlertTriangle} label="High Priority"   value={isLoading ? '…' : highPriorityCount}   subValue={`${highUnread} unread`}  accentColor="red"   />
@@ -721,7 +720,7 @@ export const Dashboard = () => {
         </div>
 
         {/* MAIN CONTENT: SIDEBAR + FEED */}
-        <div className="flex gap-4 items-start">
+        <div className="flex gap-2 sm:gap-4 items-start">
 
           {/* FILTER SIDEBAR — Desktop */}
           <div className="hidden lg:block w-64 xl:w-72 flex-shrink-0 sticky top-28">
@@ -740,7 +739,7 @@ export const Dashboard = () => {
           {filterOpen && (
             <div className="lg:hidden fixed inset-0 z-40" onClick={() => setFilterOpen(false)}>
               <div className="absolute inset-0 bg-black/70" />
-              <div className="absolute bottom-0 left-0 right-0 max-h-[82vh] overflow-y-auto rounded-t-2xl" onClick={(e) => e.stopPropagation()}>
+              <div className="absolute bottom-0 left-0 right-0 max-h-[85vh] sm:max-h-[82vh] overflow-y-auto rounded-t-2xl" onClick={(e) => e.stopPropagation()}>
                 <FilterSidebar
                   filters={filters}
                   onFiltersChange={setFilters}
@@ -755,12 +754,12 @@ export const Dashboard = () => {
           )}
 
           {/* ALERT FEED */}
-          <div className="flex-1 min-w-0 flex flex-col gap-3">
+          <div className="flex-1 min-w-0 flex flex-col gap-2 sm:gap-3">
 
             {/* Feed toolbar */}
-            <div className="flex items-center justify-between gap-3 flex-wrap px-1">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-white">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 flex-wrap px-1">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="text-xs sm:text-sm font-semibold text-white truncate">
                   {isLoading ? '…' : filtered.length} alerts
                 </span>
                 {hasActiveFilters && (
@@ -775,16 +774,16 @@ export const Dashboard = () => {
               </div>
 
               {/* Sort dropdown */}
-              <div ref={sortMenuRef} className="relative">
+              <div ref={sortMenuRef} className="relative w-full sm:w-auto">
                 <button
                   onClick={() => setShowSortMenu((v) => !v)}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-medium bg-[#0D0D0D] border border-[#1F1F1F] text-slate-400 hover:border-white/20 hover:text-white transition-all duration-200"
+                  className="w-full sm:w-auto flex items-center justify-between sm:justify-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg sm:rounded-xl text-xs font-medium bg-[#0D0D0D] border border-[#1F1F1F] text-slate-400 hover:border-white/20 hover:text-white transition-all duration-200"
                 >
-                  {currentSortLabel}
-                  <ChevronDown className="w-3 h-3" />
+                  <span className="truncate">{currentSortLabel}</span>
+                  <ChevronDown className="w-3 h-3 flex-shrink-0" />
                 </button>
                 {showSortMenu && (
-                  <div className="absolute right-0 top-full mt-2 z-30 w-48 rounded-xl overflow-hidden bg-[#0D0D0D] border border-[#1F1F1F] shadow-2xl">
+                  <div className="absolute right-0 sm:right-0 top-full mt-2 z-30 w-full sm:w-48 rounded-lg sm:rounded-xl overflow-hidden bg-[#0D0D0D] border border-[#1F1F1F] shadow-2xl">
                     {SORT_OPTIONS.map((opt) => (
                       <button
                         key={opt.value}
@@ -801,9 +800,9 @@ export const Dashboard = () => {
 
             {/* Active filter chips */}
             {hasActiveFilters && (
-              <div className="flex flex-wrap gap-2 px-1">
+              <div className="flex flex-wrap gap-1.5 sm:gap-2 px-1 text-xs sm:text-sm">
                 {appliedFilters.priority.length < 3 && (
-                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  <div className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                     Priority: {appliedFilters.priority.join(', ')}
                     <button onClick={() => {
                       const nf = { ...appliedFilters, priority: ['HIGH', 'MEDIUM', 'LOW'] };
@@ -853,8 +852,8 @@ export const Dashboard = () => {
             {/* Feed list */}
             <div
               ref={feedRef}
-              className="space-y-2 overflow-y-auto pr-1"
-              style={{ maxHeight: 'calc(100vh - 300px)', minHeight: '400px' }}
+              className="space-y-1.5 sm:space-y-2 overflow-y-auto pr-1"
+              style={{ maxHeight: 'calc(100vh - 280px)', minHeight: '300px' }}
             >
               {isLoading ? (
                 Array.from({ length: 6 }).map((_, i) => <AlertSkeleton key={i} />)

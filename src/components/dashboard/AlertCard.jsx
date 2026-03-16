@@ -93,11 +93,12 @@ export const AlertCard = ({ alert, onViewDetails, onMarkAsRead }) => {
   return (
     <div
       className={`
-        group relative flex gap-4 p-4 rounded-xl
+        group relative flex flex-col sm:flex-row gap-2 sm:gap-4 p-3 sm:p-4 rounded-lg sm:rounded-xl
         bg-[#0D0D0D] border border-[#1F1F1F]
         border-l-2 ${priority.cardBorder}
         transition-all duration-300 cursor-pointer
         hover:bg-[#141414] hover:border-[#2A2A2A] hover:shadow-xl ${priority.glow}
+        active:scale-95 sm:active:scale-100
         ${isUnread ? 'ring-1 ring-inset ring-white/5' : 'opacity-80 hover:opacity-100'}
       `}
       onClick={() => onViewDetails && onViewDetails(alert)}
@@ -105,54 +106,54 @@ export const AlertCard = ({ alert, onViewDetails, onMarkAsRead }) => {
       {/* Unread indicator pulse */}
       {isUnread && (
         <span
-          className={`absolute top-3 right-3 w-2 h-2 rounded-full ${priority.dot} animate-pulse`}
+          className={`absolute top-2 right-2 sm:top-3 sm:right-3 w-2 h-2 rounded-full ${priority.dot} animate-pulse`}
         />
       )}
 
       {/* Icon */}
       <div
         className={`
-          flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center
+          flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center
           ${priority.bg} border ${priority.border}
         `}
       >
-        <IconComponent className={`w-5 h-5 ${priority.text}`} />
+        <IconComponent className={`w-4 h-4 sm:w-5 sm:h-5 ${priority.text}`} />
       </div>
 
       {/* Content */}
       <div className="flex-1 min-w-0">
         {/* Top row: badges + timestamp */}
-        <div className="flex items-center flex-wrap gap-2 mb-1.5">
+        <div className="flex items-center flex-wrap gap-1 sm:gap-2 mb-1 text-[10px] sm:text-xs">
           {/* Priority badge */}
           <span
-            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold tracking-wider border ${priority.bg} ${priority.text} ${priority.border}`}
+            className={`inline-flex items-center gap-0.5 px-1.5 sm:px-2 py-0.5 rounded-md text-[9px] sm:text-[11px] font-bold tracking-wider border ${priority.bg} ${priority.text} ${priority.border} flex-shrink-0`}
           >
-            <span className={`w-1.5 h-1.5 rounded-full ${priority.dot}`} />
+            <span className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full ${priority.dot}`} />
             {priority.label}
           </span>
 
           {/* Source badge */}
           <span
-            className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium border ${sourceColor}`}
+            className={`inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-md text-[9px] sm:text-[11px] font-medium border ${sourceColor} truncate`}
           >
             {alert.source}
           </span>
 
           {/* Event type tag */}
-          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium text-slate-400 bg-slate-500/10 border border-slate-500/20">
+          <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium text-slate-400 bg-slate-500/10 border border-slate-500/20">
             {(alert.event_type || 'ALERT').replace(/_/g, ' ')}
           </span>
 
           {/* Timestamp */}
-          <span className="ml-auto flex items-center gap-1 text-[11px] text-slate-500 whitespace-nowrap flex-shrink-0">
-            <Clock className="w-3 h-3" />
+          <span className="ml-auto flex items-center gap-1 text-[9px] sm:text-[11px] text-slate-500 whitespace-nowrap flex-shrink-0">
+            <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
             {formatRelativeTime(alert.timestamp)}
           </span>
         </div>
 
         {/* Title */}
         <h4
-          className={`text-sm font-semibold mb-1 truncate ${
+          className={`text-xs sm:text-sm font-semibold mb-0.5 sm:mb-1 line-clamp-2 ${
             isUnread ? 'text-white' : 'text-slate-300'
           }`}
         >
@@ -160,45 +161,45 @@ export const AlertCard = ({ alert, onViewDetails, onMarkAsRead }) => {
         </h4>
 
         {/* Content preview */}
-        <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+        <p className="text-[11px] sm:text-xs text-slate-500 line-clamp-2 leading-relaxed">
           {safeToString(alert.content)}
         </p>
 
         {/* Token/entity */}
         {alert.entity && (
-          <div className="flex items-center gap-1 mt-2">
-            <span className="text-[10px] text-slate-600 uppercase tracking-wider">Token:</span>
-            <span className="text-[10px] font-bold text-emerald-400">{alert.entity}</span>
+          <div className="flex items-center gap-1 mt-1.5 sm:mt-2">
+            <span className="text-[9px] sm:text-[10px] text-slate-600 uppercase tracking-wider">Token:</span>
+            <span className="text-[9px] sm:text-[10px] font-bold text-emerald-400">{alert.entity}</span>
           </div>
         )}
       </div>
 
-      {/* Action buttons - appear on hover */}
+      {/* Action buttons - appear on hover (desktop) or below on mobile */}
       <div
         className="
-          flex-shrink-0 flex flex-col gap-1.5 justify-center
-          opacity-0 group-hover:opacity-100 transition-opacity duration-200
+          flex flex-row sm:flex-col gap-1.5 justify-end sm:justify-center flex-shrink-0
+          opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200
         "
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={() => onViewDetails && onViewDetails(alert)}
-          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium
+          className="flex items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs font-medium
             bg-emerald-500/10 text-emerald-400 border border-emerald-500/30
-            hover:bg-emerald-500/20 transition-colors duration-200 whitespace-nowrap"
+            hover:bg-emerald-500/20 active:scale-95 transition-all duration-200 whitespace-nowrap"
         >
           <Eye className="w-3 h-3" />
-          Details
+          <span className="hidden sm:inline">Details</span>
         </button>
         {isUnread && (
           <button
             onClick={() => onMarkAsRead && onMarkAsRead(alert.id)}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium
+            className="flex items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs font-medium
               bg-slate-500/10 text-slate-400 border border-slate-500/20
-              hover:bg-slate-500/20 transition-colors duration-200 whitespace-nowrap"
+              hover:bg-slate-500/20 active:scale-95 transition-all duration-200 whitespace-nowrap"
           >
             <CheckCircle className="w-3 h-3" />
-            Read
+            <span className="hidden sm:inline">Read</span>
           </button>
         )}
       </div>
