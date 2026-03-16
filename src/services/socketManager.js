@@ -10,6 +10,11 @@ class SocketManager {
     this.bound = false;
   }
 
+  isSocketActive() {
+    if (!this.socket) return false;
+    return this.socket.connected || this.socket.active;
+  }
+
   notify() {
     const snapshot = { status: this.status, reconnectAttempt: this.attempt };
     this.listeners.forEach((listener) => listener(snapshot));
@@ -54,17 +59,20 @@ class SocketManager {
   connect(token) {
     if (!token) return null;
 
-    if (this.socket?.connected) return this.socket;
+    // Avoid duplicate connect calls when multiple components mount at once.
+    if (this.isSocketActive()) return this.socket;
 
     if (!this.socket) {
       this.socket = io(WS_URL, {
         auth: { token },
-        transports: ['websocket', 'polling'],
+        // Use polling first so environments that block WS upgrades can still connect cleanly.
+        transports: ['polling', 'websocket'],
         reconnection: true,
         reconnectionAttempts: 3,
         reconnectionDelay: 1000,
         reconnectionDelayMax: 8000,
         randomizationFactor: 0.5,
+        timeout: 10000,
       });
       this.status = 'reconnecting';
       this.notify();
@@ -73,7 +81,9 @@ class SocketManager {
     }
 
     this.socket.auth = { token };
-    this.socket.connect();
+    if (!this.isSocketActive()) {
+      this.socket.connect();
+    }
     this.status = 'reconnecting';
     this.notify();
     this.bindLifecycleEvents();
