@@ -702,45 +702,6 @@ export const Dashboard = () => {
     <div className="min-h-screen w-full pt-24 sm:pt-28 pb-12 px-3 sm:px-4 lg:px-6" style={{ position: 'relative', zIndex: 1 }}>
       <div className="max-w-[1400px] mx-auto space-y-4 sm:space-y-6">
 
-        {/* PAGE HEADER */}
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
-          <div className="min-w-0">
-            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Alert Dashboard</h1>
-            <p className="text-xs sm:text-sm text-slate-500 mt-1">
-              Real-time market signals from 50+ sources
-            </p>
-          </div>
-          <div className="flex items-center gap-2 flex-wrap justify-start sm:justify-end">
-            <Tooltip content="Reload latest alerts" placement="bottom">
-              <button
-                onClick={handleRefresh}
-                className={`flex items-center gap-1 sm:gap-2 px-2.5 sm:px-4 py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium bg-[#0D0D0D] border border-[#1F1F1F] text-slate-400 hover:border-emerald-500/40 hover:text-emerald-400 transition-all duration-200 ${isRefreshing ? 'text-emerald-400 border-emerald-500/40' : ''}`}
-              >
-                <RefreshCw className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-                <span className="hidden sm:inline">Refresh</span>
-              </button>
-            </Tooltip>
-            <Tooltip content="Export visible alerts to CSV" placement="bottom">
-              <button className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-[#0D0D0D] border border-[#1F1F1F] text-slate-400 hover:border-white/20 hover:text-white transition-all duration-200">
-                <Download className="w-4 h-4" />
-                Export
-              </button>
-            </Tooltip>
-            {/* Mobile filter toggle */}
-            <Tooltip content="Filter alerts" placement="bottom">
-              <button
-                onClick={() => setFilterOpen((v) => !v)}
-                className={`lg:hidden flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-medium border transition-all duration-200 ${filterOpen ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-[#0D0D0D] border-[#1F1F1F] text-slate-400'}`}
-              >
-                <SlidersHorizontal className="w-3.5 h-3.5" />
-                {hasActiveFilters && (
-                  <span className="w-3 h-3 rounded-full bg-emerald-500 text-black text-[8px] font-bold flex items-center justify-center">!</span>
-                )}
-              </button>
-            </Tooltip>
-          </div>
-        </div>
-
         {/* TODAY'S HIGHLIGHTS */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <div className="bg-gradient-to-br from-emerald-500/5 to-emerald-600/5 border border-emerald-500/20 rounded-xl p-4 sm:p-5 hover:border-emerald-500/40 transition-all">
