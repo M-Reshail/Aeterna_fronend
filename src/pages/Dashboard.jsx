@@ -4,10 +4,6 @@ import PropTypes from 'prop-types';
 import { useQueryClient } from '@tanstack/react-query';
 import Tooltip from '@components/common/Tooltip';
 import {
-  Bell,
-  BellRing,
-  AlertTriangle,
-  Activity,
   TrendingUp,
   Calendar,
   RefreshCw,
@@ -189,34 +185,6 @@ const mergeAlertsPreservingReadState = (previousAlerts, incomingAlerts, readIdsS
       status: shouldKeepRead ? 'read' : item.status,
     };
   });
-};
-
-// ─────────────────────────────────────────────────────────────────────────────
-// STAT CARD
-// ─────────────────────────────────────────────────────────────────────────────
-const ACCENT_COLORS = {
-  emerald: { icon: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', val: 'text-emerald-400' },
-  red:     { icon: 'text-red-400',     bg: 'bg-red-500/10',     border: 'border-red-500/20',     val: 'text-red-400'     },
-  amber:   { icon: 'text-amber-400',   bg: 'bg-amber-500/10',   border: 'border-amber-500/20',   val: 'text-amber-400'   },
-  blue:    { icon: 'text-blue-400',    bg: 'bg-blue-500/10',    border: 'border-blue-500/20',    val: 'text-blue-400'    },
-};
-
-const StatCard = ({ icon: Icon, label, value, subValue, accentColor = 'emerald' }) => {
-  const c = ACCENT_COLORS[accentColor] || ACCENT_COLORS.emerald;
-  return (
-    <div className="flex items-center gap-4 p-4 rounded-2xl bg-[#080808] border border-[#1A1A1A] hover:border-[#252525] transition-all duration-300">
-      <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${c.bg} border ${c.border}`}>
-        <Icon className={`w-5 h-5 ${c.icon}`} />
-      </div>
-      <div className="min-w-0">
-        <p className="text-xs text-slate-500 uppercase tracking-wider mb-0.5">{label}</p>
-        <div className="flex items-baseline gap-2">
-          <span className={`text-2xl font-bold ${c.val}`}>{value}</span>
-          {subValue && <span className="text-xs text-slate-500">{subValue}</span>}
-        </div>
-      </div>
-    </div>
-  );
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -637,9 +605,6 @@ export const Dashboard = () => {
   }, [filtered.length, isLoadingMore, visibleCount]);
 
   const visibleAlerts = filtered.slice(0, visibleCount);
-  const unreadCount = allAlerts.filter((a) => a.status === 'new').length;
-  const highPriorityCount = allAlerts.filter((a) => a.priority === 'HIGH').length;
-  const highUnread = allAlerts.filter((a) => a.priority === 'HIGH' && a.status === 'new').length;
 
   const handleMarkAsRead = useCallback(async (id) => {
     readAlertIdsRef.current.add(String(id));
@@ -776,14 +741,6 @@ export const Dashboard = () => {
           </div>
         </div>
 
-        {/* STATS ROW */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
-          <StatCard icon={Bell}          label="Total Alerts"    value={isLoading ? '…' : allAlerts.length}    subValue="all time"           accentColor="blue"    />
-          <StatCard icon={BellRing}      label="Unread"          value={isLoading ? '…' : unreadCount}         subValue="requires action"    accentColor="amber"   />
-          <StatCard icon={AlertTriangle} label="High Priority"   value={isLoading ? '…' : highPriorityCount}   subValue={`${highUnread} unread`}  accentColor="red"   />
-          <StatCard icon={Activity}      label="Sources Active"  value={isLoading ? '…' : sourceOptions.length} subValue="live feeds"          accentColor="emerald" />
-        </div>
-
         {/* TODAY'S HIGHLIGHTS */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <div className="bg-gradient-to-br from-emerald-500/5 to-emerald-600/5 border border-emerald-500/20 rounded-xl p-4 sm:p-5 hover:border-emerald-500/40 transition-all">
@@ -877,19 +834,6 @@ export const Dashboard = () => {
               </div>
             )}
           </div>
-        </div>
-
-        <div className="bg-[#0D0D0D] border border-[#1F1F1F] rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <p className="text-sm font-semibold text-white">Alerts and filters moved to News</p>
-            <p className="text-xs text-slate-500 mt-1">Open News in the navbar to view and filter alert feed.</p>
-          </div>
-          <button
-            onClick={() => navigate('/news')}
-            className="px-4 py-2 rounded-lg text-sm font-semibold bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 transition-all"
-          >
-            Open News Alerts
-          </button>
         </div>
       </div>
     </div>
