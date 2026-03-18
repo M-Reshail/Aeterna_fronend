@@ -62,6 +62,49 @@ const toDisplayText = (value, fallback = '') => {
   return fallback;
 };
 
+const normalizeCategories = (value) => {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item) => toDisplayText(item, '').trim())
+    .filter(Boolean);
+};
+
+const toHashtag = (value) => {
+  const cleaned = toDisplayText(value, '')
+    .replace(/[^a-zA-Z0-9\s_-]/g, '')
+    .trim();
+  return cleaned ? `#${cleaned.replace(/\s+/g, '_')}` : '';
+};
+
+const logIngestionResponse = (response, context = '') => {
+  if (!import.meta.env.DEV) return;
+  const items = Array.isArray(response) ? response : [];
+  const first = items[0] || {};
+  const firstContent = first?.content || {};
+
+  console.groupCollapsed(`[News] /ingestion/events response ${context}`.trim());
+  console.log('Full response:', response);
+  console.table(
+    items.slice(0, 5).map((item) => ({
+      id: item?.id,
+      source: item?.source,
+      type: item?.type,
+      title: item?.content?.title,
+      author: item?.content?.author,
+      hasLink: Boolean(item?.content?.link),
+      categories: Array.isArray(item?.content?.categories) ? item.content.categories.length : 0,
+    }))
+  );
+  console.log('First item extracted fields:', {
+    title: firstContent?.title,
+    summary: firstContent?.summary,
+    link: firstContent?.link,
+    author: firstContent?.author,
+    categories: firstContent?.categories,
+  });
+  console.groupEnd();
+};
+
 const inferEventType = (title = '') => {
   const lower = toDisplayText(title, '').toLowerCase();
   if (lower.includes('price')) return 'PRICE_ALERT';
@@ -83,8 +126,18 @@ const normalizeAlert = (alert) => ({
 
 const normalizeNewsEvent = (event) => {
   const content = event?.content || {};
-  const title = toDisplayText(content.title, toDisplayText(content.name, `News from ${toDisplayText(event?.source, 'source')}`));
-  const body = toDisplayText(content.summary, toDisplayText(content.alert_reasons, toDisplayText(content.link, 'No details provided')));
+  const title = toDisplayText(
+    content.title,
+    toDisplayText(event?.title, toDisplayText(content.name, `News from ${toDisplayText(event?.source, 'source')}`))
+  );
+  const summary = toDisplayText(
+    content.summary,
+    toDisplayText(event?.summary, toDisplayText(content.alert_reasons, 'No summary available'))
+  );
+  const link = toDisplayText(content.link, toDisplayText(event?.link, ''));
+  const author = toDisplayText(content.author, toDisplayText(event?.author, 'Unknown author'));
+  const categories = normalizeCategories(content.categories?.length ? content.categories : event?.categories);
+  const hashtags = categories.map(toHashtag).filter(Boolean);
 
   return {
     id: `event-${event?.id}`,
@@ -92,7 +145,12 @@ const normalizeNewsEvent = (event) => {
     event_type: String(event?.type || 'news').toUpperCase(),
     source: toDisplayText(event?.source, 'unknown'),
     title,
-    content: body,
+    content: summary,
+    summary,
+    link,
+    author,
+    categories,
+    hashtags,
     priority: content.quality_score >= 70 ? 'HIGH' : content.quality_score >= 50 ? 'MEDIUM' : 'LOW',
     status: 'new',
     timestamp: event?.timestamp || new Date().toISOString(),
@@ -100,6 +158,12 @@ const normalizeNewsEvent = (event) => {
     // Preserve raw content for detailed view
     rawContent: {
       ...content,
+      title,
+      summary,
+      link,
+      author,
+      categories,
+      hashtags,
       type: event?.type,
     },
   };
@@ -356,6 +420,11 @@ export const News = () => {
       }
 
       // Normalize based on event type
+      const isEventsFeed = sourceApiParams.length > 0 || eventType !== 'all';
+      if (isEventsFeed) {
+        logIngestionResponse(feedResult, `(items: ${Array.isArray(feedResult) ? feedResult.length : 0})`);
+      }
+
       const normalizedAlerts = (sourceApiParams.length > 0 || (eventType !== 'all' && !sourceApiParams.length))
         ? feedResult.flat().filter(Boolean).map(normalizeNewsEvent)
         : feedResult.map(normalizeAlert);

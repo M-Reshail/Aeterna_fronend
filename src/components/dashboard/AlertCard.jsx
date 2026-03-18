@@ -26,6 +26,13 @@ const safeToString = (value, fallback = '') => {
   return fallback;
 };
 
+const asArray = (value) => (Array.isArray(value) ? value : []);
+
+const toHashtag = (value) => {
+  const raw = safeToString(value, '').replace(/[^a-zA-Z0-9\s_-]/g, '').trim();
+  return raw ? `#${raw.replace(/\s+/g, '_')}` : '';
+};
+
 // Event type icon mapping
 const EVENT_ICONS = {
   LARGE_TRANSFER: ArrowUpDown,
@@ -71,17 +78,10 @@ const PRIORITY_CONFIG = {
 };
 
 const SOURCE_COLORS = {
-  Ethereum: 'text-purple-400 bg-purple-500/10 border-purple-500/30',
-  Binance: 'text-yellow-400 bg-yellow-500/10 border-yellow-500/30',
-  Solana: 'text-teal-400 bg-teal-500/10 border-teal-500/30',
   CoinDesk: 'text-blue-400 bg-blue-500/10 border-blue-500/30',
   CoinTelegraph: 'text-orange-400 bg-orange-500/10 border-orange-500/30',
   Decrypt: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/30',
   CoinGecko: 'text-green-400 bg-green-500/10 border-green-500/30',
-  Twitter: 'text-sky-400 bg-sky-500/10 border-sky-500/30',
-  Uniswap: 'text-pink-400 bg-pink-500/10 border-pink-500/30',
-  Aave: 'text-violet-400 bg-violet-500/10 border-violet-500/30',
-  DEFAULT: 'text-slate-400 bg-slate-500/10 border-slate-500/30',
 };
 
 export const AlertCard = ({ alert, onViewDetails, onMarkAsRead }) => {
@@ -89,6 +89,12 @@ export const AlertCard = ({ alert, onViewDetails, onMarkAsRead }) => {
   const IconComponent = EVENT_ICONS[alert.event_type] || EVENT_ICONS.DEFAULT;
   const sourceColor = SOURCE_COLORS[alert.source] || SOURCE_COLORS.DEFAULT;
   const isUnread = alert.status === 'new';
+  const author = safeToString(alert.author || alert?.rawContent?.author, 'Unknown author');
+  const articleLink = safeToString(alert.link || alert?.rawContent?.link, '');
+  const categories = asArray(alert.categories?.length ? alert.categories : alert?.rawContent?.categories)
+    .map((item) => safeToString(item, '').trim())
+    .filter(Boolean)
+    .slice(0, 4);
 
   return (
     <div
@@ -165,6 +171,37 @@ export const AlertCard = ({ alert, onViewDetails, onMarkAsRead }) => {
           {safeToString(alert.content)}
         </p>
 
+        {/* Author + article link */}
+        <div className="mt-1.5 flex flex-wrap items-center gap-2 text-[10px] sm:text-[11px] text-slate-500">
+          <span className="truncate">By {author}</span>
+          {articleLink && (
+            <a
+              href={articleLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="inline-flex items-center gap-1 text-blue-300 hover:text-blue-200 transition-colors"
+            >
+              <ExternalLink className="w-3 h-3" />
+              Read more
+            </a>
+          )}
+        </div>
+
+        {/* Categories as hashtags */}
+        {categories.length > 0 && (
+          <div className="mt-1.5 flex flex-wrap gap-1">
+            {categories.map((category) => (
+              <span
+                key={`${alert.id}-${category}`}
+                className="text-[10px] sm:text-[11px] text-blue-300/90 bg-blue-500/10 border border-blue-500/20 px-1.5 py-0.5 rounded-md"
+              >
+                {toHashtag(category)}
+              </span>
+            ))}
+          </div>
+        )}
+
         {/* Token/entity */}
         {alert.entity && (
           <div className="flex items-center gap-1 mt-1.5 sm:mt-2">
@@ -214,10 +251,19 @@ AlertCard.propTypes = {
     source: PropTypes.string,
     title: PropTypes.string,
     content: PropTypes.string,
+    summary: PropTypes.string,
+    author: PropTypes.string,
+    link: PropTypes.string,
+    categories: PropTypes.arrayOf(PropTypes.string),
     priority: PropTypes.oneOf(['HIGH', 'MEDIUM', 'LOW']),
     status: PropTypes.string,
     timestamp: PropTypes.string,
     entity: PropTypes.string,
+    rawContent: PropTypes.shape({
+      author: PropTypes.string,
+      link: PropTypes.string,
+      categories: PropTypes.arrayOf(PropTypes.string),
+    }),
   }).isRequired,
   onViewDetails: PropTypes.func,
   onMarkAsRead: PropTypes.func,
