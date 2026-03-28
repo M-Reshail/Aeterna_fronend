@@ -1,5 +1,3 @@
-import { validateEventRendering } from './renderValidation';
-
 const isPlainObject = (value) => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 
 const toText = (value, fallback = '') => {
@@ -94,7 +92,7 @@ export const normalizeEvent = (event) => {
     ''
   );
 
-  const author = toText(firstDefined(content.author, event?.author), '');
+  const author = toText(firstDefined(content.author, event?.author), 'Unknown');
   const categories = toArray(firstDefined(content.categories, event?.categories));
   const hashtags = toArray(content.hashtags);
   const mentions = toArray(content.mentions);
@@ -179,12 +177,9 @@ export const normalizeEvent = (event) => {
 export const debugLogNormalizedEvents = (apiResponse, normalizedEvents, context = '') => {
   if (!import.meta.env.DEV) return;
 
-  const rawItems = Array.isArray(apiResponse) ? apiResponse : [];
-  const normalizedItems = Array.isArray(normalizedEvents) ? normalizedEvents : [];
-
-  const firstApi = rawItems[0] || {};
+  const firstApi = Array.isArray(apiResponse) ? apiResponse[0] : apiResponse;
   const firstContentKeys = Object.keys(firstApi?.content || {});
-  const firstNormalized = normalizedItems[0] || {};
+  const firstNormalized = Array.isArray(normalizedEvents) ? normalizedEvents[0] : normalizedEvents;
   const missingKeys = firstContentKeys.filter((key) => !(key in (firstNormalized || {})) && !(key in (firstNormalized?.rawContent || {})));
   const requiredFields = ['author', 'categories', 'hashtags', 'mentions', 'quality_score', 'published_date'];
   const requiredStatus = Object.fromEntries(
@@ -194,10 +189,6 @@ export const debugLogNormalizedEvents = (apiResponse, normalizedEvents, context 
     ])
   );
   const missingRequired = requiredFields.filter((key) => !requiredStatus[key]);
-  const validationResults = rawItems.map((rawEvent, index) =>
-    validateEventRendering({ rawEvent, normalizedEvent: normalizedItems[index], index })
-  );
-  const mismatchWarnings = validationResults.flatMap((item) => item.warnings);
 
   console.groupCollapsed(`[Events] ${context || 'Normalization debug'}`.trim());
   console.log('Full API response:', apiResponse);
@@ -207,9 +198,5 @@ export const debugLogNormalizedEvents = (apiResponse, normalizedEvents, context 
   console.log('Missing from normalized/rawContent:', missingKeys);
   console.log('Required field presence:', requiredStatus);
   console.log('Missing required fields:', missingRequired);
-  console.log('Render validation snapshot:', validationResults.slice(0, 5).map((item) => item.renderRules));
-  mismatchWarnings.forEach((warning) => {
-    console.warn(`[Render Validation] ${warning}`);
-  });
   console.groupEnd();
 };
