@@ -11,7 +11,7 @@ const resolveType = (alert) => {
   return 'news';
 };
 
-export const AlertCard = ({ alert, onViewDetails, onMarkAsRead }) => {
+export const AlertCard = ({ alert, onViewDetails, onMarkAsRead, expandedCardId, onToggleExpand }) => {
   const typeKey = resolveType(alert);
   if (typeKey === 'price') {
     return <PriceCard alert={alert} onViewDetails={onViewDetails} onMarkAsRead={onMarkAsRead} />;
@@ -26,6 +26,8 @@ export const AlertCard = ({ alert, onViewDetails, onMarkAsRead }) => {
       alert={alert}
       onViewDetails={onViewDetails}
       onMarkAsRead={onMarkAsRead}
+      isExpanded={expandedCardId === alert.id}
+      onToggleExpand={onToggleExpand}
     />
   );
 };
@@ -39,6 +41,8 @@ AlertCard.propTypes = {
   }).isRequired,
   onViewDetails: PropTypes.func,
   onMarkAsRead: PropTypes.func,
+  expandedCardId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  onToggleExpand: PropTypes.func,
 };
 
 export default AlertCard;
