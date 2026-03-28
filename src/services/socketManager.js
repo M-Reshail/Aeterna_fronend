@@ -9,6 +9,13 @@ class SocketManager {
     this.listeners = new Set();
     this.bound = false;
     this.blocked = false;
+
+    if (typeof window !== 'undefined') {
+      const blockedUntil = Number(window.sessionStorage.getItem('socket_blocked_until') || 0);
+      if (Number.isFinite(blockedUntil) && blockedUntil > Date.now()) {
+        this.blocked = true;
+      }
+    }
   }
 
   isSocketActive() {
@@ -50,6 +57,9 @@ class SocketManager {
       if (isNotFoundSocketEndpoint) {
         console.warn('⚠️ Socket.IO endpoint not found (404) — disabling reconnection attempts');
         this.blocked = true;
+        if (typeof window !== 'undefined') {
+          window.sessionStorage.setItem('socket_blocked_until', String(Date.now() + 10 * 60 * 1000));
+        }
         if (this.socket?.io?.opts) {
           this.socket.io.opts.reconnection = false;
           this.socket.io.opts.reconnectionAttempts = 0;

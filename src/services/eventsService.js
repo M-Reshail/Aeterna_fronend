@@ -25,7 +25,15 @@ export const eventsService = {
   // ─── GET /ingestion/search/by-type/{type} ────────────────────────────────
   // type: "news" | "price"
   getEventsByType: async (type, { skip = 0, limit = 50 } = {}) => {
-    return api.get(`/ingestion/search/by-type/${type}`, { params: { skip, limit } });
+    try {
+      return await api.get(`/ingestion/search/by-type/${type}`, { params: { skip, limit } });
+    } catch (error) {
+      // Some deployments expose only /ingestion/events with a type query.
+      if (error?.status === 404) {
+        return eventsService.getEvents({ skip, limit, type });
+      }
+      throw error;
+    }
   },
 
   // ─── GET /ingestion/stats ─────────────────────────────────────────────────
