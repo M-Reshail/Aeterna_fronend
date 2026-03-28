@@ -204,6 +204,7 @@ export const FilterSidebar = ({
                 { value: 'all', label: 'All Types', icon: '📊' },
                 { value: 'NEWS', label: 'News', icon: '📰' },
                 { value: 'PRICE_ALERT', label: 'Price updates', icon: '💰' },
+                { value: 'ONCHAIN', label: 'On-chain', icon: '⛓️' },
               ].map((opt) => {
                 const isActive = (filters.eventType || 'all') === opt.value;
                 return (
