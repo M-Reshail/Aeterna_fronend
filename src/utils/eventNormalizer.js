@@ -73,14 +73,6 @@ const shortenAddress = (address) => {
 export const normalizeEvent = (event) => {
   const content = isPlainObject(event?.content) ? { ...event.content } : {};
   const type = normalizeType(event?.type);
-  const publishedDate = firstDefined(
-    content.published_date,
-    content.published_at,
-    content.publication_date,
-    content.date_published,
-    content.published,
-    null
-  );
 
   const title = toText(
     firstDefined(content.title, content.name, event?.title),
@@ -131,7 +123,6 @@ export const normalizeEvent = (event) => {
     event_type: type.toUpperCase(),
     source: toText(event?.source, 'unknown'),
     timestamp: event?.timestamp || new Date().toISOString(),
-    published_date: publishedDate,
     title,
     summary,
     content: summary,
@@ -181,22 +172,11 @@ export const debugLogNormalizedEvents = (apiResponse, normalizedEvents, context 
   const firstContentKeys = Object.keys(firstApi?.content || {});
   const firstNormalized = Array.isArray(normalizedEvents) ? normalizedEvents[0] : normalizedEvents;
   const missingKeys = firstContentKeys.filter((key) => !(key in (firstNormalized || {})) && !(key in (firstNormalized?.rawContent || {})));
-  const requiredFields = ['author', 'categories', 'hashtags', 'mentions', 'quality_score', 'published_date'];
-  const requiredStatus = Object.fromEntries(
-    requiredFields.map((key) => [
-      key,
-      Boolean((firstNormalized || {})[key] ?? (firstNormalized?.rawContent || {})[key] ?? (firstNormalized?.metrics || {})[key]),
-    ])
-  );
-  const missingRequired = requiredFields.filter((key) => !requiredStatus[key]);
 
   console.groupCollapsed(`[Events] ${context || 'Normalization debug'}`.trim());
   console.log('Full API response:', apiResponse);
   console.log('Normalized data:', normalizedEvents);
-  console.log('Rendered data candidate (first normalized item):', firstNormalized);
   console.log('First event content keys:', firstContentKeys);
   console.log('Missing from normalized/rawContent:', missingKeys);
-  console.log('Required field presence:', requiredStatus);
-  console.log('Missing required fields:', missingRequired);
   console.groupEnd();
 };

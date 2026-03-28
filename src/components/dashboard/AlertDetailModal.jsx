@@ -203,11 +203,6 @@ export const AlertDetailModal = ({
   const mergedContent = { ...(alert.rawContent || {}), ...(alert.metrics ? { metrics: alert.metrics } : {}) };
   const summaryText = safeToString(alert.summary || alert.content, 'No summary available');
   const hasLongSummary = summaryText.length > 220;
-  const publishedDate = alert.published_date || mergedContent.published_date || mergedContent.published_at || mergedContent.publication_date || mergedContent.date_published;
-  const categoriesList = asArray(alert.categories || mergedContent.categories);
-  const hashtagsList = asArray(alert.hashtags || mergedContent.hashtags);
-  const mentionsList = asArray(alert.mentions || mergedContent.mentions);
-  const qualityValue = toNumber(mergedContent.quality_score ?? alert.metrics?.quality_score);
   const visibleSummary = hasLongSummary && !showFullSummary
     ? `${summaryText.slice(0, 220)}...`
     : summaryText;
@@ -342,10 +337,6 @@ export const AlertDetailModal = ({
                   <p className="text-slate-500">Author</p>
                   <p className="text-slate-300 font-medium truncate">{safeToString(alert.author || mergedContent.author, 'Unknown')}</p>
                 </div>
-                <div>
-                  <p className="text-slate-500">Published Date</p>
-                  <p className="text-slate-300 font-medium">{publishedDate ? formatDateTime(publishedDate) : 'Not provided'}</p>
-                </div>
                 {toNumber(mergedContent.word_count) !== null && (
                   <div>
                     <p className="text-slate-500">Word Count</p>
@@ -358,10 +349,12 @@ export const AlertDetailModal = ({
                     <p className="text-slate-300 font-medium">{toNumber(mergedContent.read_time_minutes)} min</p>
                   </div>
                 )}
-                <div>
-                  <p className="text-slate-500">Quality</p>
-                  <p className="text-slate-300 font-medium">{qualityValue !== null ? `${qualityValue}%` : 'Not provided'}</p>
-                </div>
+                {toNumber(mergedContent.quality_score) !== null && (
+                  <div>
+                    <p className="text-slate-500">Quality</p>
+                    <p className="text-slate-300 font-medium">{toNumber(mergedContent.quality_score)}%</p>
+                  </div>
+                )}
                 {alert.image && (
                   <div>
                     <p className="text-slate-500">Image</p>
@@ -376,44 +369,44 @@ export const AlertDetailModal = ({
                 </div>
               )}
 
-              <div>
-                <p className="text-slate-500 text-[10px] sm:text-xs mb-1">Categories</p>
-                <div className="flex flex-wrap gap-1">
-                  {categoriesList.length > 0 ? categoriesList.map((cat, idx) => (
-                    <span key={idx} className="inline-flex px-1.5 sm:px-2 py-0.5 rounded-md bg-blue-500/20 text-blue-300 text-[9px] sm:text-xs font-medium">
-                      {cat}
-                    </span>
-                  )) : (
-                    <span className="inline-flex px-1.5 sm:px-2 py-0.5 rounded-md bg-slate-500/20 text-slate-300 text-[9px] sm:text-xs font-medium">None</span>
-                  )}
+              {asArray(alert.categories || mergedContent.categories).length > 0 && (
+                <div>
+                  <p className="text-slate-500 text-[10px] sm:text-xs mb-1">Categories</p>
+                  <div className="flex flex-wrap gap-1">
+                    {asArray(alert.categories || mergedContent.categories).map((cat, idx) => (
+                      <span key={idx} className="inline-flex px-1.5 sm:px-2 py-0.5 rounded-md bg-blue-500/20 text-blue-300 text-[9px] sm:text-xs font-medium">
+                        {cat}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
-              <div>
-                <p className="text-slate-500 text-[10px] sm:text-xs mb-1">Hashtags</p>
-                <div className="flex flex-wrap gap-1">
-                  {hashtagsList.length > 0 ? hashtagsList.map((tag, idx) => (
-                    <span key={idx} className="text-blue-300 text-[9px] sm:text-xs">
-                      {String(tag).startsWith('#') ? tag : `#${tag}`}
-                    </span>
-                  )) : (
-                    <span className="inline-flex px-1.5 sm:px-2 py-0.5 rounded-md bg-slate-500/20 text-slate-300 text-[9px] sm:text-xs font-medium">None</span>
-                  )}
+              {asArray(alert.hashtags || mergedContent.hashtags).length > 0 && (
+                <div>
+                  <p className="text-slate-500 text-[10px] sm:text-xs mb-1">Hashtags</p>
+                  <div className="flex flex-wrap gap-1">
+                    {asArray(alert.hashtags || mergedContent.hashtags).map((tag, idx) => (
+                      <span key={idx} className="text-blue-300 text-[9px] sm:text-xs">
+                        {String(tag).startsWith('#') ? tag : `#${tag}`}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
-              <div>
-                <p className="text-slate-500 text-[10px] sm:text-xs mb-1">Mentions</p>
-                <div className="flex flex-wrap gap-1">
-                  {mentionsList.length > 0 ? mentionsList.map((mention, idx) => (
-                    <span key={idx} className="inline-flex px-1.5 sm:px-2 py-0.5 rounded-md bg-slate-500/20 text-slate-300 text-[9px] sm:text-xs font-medium">
-                      {mention}
-                    </span>
-                  )) : (
-                    <span className="inline-flex px-1.5 sm:px-2 py-0.5 rounded-md bg-slate-500/20 text-slate-300 text-[9px] sm:text-xs font-medium">None</span>
-                  )}
+              {asArray(alert.mentions || mergedContent.mentions).length > 0 && (
+                <div>
+                  <p className="text-slate-500 text-[10px] sm:text-xs mb-1">Mentions</p>
+                  <div className="flex flex-wrap gap-1">
+                    {asArray(alert.mentions || mergedContent.mentions).map((mention, idx) => (
+                      <span key={idx} className="inline-flex px-1.5 sm:px-2 py-0.5 rounded-md bg-slate-500/20 text-slate-300 text-[9px] sm:text-xs font-medium">
+                        {mention}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {(alert.link || mergedContent.link) && (
                 <a
