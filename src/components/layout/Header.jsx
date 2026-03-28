@@ -9,6 +9,7 @@ export const Header = () => {
   const location = useLocation();
   const { user, logout, isAuthenticated } = useAuth();
   const { status } = useSocket({ autoConnect: false });
+  const realtimeEnabled = false;
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -162,15 +163,23 @@ export const Header = () => {
               <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-full border border-[#1f1f1f] bg-[#0b0b0b]/80">
                 <span
                   className={`w-1.5 h-1.5 rounded-full ${
-                    status === 'connected'
-                      ? 'bg-emerald-400'
-                      : status === 'reconnecting'
-                        ? 'bg-amber-400'
-                        : 'bg-slate-500'
+                    realtimeEnabled
+                      ? status === 'connected'
+                        ? 'bg-emerald-400'
+                        : status === 'reconnecting'
+                          ? 'bg-amber-400'
+                          : 'bg-slate-500'
+                      : 'bg-slate-500'
                   }`}
                 />
                 <span className="text-[11px] uppercase tracking-wide text-slate-500">
-                  {status === 'connected' ? 'Live' : status === 'reconnecting' ? 'Reconnecting' : 'Offline'}
+                  {realtimeEnabled
+                    ? status === 'connected'
+                      ? 'Live'
+                      : status === 'reconnecting'
+                        ? 'Reconnecting'
+                        : 'Offline'
+                    : 'Realtime Off'}
                 </span>
               </div>
             )}
