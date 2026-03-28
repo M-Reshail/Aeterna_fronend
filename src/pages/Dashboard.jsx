@@ -73,29 +73,6 @@ const normalizeSourceName = (source) => {
   return '';
 };
 
-const sourceMatchesSelection = (source, selectedSources = []) => {
-  const current = String(source || '').trim().toLowerCase();
-  if (!current) return false;
-
-  const normalized = normalizeSourceName(source).toLowerCase();
-  const compact = current.replace(/[\s._-]/g, '');
-
-  return selectedSources.some((selected) => {
-    const s = String(selected || '').trim().toLowerCase();
-    if (!s) return false;
-    const sCompact = s.replace(/[\s._-]/g, '');
-
-    return (
-      s === current ||
-      s === normalized ||
-      current.includes(s) ||
-      s.includes(current) ||
-      compact.includes(sCompact) ||
-      sCompact.includes(compact)
-    );
-  });
-};
-
 const toApiSourceParam = (sourceLabel) => {
   const mapped = SOURCE_QUERY_BY_LABEL[sourceLabel];
   if (mapped) return mapped;
@@ -531,7 +508,7 @@ export const Dashboard = () => {
     }
     if (appliedFilters.sources?.length > 0) {
       const selectedSources = appliedFilters.sources.map((source) => String(source).toLowerCase());
-      result = result.filter((a) => sourceMatchesSelection(a.source, selectedSources));
+      result = result.filter((a) => selectedSources.includes(normalizeSourceName(a.source).toLowerCase()));
     }
     if (appliedFilters.contentFilter === 'price') {
       result = result.filter(isPriceRelatedAlert);
