@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Clock, Newspaper } from 'lucide-react';
 import { formatRelativeTime } from '@utils/helpers';
@@ -35,15 +35,12 @@ const priorityStyles = {
 };
 
 export const NewsCard = ({ alert, onViewDetails }) => {
-  const [showFullSummary, setShowFullSummary] = useState(false);
   const summary = safeToString(alert.summary || alert.content, '');
   const publishedDate = resolvePublishedDate(alert);
   const source = safeToString(alert.source, 'unknown');
   const compactSummary = summary
     ? summary.replace(/\s+/g, ' ')
     : '';
-  const hasSummary = compactSummary.length > 0;
-  const isLongSummary = compactSummary.length >= 120;
   const priority = safeToString(alert.priority, 'LOW');
   const styles = priorityStyles[priority] || priorityStyles.LOW;
 
@@ -72,24 +69,10 @@ export const NewsCard = ({ alert, onViewDetails }) => {
         <h3 className="text-base sm:text-lg font-bold text-white leading-snug line-clamp-2">{safeToString(alert.title, 'Untitled')}</h3>
       </div>
 
-      {hasSummary && (
-        <div className="mt-1">
-          <p className={`text-xs text-slate-400 leading-relaxed ${isLongSummary && !showFullSummary ? 'line-clamp-2' : ''}`}>
-            {compactSummary}
-          </p>
-          {isLongSummary && (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowFullSummary((prev) => !prev);
-              }}
-              className="mt-1 text-[11px] text-blue-300 hover:text-blue-200 transition-colors"
-            >
-              {showFullSummary ? 'Show less' : 'Show more'}
-            </button>
-          )}
-        </div>
+      {compactSummary && (
+        <p className="mt-1 text-xs text-slate-400 leading-relaxed line-clamp-1">
+          {compactSummary}
+        </p>
       )}
     </article>
   );

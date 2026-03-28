@@ -340,12 +340,7 @@ export const AlertDetailModal = ({
               <div className="grid grid-cols-2 gap-1.5 sm:gap-2 text-[10px] sm:text-xs">
                 <div>
                   <p className="text-slate-500">Author</p>
-                  <p
-                    className="text-slate-300 font-medium whitespace-normal break-words"
-                    title={safeToString(alert.author || mergedContent.author, 'Unknown')}
-                  >
-                    {safeToString(alert.author || mergedContent.author, 'Unknown')}
-                  </p>
+                  <p className="text-slate-300 font-medium truncate">{safeToString(alert.author || mergedContent.author, 'Unknown')}</p>
                 </div>
                 <div>
                   <p className="text-slate-500">Published Date</p>

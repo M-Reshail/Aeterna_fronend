@@ -154,14 +154,6 @@ const isPriceRelatedAlert = (item) => {
   return PRICE_KEYWORDS.some((keyword) => text.includes(keyword));
 };
 
-const resolveAlertType = (item) => {
-  const rawType = String(item?.type || item?.rawContent?.type || item?.event_type || '').toLowerCase();
-  if (rawType.includes('price')) return 'PRICE_ALERT';
-  if (rawType.includes('onchain')) return 'ONCHAIN';
-  if (rawType.includes('news')) return 'NEWS';
-  return isPriceRelatedAlert(item) ? 'PRICE_ALERT' : 'NEWS';
-};
-
 const mergeAlertsPreservingReadState = (previousAlerts, incomingAlerts, readIdsSet) => {
   const prevById = new Map((previousAlerts || []).map((item) => [String(item.id), item]));
 
@@ -293,13 +285,7 @@ export const Dashboard = () => {
       try {
         if (sourceApiParams.length > 0) {
           // If sources selected: fetch from those sources with optional type filter
-          const type = eventType === 'PRICE_ALERT'
-            ? 'price'
-            : eventType === 'NEWS'
-            ? 'news'
-            : eventType === 'ONCHAIN'
-            ? 'onchain'
-            : undefined;
+          const type = eventType === 'PRICE_ALERT' ? 'price' : (eventType === 'NEWS' ? 'news' : undefined);
           const results = await Promise.all(
             sourceApiParams.map((source) =>
               eventsService.getEvents({ skip: 0, limit: 100, source, type })
@@ -313,10 +299,6 @@ export const Dashboard = () => {
         } else if (eventType === 'PRICE_ALERT') {
           // If only price filter selected (no sources): fetch all price events
           feedResult = await eventsService.getEventsByType('price', { skip: 0, limit: 100 });
-          if (!Array.isArray(feedResult)) feedResult = [];
-        } else if (eventType === 'ONCHAIN') {
-          // If only onchain filter selected (no sources): fetch all onchain events
-          feedResult = await eventsService.getEventsByType('onchain', { skip: 0, limit: 100 });
           if (!Array.isArray(feedResult)) feedResult = [];
         } else {
           // If no filter selected: fetch alerts
@@ -532,7 +514,11 @@ export const Dashboard = () => {
       result = result.filter((a) => appliedFilters.priority.includes(a.priority));
     }
     if (appliedFilters.eventType && appliedFilters.eventType !== 'all') {
-      result = result.filter((a) => resolveAlertType(a) === appliedFilters.eventType);
+      if (appliedFilters.eventType === 'PRICE_ALERT') {
+        result = result.filter(isPriceRelatedAlert);
+      } else if (appliedFilters.eventType === 'NEWS') {
+        result = result.filter((a) => !isPriceRelatedAlert(a));
+      }
     }
     if (appliedFilters.entity) {
       const term = appliedFilters.entity.toLowerCase();

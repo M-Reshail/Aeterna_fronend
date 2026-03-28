@@ -89,7 +89,7 @@ export const normalizeEvent = (event) => {
 
   const summary = toText(
     firstDefined(content.summary, content.description, content.alert_reasons, event?.summary),
-    ''
+    'No summary available'
   );
 
   const author = toText(firstDefined(content.author, event?.author), 'Unknown');
