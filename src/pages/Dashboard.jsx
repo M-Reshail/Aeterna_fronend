@@ -25,7 +25,7 @@ import { useToast } from '@hooks/useToast';
 import feedbackService from '@services/feedbackService';
 import alertsService from '@services/alertsService';
 import eventsService from '@services/eventsService';
-import { normalizeFeedItem, normalizeFeedItems, debugLogNormalizedEvents } from '@utils/eventNormalizer';
+import { normalizeFeedItem, debugLogNormalizedEvents } from '@utils/eventNormalizer';
 import { applyDynamicFilters } from '@utils/eventFilters';
 
 const DEFAULT_FILTERS = {
@@ -211,8 +211,8 @@ export const Dashboard = () => {
     toastRef.current = toast;
   }, [toast]);
 
-  const loadDashboardData = useCallback(async (selectedSources = [], eventType = 'all', { silent = false } = {}) => {
-    if (!silent) setIsLoading(true);
+  const loadDashboardData = useCallback(async (selectedSources = [], eventType = 'all') => {
+    setIsLoading(true);
     setLoadError('');
     try {
       const sourceList = Array.isArray(selectedSources)
@@ -222,11 +222,14 @@ export const Dashboard = () => {
         new Set(sourceList.map(toApiSourceParam).filter(Boolean))
       );
 
-      // Load sources and feed in parallel so alerts render as soon as feed resolves.
-      const availableSourcesPromise = eventsService.getAvailableSources({ limit: 120 }).catch((error) => {
+      // ALWAYS load available sources first - independently from alerts
+      let apiSources = [];
+      try {
+        apiSources = await eventsService.getAvailableSources({ limit: 200 });
+      } catch (error) {
         console.warn('Could not load available sources:', error.message);
-        return [];
-      });
+        // Continue even if sources fail - use fallback
+      }
 
       // Determine which API endpoint to call for alerts
       let feedResult = [];
@@ -242,29 +245,23 @@ export const Dashboard = () => {
             : eventType === 'ONCHAIN'
             ? 'onchain'
             : undefined;
-          const settled = await Promise.allSettled(
+          const results = await Promise.all(
             sourceApiParams.map((source) =>
-              eventsService.getEvents({ skip: 0, limit: 60, source, type })
+              eventsService.getEvents({ skip: 0, limit: 100, source, type })
             )
           );
-          feedResult = settled
-            .filter((result) => result.status === 'fulfilled')
-            .flatMap((result) => (Array.isArray(result.value) ? result.value : []))
-            .filter(Boolean);
-          if (feedResult.length === 0 && settled.some((result) => result.status === 'rejected')) {
-            feedError = settled.find((result) => result.status === 'rejected')?.reason || null;
-          }
+          feedResult = results.flat().filter(Boolean);
         } else if (eventType === 'NEWS') {
           // If only news filter selected (no sources): fetch all news
-          feedResult = await eventsService.getEventsByType('news', { skip: 0, limit: 60 });
+          feedResult = await eventsService.getEventsByType('news', { skip: 0, limit: 100 });
           if (!Array.isArray(feedResult)) feedResult = [];
         } else if (eventType === 'PRICE_ALERT') {
           // If only price filter selected (no sources): fetch all price events
-          feedResult = await eventsService.getEventsByType('price', { skip: 0, limit: 60 });
+          feedResult = await eventsService.getEventsByType('price', { skip: 0, limit: 100 });
           if (!Array.isArray(feedResult)) feedResult = [];
         } else if (eventType === 'ONCHAIN') {
           // If only onchain filter selected (no sources): fetch all onchain events
-          feedResult = await eventsService.getEventsByType('onchain', { skip: 0, limit: 60 });
+          feedResult = await eventsService.getEventsByType('onchain', { skip: 0, limit: 100 });
           if (!Array.isArray(feedResult)) feedResult = [];
         } else {
           // If no filter selected: fetch alerts
@@ -279,8 +276,11 @@ export const Dashboard = () => {
       }
 
       // Normalize based on event type
-      const normalizedAlerts = normalizeFeedItems((Array.isArray(feedResult) ? feedResult : []).flat().filter(Boolean));
-      const apiSources = await availableSourcesPromise;
+      const normalizedAlerts = (Array.isArray(feedResult) ? feedResult : [])
+        .flat()
+        .filter(Boolean)
+        .map(normalizeFeedItem)
+        .filter(Boolean);
 
       if (sourceApiParams.length > 0 || eventType !== 'all') {
         debugLogNormalizedEvents(
@@ -337,7 +337,7 @@ export const Dashboard = () => {
       setAllAlerts([]);
       // DON'T clear sources - they should remain visible
     } finally {
-      if (!silent) setIsLoading(false);
+      setIsLoading(false);
     }
   }, []);
 
@@ -644,7 +644,7 @@ export const Dashboard = () => {
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    await loadDashboardData(appliedFilters.sources || [], appliedFilters.eventType || 'all', { silent: true });
+    await loadDashboardData(appliedFilters.sources || [], appliedFilters.eventType || 'all');
     setIsRefreshing(false);
   };
 
@@ -716,7 +716,7 @@ export const Dashboard = () => {
               </div>
             )}
           </div>
-eqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
+
           <div className="bg-gradient-to-br from-amber-500/5 to-amber-600/5 border border-amber-500/20 rounded-xl p-4 sm:p-5 hover:border-amber-500/40 transition-all">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-white flex items-center gap-2">

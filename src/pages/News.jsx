@@ -26,7 +26,7 @@ import { useToast } from '@hooks/useToast';
 import feedbackService from '@services/feedbackService';
 import alertsService from '@services/alertsService';
 import eventsService from '@services/eventsService';
-import { normalizeFeedItem, normalizeFeedItems, debugLogNormalizedEvents } from '@utils/eventNormalizer';
+import { normalizeFeedItem, debugLogNormalizedEvents } from '@utils/eventNormalizer';
 import { applyDynamicFilters } from '@utils/eventFilters';
 
 const DEFAULT_FILTERS = {
@@ -236,8 +236,8 @@ export const News = () => {
     toastRef.current = toast;
   }, [toast]);
 
-  const loadDashboardData = useCallback(async (selectedSources = [], eventType = 'all', { silent = false } = {}) => {
-    if (!silent) setIsLoading(true);
+  const loadDashboardData = useCallback(async (selectedSources = [], eventType = 'all') => {
+    setIsLoading(true);
     setLoadError('');
     try {
       const sourceList = Array.isArray(selectedSources)
@@ -247,11 +247,14 @@ export const News = () => {
         new Set(sourceList.map(toApiSourceParam).filter(Boolean))
       );
 
-      // Load sources and feed in parallel so alerts appear faster.
-      const availableSourcesPromise = eventsService.getAvailableSources({ limit: 120 }).catch((error) => {
+      // ALWAYS load available sources first - independently from alerts
+      let apiSources = [];
+      try {
+        apiSources = await eventsService.getAvailableSources({ limit: 200 });
+      } catch (error) {
         console.warn('Could not load available sources:', error.message);
-        return [];
-      });
+        // Continue even if sources fail - use fallback
+      }
 
       // Determine which API endpoint to call for alerts
       let feedResult = [];
@@ -267,33 +270,27 @@ export const News = () => {
             : eventType === 'ONCHAIN'
             ? 'onchain'
             : undefined;
-          const settled = await Promise.allSettled(
+          const results = await Promise.all(
             sourceApiParams.map((source) =>
-              eventsService.getEvents({ skip: 0, limit: 60, source, type })
+              eventsService.getEvents({ skip: 0, limit: 100, source, type })
             )
           );
-          feedResult = settled
-            .filter((result) => result.status === 'fulfilled')
-            .flatMap((result) => (Array.isArray(result.value) ? result.value : []))
-            .filter(Boolean);
-          if (feedResult.length === 0 && settled.some((result) => result.status === 'rejected')) {
-            feedError = settled.find((result) => result.status === 'rejected')?.reason || null;
-          }
+          feedResult = results.flat().filter(Boolean);
         } else if (eventType === 'NEWS') {
           // If only news filter selected (no sources): fetch all news
-          feedResult = await eventsService.getEventsByType('news', { skip: 0, limit: 60 });
+          feedResult = await eventsService.getEventsByType('news', { skip: 0, limit: 100 });
           if (!Array.isArray(feedResult)) feedResult = [];
         } else if (eventType === 'PRICE_ALERT') {
           // If only price filter selected (no sources): fetch all price events
-          feedResult = await eventsService.getEventsByType('price', { skip: 0, limit: 60 });
+          feedResult = await eventsService.getEventsByType('price', { skip: 0, limit: 100 });
           if (!Array.isArray(feedResult)) feedResult = [];
         } else if (eventType === 'ONCHAIN') {
           // If only onchain filter selected (no sources): fetch all onchain events
-          feedResult = await eventsService.getEventsByType('onchain', { skip: 0, limit: 60 });
+          feedResult = await eventsService.getEventsByType('onchain', { skip: 0, limit: 100 });
           if (!Array.isArray(feedResult)) feedResult = [];
         } else {
-          // News page default: use public ingestion events (avoids auth-only alerts endpoint).
-          feedResult = await eventsService.getEvents({ skip: 0, limit: 60 });
+          // If no filter selected: fetch alerts
+          feedResult = await alertsService.getAlerts({ skip: 0, limit: 50 });
           if (!Array.isArray(feedResult)) feedResult = [];
         }
       } catch (error) {
@@ -305,8 +302,11 @@ export const News = () => {
 
       // Normalize based on event type
       const isEventsFeed = sourceApiParams.length > 0 || eventType !== 'all';
-      const normalizedAlerts = normalizeFeedItems((Array.isArray(feedResult) ? feedResult : []).flat().filter(Boolean));
-      const apiSources = await availableSourcesPromise;
+      const normalizedAlerts = (Array.isArray(feedResult) ? feedResult : [])
+        .flat()
+        .filter(Boolean)
+        .map(normalizeFeedItem)
+        .filter(Boolean);
 
       if (isEventsFeed) {
         debugLogNormalizedEvents(
@@ -363,7 +363,7 @@ export const News = () => {
       setAllAlerts([]);
       // DON'T clear sources - they should remain visible
     } finally {
-      if (!silent) setIsLoading(false);
+      setIsLoading(false);
     }
   }, []);
 
@@ -614,7 +614,7 @@ export const News = () => {
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    await loadDashboardData(appliedFilters.sources || [], appliedFilters.eventType || 'all', { silent: true });
+    await loadDashboardData(appliedFilters.sources || [], appliedFilters.eventType || 'all');
     setIsRefreshing(false);
   };
 

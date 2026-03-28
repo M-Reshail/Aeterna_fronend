@@ -48,9 +48,6 @@ export const FilterSidebar = ({
   filteredCount,
   sourceOptions = [],
 }) => {
-  const selectedSources = filters.sources || [];
-  const allSourcesSelected = sourceOptions.length === 0 || selectedSources.length === 0 || selectedSources.length === sourceOptions.length;
-
   const [openSections, setOpenSections] = useState({
     priority: true,
     eventType: true,
@@ -85,8 +82,9 @@ export const FilterSidebar = ({
   };
 
   const handleSelectAllSources = () => {
-    // Keep [] as canonical "All Sources" state.
-    const updated = [];
+    const current = filters.sources || [];
+    const allSelected = current.length === sourceOptions.length && sourceOptions.length > 0;
+    const updated = allSelected ? [] : [...sourceOptions];
     onFiltersChange({ ...filters, sources: updated });
   };
 
@@ -376,7 +374,7 @@ export const FilterSidebar = ({
                   className={`
                     flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer
                     transition-all duration-200 text-sm font-semibold
-                    ${allSourcesSelected
+                    ${(filters.sources || []).length === sourceOptions.length && sourceOptions.length > 0
                       ? 'bg-emerald-500/20 text-emerald-300'
                       : 'bg-white/[0.04] text-slate-300 hover:bg-white/[0.06]'
                     }
@@ -384,18 +382,18 @@ export const FilterSidebar = ({
                 >
                   <div
                     className={`w-3.5 h-3.5 rounded flex-shrink-0 border transition-all
-                      ${allSourcesSelected
+                      ${(filters.sources || []).length === sourceOptions.length && sourceOptions.length > 0 
                         ? 'bg-emerald-500 border-emerald-400' 
                         : 'border-white/30'}`}
                   >
                     <input
                       type="checkbox"
-                      checked={allSourcesSelected}
+                      checked={(filters.sources || []).length === sourceOptions.length && sourceOptions.length > 0}
                       onChange={handleSelectAllSources}
                       className="sr-only"
                     />
                   </div>
-                  <span>All Sources</span>
+                  <span>Select All</span>
                 </label>
               )}
               {sourceOptions.map((source) => {

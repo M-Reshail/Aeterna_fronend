@@ -335,24 +335,6 @@ export const normalizeFeedItem = (item) => {
   };
 };
 
-export const normalizeFeedItems = (items) => {
-  if (!Array.isArray(items) || items.length === 0) return [];
-
-  const normalized = [];
-  items.forEach((item, index) => {
-    try {
-      const parsed = normalizeFeedItem(item);
-      if (parsed) normalized.push(parsed);
-    } catch (error) {
-      if (import.meta.env.DEV) {
-        console.warn(`[Events] normalizeFeedItem failed at index ${index}:`, error, item);
-      }
-    }
-  });
-
-  return normalized;
-};
-
 export const debugLogNormalizedEvents = (apiResponse, normalizedEvents, context = '') => {
   if (!import.meta.env.DEV) return;
 
