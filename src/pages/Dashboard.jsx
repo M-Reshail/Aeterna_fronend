@@ -14,7 +14,7 @@ import {
   Loader2,
   X,
 } from 'lucide-react';
-import { AlertCard } from '@components/dashboard/AlertCard';
+import AlertCard from '@components/dashboard/AlertCard';
 import { AlertDetailModal } from '@components/dashboard/AlertDetailModal';
 import { FilterSidebar } from '@components/dashboard/FilterSidebar';
 import { useSocket } from '@hooks/useSocket';

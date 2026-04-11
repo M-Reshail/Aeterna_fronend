@@ -15,11 +15,17 @@ import {
   Loader2,
   X,
 } from 'lucide-react';
-import { AlertCard } from '@components/dashboard/AlertCard';
+import AlertCard from '@components/dashboard/AlertCard';
+import { OnchainCard } from '@components/dashboard/OnchainCard';
 import { AlertDetailModal } from '@components/dashboard/AlertDetailModal';
 import { FilterSidebar } from '@components/dashboard/FilterSidebar';
 import { useSocket } from '@hooks/useSocket';
 import { WS_EVENTS } from '@utils/constants';
+import { enrichOnchainWalletPatterns, formatOnchainEvent } from '@utils/onchainFormatter';
+import { mapAlertSignal } from '@utils/alertFormatter';
+import { mapNewsFeedItem } from '@utils/newsFormatter';
+import { normalizeFeedItem } from '@utils/feedAdapter';
+import { normalizeEvent as normalizeUnifiedEvent } from '@utils/normalizeEvent';
 import { useAuth } from '@hooks/useAuth';
 import { useToast } from '@hooks/useToast';
 import feedbackService from '@services/feedbackService';
@@ -105,65 +111,468 @@ const logIngestionResponse = (response, context = '') => {
   console.groupEnd();
 };
 
+const logMappingDebug = (rawItems, mappedItems, context = '') => {
+  if (!import.meta.env.DEV) return;
+
+  const raw = Array.isArray(rawItems) ? rawItems : [];
+  const mapped = Array.isArray(mappedItems) ? mappedItems : [];
+
+  console.groupCollapsed(`[News] mapping debug ${context}`.trim());
+  console.log('Raw API response sample:', raw.slice(0, 3));
+  console.table(
+    raw.slice(0, 5).map((item, idx) => ({
+      idx,
+      id: item?.alert_id ?? item?.id,
+      type: item?.type ?? item?.event_type ?? item?.content?.type,
+      hasContent: Boolean(item?.content),
+      hasDetails: Boolean(item?.content?.details || item?.details),
+      txHash: item?.content?.transaction_hash || item?.content?.tx_hash || item?.details?.transaction_hash,
+      from: item?.content?.from || item?.content?.from_address || item?.details?.from,
+      to: item?.content?.to || item?.content?.to_address || item?.details?.to,
+      token: item?.content?.token || item?.content?.symbol || item?.token,
+    }))
+  );
+  console.log('Mapped output sample:', mapped.slice(0, 3));
+  console.table(
+    mapped.slice(0, 5).map((item, idx) => ({
+      idx,
+      id: item?.id,
+      type: item?.type,
+      title: item?.title,
+      subtitle: item?.subtitle,
+      source: item?.source,
+      txHash: item?.txHash,
+      fromAddress: item?.fromAddress,
+      toAddress: item?.toAddress,
+      token: item?.token,
+      severity: item?.severity,
+      confidence: item?.confidence ?? item?.confidenceScore,
+    }))
+  );
+  console.groupEnd();
+};
+
 const inferEventType = (title = '') => {
   const lower = toDisplayText(title, '').toLowerCase();
   if (lower.includes('price')) return 'PRICE_ALERT';
   return 'NEWS';
 };
 
-const normalizeAlert = (alert) => ({
-  id: alert.alert_id ?? alert.id,
-  alert_id: alert.alert_id ?? alert.id,
-  event_type: toDisplayText(alert.event_type, inferEventType(alert.title)).toUpperCase(),
-  source: toDisplayText(alert.source, 'Unknown'),
-  title: toDisplayText(alert.title, 'Untitled Alert'),
-  content: toDisplayText(alert.content, toDisplayText(alert.description, toDisplayText(alert.title, 'No details provided'))),
-  priority: alert.priority || 'LOW',
-  status: normalizeStatus(alert.status),
-  timestamp: alert.created_at || alert.timestamp || alert.createdAt || new Date().toISOString(),
-  entity: toDisplayText(alert.entity, ''),
-});
+const normalizeEventType = (value) => {
+  const lower = String(value || '').trim().toLowerCase();
+  if (lower.includes('price')) return 'price';
+  if (lower.includes('onchain')) return 'onchain';
+  return 'news';
+};
 
-const normalizeNewsEvent = (event) => {
+const hasOnchainShape = (event = {}, content = {}) => {
+  const onchainHints = [
+    event?.txType,
+    event?.token,
+    content?.tx_hash,
+    content?.transaction_hash,
+    content?.from_address,
+    content?.to_address,
+    content?.wallet_from,
+    content?.wallet_to,
+    content?.blockchain,
+    content?.chain,
+  ];
+  return onchainHints.some((value) => String(value || '').trim());
+};
+
+const detectNormalizedEventType = (event = {}, content = {}) => {
+  const rawTypeCandidates = [
+    event?.event_type,
+    event?.type,
+    content?.type,
+    content?.event_type,
+    content?.alert_type,
+    inferEventType(event?.title),
+  ];
+
+  for (const candidate of rawTypeCandidates) {
+    const normalized = normalizeEventType(candidate);
+    if (normalized !== 'news') return normalized;
+  }
+
+  if (hasOnchainShape(event, content)) return 'onchain';
+  return 'news';
+};
+
+const extractEventHash = (event = {}, content = {}) => toDisplayText(
+  event?.event_hash,
+  toDisplayText(content?.event_hash, toDisplayText(content?.hash, toDisplayText(event?.hash, '')))
+);
+
+const extractEventId = (event = {}, content = {}) => toDisplayText(
+  event?.event_id,
+  toDisplayText(content?.event_id, toDisplayText(event?.id, ''))
+);
+
+const getMergeKey = (item = {}) => {
+  const hashKey = toDisplayText(item?.event_hash, toDisplayText(item?.rawContent?.event_hash, ''));
+  if (hashKey) return `hash:${hashKey}`;
+
+  const eventIdKey = toDisplayText(item?.event_id, toDisplayText(item?.rawContent?.event_id, ''));
+  if (eventIdKey) return `event:${eventIdKey}`;
+
+  return `id:${toDisplayText(item?.id, '')}`;
+};
+
+const mergeAlertEventPair = (first = {}, second = {}) => {
+  const firstIsAlert = first?.payloadKind === 'alert';
+  const secondIsAlert = second?.payloadKind === 'alert';
+  const alertItem = firstIsAlert ? first : (secondIsAlert ? second : null);
+  const eventItem = firstIsAlert ? second : secondIsAlert ? first : second;
+
+  if (alertItem && eventItem) {
+    return {
+      ...eventItem,
+      priority: alertItem.priority || eventItem.priority,
+      status: alertItem.status || eventItem.status,
+      alert_id: alertItem.alert_id || eventItem.alert_id,
+      id: alertItem.id || eventItem.id,
+      payloadKind: 'merged',
+      rawContent: {
+        ...(eventItem.rawContent || {}),
+        ...(alertItem.rawContent || {}),
+      },
+    };
+  }
+
+  return {
+    ...first,
+    ...second,
+    rawContent: {
+      ...(first.rawContent || {}),
+      ...(second.rawContent || {}),
+    },
+  };
+};
+
+const VALID_EVENT_TYPES = new Set(['news', 'price', 'onchain']);
+
+const validateNormalizedEvent = (event = {}) => {
+  const hasTitle = Boolean(toDisplayText(event?.title, ''));
+  const typeValue = toDisplayText(event?.type, '').toLowerCase();
+  const hasValidType = VALID_EVENT_TYPES.has(typeValue);
+  const hasTimestamp = Boolean(toDisplayText(event?.timestamp, ''));
+
+  const detailTitle = toDisplayText(event?.rawContent?.title, '');
+  const detailSummary = toDisplayText(event?.rawContent?.summary, '');
+  const feedSummary = toDisplayText(event?.summary, '');
+  const titleMismatch = Boolean(detailTitle) && Boolean(toDisplayText(event?.title, '')) && detailTitle !== toDisplayText(event?.title, '');
+  const summaryMismatch = Boolean(detailSummary) && Boolean(feedSummary) && detailSummary !== feedSummary;
+
+  if (event?.rawContent?.has_image === true && !toDisplayText(event?.rawContent?.image_url, '')) {
+    console.warn('Invalid event', event);
+    console.warn('[News] missing image_url while has_image=true', {
+      id: event?.id,
+      event_hash: event?.event_hash,
+      title: event?.title,
+    });
+  }
+
+  if (titleMismatch || summaryMismatch) {
+    console.warn('Invalid event', event);
+    console.warn('[News] feed/detail mismatch', {
+      id: event?.id,
+      titleMismatch,
+      summaryMismatch,
+      feedTitle: event?.title,
+      detailTitle,
+      feedSummary,
+      detailSummary,
+    });
+  }
+
+  const isValid = hasTitle && hasValidType && hasTimestamp && !titleMismatch && !summaryMismatch;
+  if (!isValid) {
+    console.warn('Invalid event', event);
+  }
+
+  return isValid;
+};
+
+const validateNormalizedEvents = (events = []) => {
+  const hashSeen = new Map();
+
+  events.forEach((event) => {
+    validateNormalizedEvent(event);
+
+    const hash = toDisplayText(event?.event_hash, toDisplayText(event?.rawContent?.event_hash, ''));
+    if (!hash) return;
+
+    const existing = hashSeen.get(hash);
+    if (existing) {
+      console.warn('[News] duplicate event_hash detected', {
+        event_hash: hash,
+        firstId: existing?.id,
+        duplicateId: event?.id,
+      });
+      return;
+    }
+
+    hashSeen.set(hash, event);
+  });
+};
+
+const normalizeDashboardEvent = (event, sourceKind = 'events') => {
+  const isAlertPayload = sourceKind === 'alerts';
   const content = event?.content || {};
-  const title = toDisplayText(
-    content.title,
-    toDisplayText(event?.title, toDisplayText(content.name, `News from ${toDisplayText(event?.source, 'source')}`))
-  );
-  const summary = toDisplayText(
-    content.summary,
-    toDisplayText(event?.summary, toDisplayText(content.alert_reasons, 'No summary available'))
-  );
+  const eventHash = extractEventHash(event, content);
+  const eventId = extractEventId(event, content);
+  const unified = normalizeUnifiedEvent(event, isAlertPayload ? event : null);
+  const normalizedFeed = normalizeFeedItem(event);
+  const eventType = isAlertPayload
+    ? detectNormalizedEventType(event, content)
+    : normalizeEventType(event?.type);
+  const sourceDisplay = unified.source || toDisplayText(normalizedFeed?.source, toDisplayText(event?.source, isAlertPayload ? 'Unknown' : 'unknown'));
+  const sourceKey = String(sourceDisplay).trim().toLowerCase();
+
+  if (isAlertPayload) {
+    if (eventType === 'onchain') {
+      const onchainFormatted = formatOnchainEvent({
+        ...event,
+        type: 'onchain',
+        content: typeof event?.content === 'object' && event?.content ? event.content : {},
+      });
+
+      return {
+        id: event.alert_id ?? event.id,
+        alert_id: event.alert_id ?? event.id,
+        event_id: eventId || null,
+        event_hash: eventHash || null,
+        payloadKind: 'alert',
+        event_type: 'ONCHAIN',
+        type: 'onchain',
+        txType: onchainFormatted.txType,
+        token: onchainFormatted.token,
+        transferType: onchainFormatted.transferType,
+        entityType: onchainFormatted.entityType,
+        sizeCategory: onchainFormatted.sizeCategory,
+        riskSignal: onchainFormatted.riskSignal,
+        confidenceScore: onchainFormatted.confidenceScore,
+        confidence: onchainFormatted.confidenceScore,
+        whaleEvent: onchainFormatted.whaleEvent,
+        whaleTier: onchainFormatted.whaleTier,
+        whaleLabel: onchainFormatted.whaleLabel,
+        blockchain: onchainFormatted.blockchain,
+        network: onchainFormatted.network,
+        txHash: onchainFormatted.txHash,
+        fromAddress: onchainFormatted.fromAddress,
+        toAddress: onchainFormatted.toAddress,
+        fromShort: onchainFormatted.fromShort,
+        toShort: onchainFormatted.toShort,
+        directionText: onchainFormatted.direction,
+        direction: onchainFormatted.txType,
+        riskLevel: onchainFormatted.severity,
+        amountUsd: onchainFormatted.amountUsd,
+        amountDisplay: onchainFormatted.amountDisplay,
+        amountFormatted: onchainFormatted.amountFormatted,
+        usdFormatted: onchainFormatted.usdFormatted,
+        metadata: normalizedFeed.metadata,
+        score: onchainFormatted.score,
+        source: unified.source,
+        sourceKey: String(unified.source || '').trim().toLowerCase(),
+        title: unified.title,
+        subtitle: normalizedFeed.subtitle || onchainFormatted.subtitle,
+        content: unified.summary || '',
+        summary: unified.summary,
+        description: unified.summary,
+        reason: onchainFormatted.reason,
+        severity: onchainFormatted.severity,
+        priority: unified.priority,
+        status: normalizeStatus(event.status),
+        timestamp: unified.timestamp,
+        detailTimestamp: unified.detailTimestamp,
+        entity: onchainFormatted.token,
+        rawContent: {
+          ...(typeof event?.content === 'object' && event?.content ? event.content : {}),
+          normalizedFeed,
+          title: unified.title,
+          summary: unified.summary,
+          author: unified.author,
+          image_url: unified.image_url,
+          hashtags: unified.hashtags,
+          mentions: unified.mentions,
+          categories: unified.categories,
+          published: unified.detailTimestamp,
+          type: 'onchain',
+          onchainFormatted,
+        },
+      };
+    }
+
+    const mappedSignal = mapAlertSignal(event);
+
+    return {
+      id: event.alert_id ?? event.id,
+      alert_id: event.alert_id ?? event.id,
+      event_id: eventId || null,
+      event_hash: eventHash || null,
+      payloadKind: 'alert',
+      event_type: String(eventType || 'news').toUpperCase(),
+      type: eventType,
+      source: unified.source,
+      sourceKey,
+      score: 0,
+      signalType: mappedSignal.signalType,
+      title: unified.title,
+      subtitle: normalizedFeed.subtitle || mappedSignal.subtitle,
+      content: unified.summary || '',
+      summary: unified.summary,
+      description: unified.summary,
+      reason: mappedSignal.reason,
+      severity: mappedSignal.severity,
+      confidenceScore: mappedSignal.confidenceScore,
+      amountUsd: mappedSignal.amountUsd,
+      amountDisplay: mappedSignal.amountDisplay,
+      metadata: normalizedFeed.metadata,
+      fromAddress: mappedSignal.fromAddress,
+      toAddress: mappedSignal.toAddress,
+      priority: unified.priority,
+      status: normalizeStatus(event.status),
+      timestamp: unified.timestamp,
+      detailTimestamp: unified.detailTimestamp,
+      entity: mappedSignal.token || toDisplayText(event.entity, ''),
+      token: mappedSignal.token || toDisplayText(event.token, toDisplayText(event.entity, '')),
+      txType: toDisplayText(event.txType, '').toLowerCase(),
+      rawContent: {
+        ...(typeof event?.content === 'object' && event?.content ? event.content : {}),
+        normalizedFeed,
+        title: unified.title,
+        summary: unified.summary,
+        author: unified.author,
+        image_url: unified.image_url,
+        hashtags: unified.hashtags,
+        mentions: unified.mentions,
+        categories: unified.categories,
+        published: unified.detailTimestamp,
+        signal: mappedSignal,
+        type: eventType,
+      },
+    };
+  }
+
+  if (eventType === 'onchain') {
+    const onchainFormatted = formatOnchainEvent(event);
+
+    return {
+      id: `event-${event?.id}`,
+      event_id: eventId || event?.id,
+      event_hash: eventHash || null,
+      payloadKind: 'event',
+      event_type: 'ONCHAIN',
+      type: 'onchain',
+      txType: onchainFormatted.txType,
+      token: onchainFormatted.token,
+      transferType: onchainFormatted.transferType,
+      entityType: onchainFormatted.entityType,
+      sizeCategory: onchainFormatted.sizeCategory,
+      riskSignal: onchainFormatted.riskSignal,
+      confidenceScore: onchainFormatted.confidenceScore,
+      confidence: onchainFormatted.confidenceScore,
+      whaleEvent: onchainFormatted.whaleEvent,
+      whaleTier: onchainFormatted.whaleTier,
+      whaleLabel: onchainFormatted.whaleLabel,
+      blockchain: onchainFormatted.blockchain,
+      network: onchainFormatted.network,
+      txHash: onchainFormatted.txHash,
+      fromAddress: onchainFormatted.fromAddress,
+      toAddress: onchainFormatted.toAddress,
+      fromShort: onchainFormatted.fromShort,
+      toShort: onchainFormatted.toShort,
+      directionText: onchainFormatted.direction,
+      direction: onchainFormatted.txType,
+      riskLevel: onchainFormatted.severity,
+      subtitle: normalizedFeed.subtitle || onchainFormatted.subtitle,
+      amountUsd: onchainFormatted.amountUsd,
+      amountDisplay: onchainFormatted.amountDisplay,
+      amountFormatted: onchainFormatted.amountFormatted,
+      usdFormatted: onchainFormatted.usdFormatted,
+      metadata: normalizedFeed.metadata,
+      score: onchainFormatted.score,
+      source: unified.source,
+      sourceKey: String(unified.source || '').trim().toLowerCase(),
+      title: unified.title,
+      content: unified.summary || '',
+      summary: unified.summary,
+      description: unified.summary,
+      reason: onchainFormatted.reason,
+      severity: onchainFormatted.severity,
+      priority: unified.priority,
+      status: 'new',
+      timestamp: unified.timestamp,
+      detailTimestamp: unified.detailTimestamp,
+      entity: onchainFormatted.token,
+      rawContent: {
+        ...content,
+        normalizedFeed,
+        title: unified.title,
+        summary: unified.summary,
+        author: unified.author,
+        image_url: unified.image_url,
+        hashtags: unified.hashtags,
+        mentions: unified.mentions,
+        categories: unified.categories,
+        published: unified.detailTimestamp,
+        type: 'onchain',
+        onchainFormatted,
+      },
+    };
+  }
+
+  const mappedNews = mapNewsFeedItem(event);
   const link = toDisplayText(content.link, toDisplayText(event?.link, ''));
-  const author = toDisplayText(content.author, toDisplayText(event?.author, 'Unknown author'));
-  const categories = normalizeCategories(content.categories?.length ? content.categories : event?.categories);
-  const hashtags = categories.map(toHashtag).filter(Boolean);
 
   return {
     id: `event-${event?.id}`,
-    event_id: event?.id,
-    event_type: String(event?.type || 'news').toUpperCase(),
-    source: toDisplayText(event?.source, 'unknown'),
-    title,
-    content: summary,
-    summary,
-    link,
-    author,
-    categories,
-    hashtags,
-    priority: content.quality_score >= 70 ? 'HIGH' : content.quality_score >= 50 ? 'MEDIUM' : 'LOW',
+    event_id: eventId || event?.id,
+    event_hash: eventHash || null,
+    payloadKind: 'event',
+    event_type: String(eventType || 'news').toUpperCase(),
+    type: eventType,
+    source: unified.source,
+    sourceKey: String(unified.source || '').trim().toLowerCase(),
+    score: 0,
+    title: unified.title,
+    subtitle: normalizedFeed.subtitle || '',
+    content: unified.summary || '',
+    summary: unified.summary,
+    description: unified.summary,
+    link: mappedNews.link || link,
+    author: unified.author,
+    sentiment: mappedNews.sentiment,
+    metadata: normalizedFeed.metadata,
+    severity: normalizedFeed.severity || '',
+    confidence: normalizedFeed.confidence,
+    categories: unified.categories,
+    hashtags: unified.hashtags,
+    mentions: unified.mentions,
+    image_url: unified.image_url,
+    priority: unified.priority,
     status: 'new',
-    timestamp: event?.timestamp || new Date().toISOString(),
+    timestamp: unified.timestamp,
+    detailTimestamp: unified.detailTimestamp,
     entity: toDisplayText(content.id, toDisplayText(content.symbol, toDisplayText(content.name, ''))),
+    token: toDisplayText(content.symbol, ''),
+    txType: toDisplayText(content.txType, toDisplayText(content.tx_type, '')).toLowerCase(),
     // Preserve raw content for detailed view
     rawContent: {
       ...content,
-      title,
-      summary,
-      link,
-      author,
-      categories,
-      hashtags,
+      normalizedFeed,
+      title: unified.title,
+      summary: unified.summary,
+      link: mappedNews.link || link,
+      author: unified.author,
+      sentiment: mappedNews.sentiment,
+      image_url: unified.image_url,
+      categories: unified.categories,
+      hashtags: unified.hashtags,
+      mentions: unified.mentions,
+      published: unified.detailTimestamp,
       type: event?.type,
     },
   };
@@ -176,7 +585,6 @@ const DEFAULT_FILTERS = {
   dateFrom: '',
   dateTo: '',
   sources: [],
-  contentFilter: 'all',
 };
 
 const SORT_OPTIONS = [
@@ -197,7 +605,8 @@ const SOURCE_QUERY_BY_LABEL = {
 };
 
 const normalizeSourceName = (source) => {
-  const raw = String(source || '').trim().toLowerCase();
+  const original = String(source || '').trim();
+  const raw = original.toLowerCase();
   if (!raw) return '';
 
   // Match patterns: www.coindesk.com, coindesk.com, coindesk
@@ -209,8 +618,8 @@ const normalizeSourceName = (source) => {
   // Match patterns: coingecko.com, coingecko
   if (raw.includes('coingecko')) return 'CoinGecko';
 
-  // Keep Data Sources clean: only show known upstream providers.
-  return '';
+  // Keep any valid upstream source visible, including onchain sources.
+  return original;
 };
 
 const toApiSourceParam = (sourceLabel) => SOURCE_QUERY_BY_LABEL[sourceLabel] || '';
@@ -258,6 +667,7 @@ const PRICE_KEYWORDS = [
 ];
 
 const isPriceRelatedAlert = (item) => {
+  if (item?.type) return item.type === 'price';
   const eventType = String(item?.event_type || '').toLowerCase();
   if (eventType.includes('price')) return true;
 
@@ -266,16 +676,28 @@ const isPriceRelatedAlert = (item) => {
 };
 
 const mergeAlertsPreservingReadState = (previousAlerts, incomingAlerts, readIdsSet) => {
-  const prevById = new Map((previousAlerts || []).map((item) => [String(item.id), item]));
+  const prevByKey = new Map((previousAlerts || []).map((item) => [getMergeKey(item), item]));
+  const incomingByKey = new Map();
 
-  return (incomingAlerts || []).map((item) => {
-    const key = String(item.id);
-    const previous = prevById.get(key);
-    const shouldKeepRead = readIdsSet.has(key) || previous?.status === 'read';
+  (incomingAlerts || []).forEach((item) => {
+    const key = getMergeKey(item);
+    const existing = incomingByKey.get(key);
+    incomingByKey.set(key, existing ? mergeAlertEventPair(existing, item) : item);
+  });
+
+  return Array.from(incomingByKey.values()).map((item) => {
+    const mergeKey = getMergeKey(item);
+    const previous = prevByKey.get(mergeKey);
+    const mergedWithPrevious = previous ? mergeAlertEventPair(previous, item) : item;
+    const shouldKeepRead =
+      readIdsSet.has(mergeKey) ||
+      readIdsSet.has(String(mergedWithPrevious.id)) ||
+      previous?.status === 'read';
 
     return {
-      ...item,
-      status: shouldKeepRead ? 'read' : item.status,
+      ...mergedWithPrevious,
+      mergeKey,
+      status: shouldKeepRead ? 'read' : mergedWithPrevious.status,
     };
   });
 };
@@ -392,7 +814,11 @@ export const News = () => {
       try {
         if (sourceApiParams.length > 0) {
           // If sources selected: fetch from those sources with optional type filter
-          const type = eventType === 'PRICE_ALERT' ? 'price' : (eventType === 'NEWS' ? 'news' : undefined);
+          const type = eventType === 'PRICE_ALERT'
+            ? 'price'
+            : (eventType === 'NEWS'
+              ? 'news'
+              : (eventType === 'ONCHAIN' ? 'onchain' : undefined));
           const results = await Promise.all(
             sourceApiParams.map((source) =>
               eventsService.getEvents({ skip: 0, limit: 100, source, type })
@@ -407,6 +833,10 @@ export const News = () => {
           // If only price filter selected (no sources): fetch all price events
           feedResult = await eventsService.getEventsByType('price', { skip: 0, limit: 100 });
           if (!Array.isArray(feedResult)) feedResult = [];
+        } else if (eventType === 'ONCHAIN') {
+          // If only onchain filter selected (no sources): fetch all onchain events
+          feedResult = await eventsService.getEventsByType('onchain', { skip: 0, limit: 100 });
+          if (!Array.isArray(feedResult)) feedResult = [];
         } else {
           // If no filter selected: fetch alerts
           feedResult = await alertsService.getAlerts({ skip: 0, limit: 50 });
@@ -419,18 +849,26 @@ export const News = () => {
         feedResult = [];
       }
 
-      // Normalize based on event type
+      // raw API -> normalizeEvent -> filter -> render
       const isEventsFeed = sourceApiParams.length > 0 || eventType !== 'all';
-      if (isEventsFeed) {
-        logIngestionResponse(feedResult, `(items: ${Array.isArray(feedResult) ? feedResult.length : 0})`);
-      }
+      logIngestionResponse(
+        feedResult,
+        `(items: ${Array.isArray(feedResult) ? feedResult.length : 0}, sourceKind: ${isEventsFeed ? 'events' : 'alerts'})`
+      );
 
-      const normalizedAlerts = (sourceApiParams.length > 0 || (eventType !== 'all' && !sourceApiParams.length))
-        ? feedResult.flat().filter(Boolean).map(normalizeNewsEvent)
-        : feedResult.map(normalizeAlert);
+      const normalizedAlerts = (feedResult || [])
+        .flat()
+        .filter(Boolean)
+        .map((item) => normalizeDashboardEvent(item, isEventsFeed ? 'events' : 'alerts'));
+
+      validateNormalizedEvents(normalizedAlerts);
+
+      logMappingDebug(feedResult, normalizedAlerts, `(sourceKind: ${isEventsFeed ? 'events' : 'alerts'})`);
+
+      const intelligenceReadyAlerts = enrichOnchainWalletPatterns(normalizedAlerts);
 
       setAllAlerts((prev) => {
-        const merged = mergeAlertsPreservingReadState(prev, normalizedAlerts, readAlertIdsRef.current);
+        const merged = mergeAlertsPreservingReadState(prev, intelligenceReadyAlerts, readAlertIdsRef.current);
 
         // Extract sources from loaded alerts
         const sourcesFromAlerts = merged
@@ -453,10 +891,13 @@ export const News = () => {
       });
 
       // Handle errors after state updates so source options are preserved
-      if (feedError && normalizedAlerts.length === 0) {
-        const errorMsg = String(feedError?.message || '').toLowerCase().includes('resource not found')
-          ? 'No alerts found for this filter. Try adjusting your filters.'
-          : (feedError?.message || 'Failed to load alerts');
+      if (feedError && intelligenceReadyAlerts.length === 0) {
+        const errorMessage = String(feedError?.message || '').toLowerCase();
+        const errorMsg = feedError?.status === 401 || errorMessage.includes('authentication required') || errorMessage.includes('no refresh token')
+          ? 'Session expired. Please sign in again.'
+          : (errorMessage.includes('resource not found')
+            ? 'No alerts found for this filter. Try adjusting your filters.'
+            : (feedError?.message || 'Failed to load alerts'));
         setLoadError(errorMsg);
       }
 
@@ -489,8 +930,9 @@ export const News = () => {
 
   useEffect(() => {
     const handleIncomingAlert = (incoming) => {
-      const normalized = normalizeAlert(incoming || {});
+      const normalized = normalizeDashboardEvent(incoming || {}, 'alerts');
       if (!normalized?.id) return;
+      validateNormalizedEvent(normalized);
 
       setSourceOptions((prev) => {
         const nextSource = normalizeSourceName(normalized.source);
@@ -499,20 +941,26 @@ export const News = () => {
       });
 
       setAllAlerts((prev) => {
-        if (prev.some((item) => item.id === normalized.id)) return prev;
-        return [normalized, ...prev];
+        const mergeKey = getMergeKey(normalized);
+        if (prev.some((item) => getMergeKey(item) === mergeKey)) {
+          const merged = prev.map((item) => (
+            getMergeKey(item) === mergeKey ? mergeAlertEventPair(item, normalized) : item
+          ));
+          return enrichOnchainWalletPatterns(merged);
+        }
+        return enrichOnchainWalletPatterns([normalized, ...prev]);
       });
 
       setRecentAlertIds((prev) => {
         const next = new Set(prev);
-        next.add(normalized.id);
+        next.add(getMergeKey(normalized));
         return next;
       });
 
       setTimeout(() => {
         setRecentAlertIds((prev) => {
           const next = new Set(prev);
-          next.delete(normalized.id);
+          next.delete(getMergeKey(normalized));
           return next;
         });
       }, 1800);
@@ -561,15 +1009,18 @@ export const News = () => {
     }
     if (appliedFilters.eventType && appliedFilters.eventType !== 'all') {
       if (appliedFilters.eventType === 'PRICE_ALERT') {
-        result = result.filter(isPriceRelatedAlert);
+        result = result.filter((a) => a.type === 'price');
       } else if (appliedFilters.eventType === 'NEWS') {
-        result = result.filter((a) => !isPriceRelatedAlert(a));
+        result = result.filter((a) => a.type === 'news');
+      } else if (appliedFilters.eventType === 'ONCHAIN') {
+        result = result.filter((a) => a.type === 'onchain');
       }
     }
     if (appliedFilters.entity) {
       const term = appliedFilters.entity.toLowerCase();
       result = result.filter(
         (a) =>
+          a.token?.toLowerCase().includes(term) ||
           a.entity?.toLowerCase().includes(term) ||
           a.title?.toLowerCase().includes(term) ||
           a.source?.toLowerCase().includes(term)
@@ -587,9 +1038,6 @@ export const News = () => {
       const selectedSources = appliedFilters.sources.map((source) => String(source).toLowerCase());
       result = result.filter((a) => selectedSources.includes(normalizeSourceName(a.source).toLowerCase()));
     }
-    if (appliedFilters.contentFilter === 'price') {
-      result = result.filter(isPriceRelatedAlert);
-    }
 
     const sorted = [...result];
     if (sortBy === 'oldest') {
@@ -597,6 +1045,8 @@ export const News = () => {
     } else if (sortBy === 'priority') {
       // Sort by priority first, then by recency (newest first)
       sorted.sort((a, b) => {
+        const scoreDiff = (b.score ?? 0) - (a.score ?? 0);
+        if (scoreDiff !== 0) return scoreDiff;
         const priorityDiff = (PRIORITY_ORDER[a.priority] ?? 3) - (PRIORITY_ORDER[b.priority] ?? 3);
         if (priorityDiff !== 0) return priorityDiff;
         return new Date(b.timestamp) - new Date(a.timestamp);
@@ -605,6 +1055,8 @@ export const News = () => {
       sorted.sort((a, b) => {
         if (a.status === 'new' && b.status !== 'new') return -1;
         if (a.status !== 'new' && b.status === 'new') return 1;
+        const scoreDiff = (b.score ?? 0) - (a.score ?? 0);
+        if (scoreDiff !== 0) return scoreDiff;
         // Then by priority, then by recency
         const priorityDiff = (PRIORITY_ORDER[a.priority] ?? 3) - (PRIORITY_ORDER[b.priority] ?? 3);
         if (priorityDiff !== 0) return priorityDiff;
@@ -613,6 +1065,8 @@ export const News = () => {
     } else {
       // Default 'newest': sort by priority first (HIGH first), then by recency
       sorted.sort((a, b) => {
+        const scoreDiff = (b.score ?? 0) - (a.score ?? 0);
+        if (scoreDiff !== 0) return scoreDiff;
         const priorityDiff = (PRIORITY_ORDER[a.priority] ?? 3) - (PRIORITY_ORDER[b.priority] ?? 3);
         if (priorityDiff !== 0) return priorityDiff;
         return new Date(b.timestamp) - new Date(a.timestamp);
@@ -646,8 +1100,16 @@ export const News = () => {
   const highUnread = allAlerts.filter((a) => a.priority === 'HIGH' && a.status === 'new').length;
 
   const handleMarkAsRead = useCallback(async (id) => {
-    readAlertIdsRef.current.add(String(id));
-    setAllAlerts((prev) => prev.map((a) => (a.id === id ? { ...a, status: 'read' } : a)));
+    setAllAlerts((prev) => {
+      const target = prev.find((a) => a.id === id);
+      const mergeKey = target ? getMergeKey(target) : '';
+      readAlertIdsRef.current.add(String(id));
+      if (mergeKey) readAlertIdsRef.current.add(mergeKey);
+      return prev.map((a) => {
+        const sameCard = a.id === id || (mergeKey && getMergeKey(a) === mergeKey);
+        return sameCard ? { ...a, status: 'read' } : a;
+      });
+    });
     setSelectedAlert((prev) => (prev?.id === id ? { ...prev, status: 'read' } : prev));
     if (isEventItemId(id)) return;
     try {
@@ -659,10 +1121,15 @@ export const News = () => {
 
   const handleOpenAlert = useCallback((alert) => {
     // Auto-mark as read on open (Gmail-style)
+    const mergeKey = getMergeKey(alert);
     readAlertIdsRef.current.add(String(alert.id));
+    if (mergeKey) readAlertIdsRef.current.add(mergeKey);
     const readAlert = { ...alert, status: 'read' };
     setSelectedAlert(readAlert);
-    setAllAlerts((prev) => prev.map((a) => (a.id === alert.id ? { ...a, status: 'read' } : a)));
+    setAllAlerts((prev) => prev.map((a) => {
+      const sameCard = a.id === alert.id || (mergeKey && getMergeKey(a) === mergeKey);
+      return sameCard ? { ...a, status: 'read' } : a;
+    }));
     if (isEventItemId(alert.id)) return;
     alertsService.markAsRead(alert.id).catch(() => {
       // Keep UI optimistic; errors are non-blocking for detail view.
@@ -721,7 +1188,7 @@ export const News = () => {
   };
 
   const handleApplyPriceFilter = useCallback(() => {
-    const nextFilters = { ...filters, contentFilter: 'price' };
+    const nextFilters = { ...filters, eventType: 'PRICE_ALERT' };
     setFilters(nextFilters);
     setAppliedFilters(nextFilters);
     setVisibleCount(8);
@@ -729,11 +1196,11 @@ export const News = () => {
 
   const hasActiveFilters =
     appliedFilters.priority.length < 3 ||
+    appliedFilters.eventType !== 'all' ||
     !!appliedFilters.entity ||
     !!appliedFilters.dateFrom ||
     !!appliedFilters.dateTo ||
-    (appliedFilters.sources?.length ?? 0) > 0 ||
-    appliedFilters.contentFilter === 'price';
+    (appliedFilters.sources?.length ?? 0) > 0;
 
   const currentSortLabel = SORT_OPTIONS.find((s) => s.value === sortBy)?.label || 'Newest First';
 
@@ -789,10 +1256,10 @@ export const News = () => {
         </div>
 
         {/* MAIN CONTENT: SIDEBAR + FEED */}
-        <div className="flex gap-2 sm:gap-4 items-start">
+        <div className="flex gap-2 items-start">
 
           {/* FILTER SIDEBAR  Desktop */}
-          <div className="hidden lg:block w-64 xl:w-72 flex-shrink-0 sticky top-28">
+          <div className="hidden lg:block w-72 xl:w-80 flex-shrink-0 sticky top-28">
             <FilterSidebar
               filters={filters}
               onFiltersChange={setFilters}
@@ -906,23 +1373,14 @@ export const News = () => {
                     }}><X className="w-3 h-3" /></button>
                   </div>
                 )}
-                {appliedFilters.contentFilter === 'price' && (
-                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                    Filter: Price
-                    <button onClick={() => {
-                      const nf = { ...appliedFilters, contentFilter: 'all' };
-                      setAppliedFilters(nf); setFilters(nf);
-                    }}><X className="w-3 h-3" /></button>
-                  </div>
-                )}
               </div>
             )}
 
             {/* Feed list */}
             <div
               ref={feedRef}
-              className="space-y-1.5 sm:space-y-2 overflow-y-auto pr-1"
-              style={{ maxHeight: 'calc(100vh - 280px)', minHeight: '300px' }}
+                className="space-y-1 overflow-y-auto pr-1"
+              style={{ maxHeight: 'calc(100vh - 130px)', minHeight: '520px' }}
             >
               {isLoading ? (
                 Array.from({ length: 6 }).map((_, i) => <AlertSkeleton key={i} />)
@@ -932,14 +1390,23 @@ export const News = () => {
                 <>
                   {visibleAlerts.map((alert) => (
                     <div
-                      key={alert.id}
-                      className={`transition-all duration-500 ${recentAlertIds.has(alert.id) ? 'opacity-100 scale-[1.01]' : 'opacity-100 scale-100'}`}
+                      key={getMergeKey(alert)}
+                      className={`transition-all duration-500 ${recentAlertIds.has(getMergeKey(alert)) ? 'opacity-100 scale-[1.01]' : 'opacity-100 scale-100'}`}
                     >
-                      <AlertCard
-                        alert={alert}
-                        onViewDetails={handleOpenAlert}
-                        onMarkAsRead={handleMarkAsRead}
-                      />
+                      {alert.type === 'onchain' ? (
+                        <OnchainCard
+                          alert={alert}
+                          selectedAlertId={selectedAlert?.id}
+                          onViewDetails={handleOpenAlert}
+                          onMarkAsRead={handleMarkAsRead}
+                        />
+                      ) : (
+                        <AlertCard
+                          alert={alert}
+                          onViewDetails={handleOpenAlert}
+                          onMarkAsRead={handleMarkAsRead}
+                        />
+                      )}
                     </div>
                   ))}
 

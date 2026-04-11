@@ -85,6 +85,24 @@ export const AlertDetailModal = ({
 }) => {
   const dialogRef = useRef(null);
   const closeButtonRef = useRef(null);
+  const detailTimestamp = alert?.detailTimestamp || alert?.rawContent?.published || alert?.timestamp;
+  const detailTitle = safeToString(alert?.rawContent?.title ?? alert?.title, 'Untitled');
+  const detailContent = safeToString(
+    alert?.rawContent?.summary ?? alert?.summary ?? alert?.content,
+    'No summary available'
+  );
+
+  useEffect(() => {
+    if (!isOpen || !alert) return;
+    const feedTitle = safeToString(alert?.title, 'Untitled');
+    if (feedTitle !== detailTitle) {
+      console.warn('[AlertDetailModal] feed/detail title mismatch', {
+        id: alert?.alert_id ?? alert?.id,
+        feedTitle,
+        detailTitle,
+      });
+    }
+  }, [isOpen, alert, detailTitle]);
 
   // Local feedback state — reset whenever the displayed alert changes
   const [localSentiment, setLocalSentiment] = useState(null);
@@ -141,6 +159,16 @@ export const AlertDetailModal = ({
   const priority = PRIORITY_CONFIG[alert.priority] || PRIORITY_CONFIG.LOW;
   const IconComponent = EVENT_ICONS[alert.event_type] || EVENT_ICONS.DEFAULT;
   const isUnread = alert.status === 'new';
+  const newsImageUrl = safeToString(alert?.rawContent?.image_url || alert?.image_url, '');
+  const priceChange1h = Number.isFinite(Number(alert?.rawContent?.price_change_1h_pct))
+    ? Number(alert.rawContent.price_change_1h_pct)
+    : (Number.isFinite(Number(alert?.rawContent?.change_1h_pct)) ? Number(alert.rawContent.change_1h_pct) : null);
+  const priceChange24h = Number.isFinite(Number(alert?.rawContent?.price_change_24h_pct))
+    ? Number(alert.rawContent.price_change_24h_pct)
+    : (Number.isFinite(Number(alert?.rawContent?.change_24h_pct)) ? Number(alert.rawContent.change_24h_pct) : null);
+  const priceChange7d = Number.isFinite(Number(alert?.rawContent?.price_change_7d_pct))
+    ? Number(alert.rawContent.price_change_7d_pct)
+    : (Number.isFinite(Number(alert?.rawContent?.change_7d_pct)) ? Number(alert.rawContent.change_7d_pct) : null);
 
   return createPortal(
     <div
@@ -202,11 +230,11 @@ export const AlertDetailModal = ({
         {/* Body */}
         <div className="p-4 sm:p-6 space-y-3 sm:space-y-5">
           {/* Title */}
-          <h2 id="alert-detail-title" className="text-base sm:text-lg font-bold text-white leading-snug">{safeToString(alert.title)}</h2>
+          <h2 id="alert-detail-title" className="text-base sm:text-lg font-bold text-white leading-snug">{detailTitle}</h2>
 
           {/* Full content */}
           <div className="p-3 sm:p-4 rounded-lg sm:rounded-xl bg-white/[0.03] border border-white/[0.07]">
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">{safeToString(alert.content)}</p>
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">{detailContent}</p>
           </div>
 
           {/* Metadata row */}
@@ -217,8 +245,8 @@ export const AlertDetailModal = ({
                 <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-500 flex-shrink-0" />
                 <span className="text-[9px] sm:text-[11px] text-slate-500 uppercase tracking-wider">Time</span>
               </div>
-              <p className="text-[11px] sm:text-xs font-medium text-slate-300">{formatDateTime(alert.timestamp)}</p>
-              <p className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5">{formatRelativeTime(alert.timestamp)}</p>
+              <p className="text-[11px] sm:text-xs font-medium text-slate-300">{formatDateTime(detailTimestamp)}</p>
+              <p className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5">{formatRelativeTime(detailTimestamp)}</p>
             </div>
 
             {/* Source */}
@@ -257,6 +285,17 @@ export const AlertDetailModal = ({
           {alert.rawContent?.type === 'news' && alert.rawContent && (
             <div className="p-3 sm:p-4 rounded-lg sm:rounded-xl bg-blue-500/5 border border-blue-500/20 space-y-2 sm:space-y-3">
               <h3 className="text-xs sm:text-sm font-bold text-blue-400">📰 News Details</h3>
+
+              {newsImageUrl && (
+                <div className="rounded-lg overflow-hidden border border-blue-500/25 bg-[#0B1322]">
+                  <img
+                    src={newsImageUrl}
+                    alt={safeToString(alert.title, 'News image')}
+                    className="w-full max-h-64 object-cover"
+                    loading="lazy"
+                  />
+                </div>
+              )}
               
               <div className="grid grid-cols-2 gap-1.5 sm:gap-2 text-[10px] sm:text-xs">
                 {alert.rawContent.author && (
@@ -365,27 +404,27 @@ export const AlertDetailModal = ({
               </div>
 
               <div className="grid grid-cols-3 gap-1 text-[9px] sm:text-xs">
-                {typeof alert.rawContent.price_change_1h_pct === 'number' && (
+                {typeof priceChange1h === 'number' && (
                   <div className="p-1.5 sm:p-2 rounded-lg bg-white/[0.03] border border-white/[0.06]">
                     <p className="text-slate-500 text-[8px] sm:text-[10px]">1H</p>
-                    <p className={`font-bold ${alert.rawContent.price_change_1h_pct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                      {alert.rawContent.price_change_1h_pct >= 0 ? '+' : ''}{alert.rawContent.price_change_1h_pct.toFixed(2)}%
+                    <p className={`font-bold ${priceChange1h >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                      {priceChange1h >= 0 ? '+' : ''}{priceChange1h.toFixed(2)}%
                     </p>
                   </div>
                 )}
-                {typeof alert.rawContent.price_change_24h_pct === 'number' && (
+                {typeof priceChange24h === 'number' && (
                   <div className="p-1.5 sm:p-2 rounded-lg bg-white/[0.03] border border-white/[0.06]">
                     <p className="text-slate-500 text-[8px] sm:text-[10px]">24H</p>
-                    <p className={`font-bold ${alert.rawContent.price_change_24h_pct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                      {alert.rawContent.price_change_24h_pct >= 0 ? '+' : ''}{alert.rawContent.price_change_24h_pct.toFixed(2)}%
+                    <p className={`font-bold ${priceChange24h >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                      {priceChange24h >= 0 ? '+' : ''}{priceChange24h.toFixed(2)}%
                     </p>
                   </div>
                 )}
-                {typeof alert.rawContent.price_change_7d_pct === 'number' && (
+                {typeof priceChange7d === 'number' && (
                   <div className="p-1.5 sm:p-2 rounded-lg bg-white/[0.03] border border-white/[0.06]">
                     <p className="text-slate-500 text-[8px] sm:text-[10px]">7D</p>
-                    <p className={`font-bold ${alert.rawContent.price_change_7d_pct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                      {alert.rawContent.price_change_7d_pct >= 0 ? '+' : ''}{alert.rawContent.price_change_7d_pct.toFixed(2)}%
+                    <p className={`font-bold ${priceChange7d >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                      {priceChange7d >= 0 ? '+' : ''}{priceChange7d.toFixed(2)}%
                     </p>
                   </div>
                 )}
@@ -441,7 +480,11 @@ export const AlertDetailModal = ({
               <div>
                 <p className="text-[11px] text-slate-500 uppercase tracking-wider">Content Filter</p>
                 <p className="text-xs text-slate-300 mt-1">
-                  {isPriceRelated ? 'This item is price-related news.' : 'This item is general news.'}
+                    {isPriceRelated
+                      ? 'This item is price-related news.'
+                      : ((alert?.eventType || alert?.type || '').toUpperCase() === 'ONCHAIN'
+                        ? 'This item is onchain activity.'
+                        : 'This item is general market news.')}
                 </p>
               </div>
               <button

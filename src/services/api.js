@@ -35,7 +35,9 @@ const processQueue = (error, token = null) => {
 
 const doRefresh = async () => {
   const refreshToken = getRefreshToken();
-  if (!refreshToken) throw new Error('No refresh token');
+  if (!refreshToken) {
+    throw Object.assign(new Error('Authentication required'), { status: 401 });
+  }
 
   const res = await fetch(`${API_BASE_URL}/auth/refresh`, {
     method:  'POST',
@@ -51,12 +53,23 @@ const doRefresh = async () => {
 };
 
 // ─── Build auth headers ───────────────────────────────────────────────────────
-const buildHeaders = (extra = {}) => {
+const buildHeaders = (extra = {}, includeAuth = true) => {
   const token = getAccessToken();
   const headers = { 'Content-Type': 'application/json', ...extra };
-  if (token) headers['Authorization'] = `Bearer ${token}`;
+  if (includeAuth && token) headers['Authorization'] = `Bearer ${token}`;
   return headers;
 };
+
+const AUTH_PUBLIC_ENDPOINTS = [
+  '/auth/login',
+  '/auth/register',
+  '/auth/refresh',
+  '/auth/password-reset/request',
+  '/auth/password-reset/confirm',
+];
+
+const isPublicAuthEndpoint = (endpoint = '') =>
+  AUTH_PUBLIC_ENDPOINTS.some((prefix) => String(endpoint).startsWith(prefix));
 
 // ─── Core request function ────────────────────────────────────────────────────
 const request = async (method, endpoint, { body, params, formEncoded, blobResponse, retryCount = 0 } = {}) => {
@@ -70,7 +83,8 @@ const request = async (method, endpoint, { body, params, formEncoded, blobRespon
   }
 
   // Build fetch options
-  const options = { method, headers: buildHeaders() };
+  const shouldAttachAuth = !isPublicAuthEndpoint(endpoint);
+  const options = { method, headers: buildHeaders({}, shouldAttachAuth) };
 
   if (body !== undefined) {
     if (formEncoded) {
@@ -106,7 +120,7 @@ const request = async (method, endpoint, { body, params, formEncoded, blobRespon
   }
 
   // ── 401: attempt one token refresh then replay ────────────────────────────
-  if (res.status === 401) {
+  if (res.status === 401 && shouldAttachAuth) {
     endRequest();
 
     let newToken;

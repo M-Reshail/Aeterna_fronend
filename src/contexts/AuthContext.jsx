@@ -73,10 +73,40 @@ export const AuthProvider = ({ children }) => {
       // authService.login saves tokens; the real API does not return a user object
       const response = await authService.login(email, password);
       setToken(response.access_token);
-      // Fetch profile to populate user state
-      const profile = await authService.getProfile();
-      setUser(profile);
-      localStorage.setItem(USER_KEY, JSON.stringify(profile));
+
+      // Prefer user from login response if available; otherwise fetch profile.
+      let resolvedUser = response?.user || null;
+      if (!resolvedUser) {
+        try {
+          resolvedUser = await authService.getProfile();
+        } catch (profileErr) {
+          const status = profileErr?.status;
+          const msg = String(profileErr?.message || '').toLowerCase();
+          const isRefreshRelatedAuthError =
+            status === 401 && (
+              msg.includes('authentication required') ||
+              msg.includes('no refresh token') ||
+              msg.includes('token refresh failed')
+            );
+
+          if (!isRefreshRelatedAuthError) {
+            throw profileErr;
+          }
+
+          // Allow session bootstrap from token claims when profile endpoint cannot be used.
+          const claims = decodeToken(response?.access_token) || {};
+          const fallbackName = (email || '').split('@')[0] || 'User';
+          resolvedUser = {
+            id: claims?.sub || claims?.id || claims?.user_id || email,
+            email: claims?.email || email,
+            name: claims?.name || fallbackName,
+            role: claims?.role || 'user',
+          };
+        }
+      }
+
+      setUser(resolvedUser);
+      localStorage.setItem(USER_KEY, JSON.stringify(resolvedUser));
       return response;
     } catch (err) {
       console.error('❌ AuthContext.login - Error:', err);

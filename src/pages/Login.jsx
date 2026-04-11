@@ -70,8 +70,8 @@ export const Login = () => {
       await login(formData.email, formData.password);
       navigate('/dashboard');
     } catch (err) {
-      const status = err.response?.status;
-      const serverMsg = err.response?.data?.message || err.message || '';
+      const status = err?.status ?? err?.response?.status;
+      const serverMsg = err?.data?.detail || err?.response?.data?.detail || err?.response?.data?.message || err?.message || '';
 
       // Map common HTTP status codes to human-readable messages
       let errorMsg;

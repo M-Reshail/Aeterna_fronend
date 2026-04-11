@@ -33,6 +33,55 @@ const toHashtag = (value) => {
   return raw ? `#${raw.replace(/\s+/g, '_')}` : '';
 };
 
+const compactAddress = (value) => {
+  const text = safeToString(value, '').trim();
+  if (!text) return '';
+  if (!text.startsWith('0x') || text.length <= 14) return text;
+  return `${text.slice(0, 6)}...${text.slice(-4)}`;
+};
+
+const cleanPreview = (value) => {
+  const text = safeToString(value, '')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (!text) return '';
+  if (text.length <= 220) return text;
+
+  const cut = text.slice(0, 220);
+  const lastPunctuation = Math.max(cut.lastIndexOf('.'), cut.lastIndexOf('!'), cut.lastIndexOf('?'));
+  if (lastPunctuation > 80) return cut.slice(0, lastPunctuation + 1);
+
+  const lastSpace = cut.lastIndexOf(' ');
+  return `${cut.slice(0, lastSpace > 80 ? lastSpace : 220)}...`;
+};
+
+const summarizeForFeed = (summary) => {
+  if (typeof summary !== 'string') {
+    return { text: '', show: false, truncated: false };
+  }
+
+  const cleaned = summary
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (!cleaned) {
+    return { text: '', show: false, truncated: false };
+  }
+
+  if (cleaned.length <= 120) {
+    return { text: cleaned, show: true, truncated: false };
+  }
+
+  return {
+    text: `${cleaned.slice(0, 120).trimEnd()}...`,
+    show: true,
+    truncated: true,
+  };
+};
+
 // Event type icon mapping
 const EVENT_ICONS = {
   LARGE_TRANSFER: ArrowUpDown,
@@ -89,17 +138,57 @@ export const AlertCard = ({ alert, onViewDetails, onMarkAsRead }) => {
   const IconComponent = EVENT_ICONS[alert.event_type] || EVENT_ICONS.DEFAULT;
   const sourceColor = SOURCE_COLORS[alert.source] || SOURCE_COLORS.DEFAULT;
   const isUnread = alert.status === 'new';
+
   const author = safeToString(alert.author || alert?.rawContent?.author, 'Unknown author');
   const articleLink = safeToString(alert.link || alert?.rawContent?.link, '');
   const categories = asArray(alert.categories?.length ? alert.categories : alert?.rawContent?.categories)
     .map((item) => safeToString(item, '').trim())
     .filter(Boolean)
     .slice(0, 4);
+  const hashtags = asArray(alert.hashtags?.length ? alert.hashtags : alert?.rawContent?.hashtags)
+    .map((item) => safeToString(item, '').trim())
+    .filter(Boolean)
+    .slice(0, 4);
+  const mentions = asArray(alert.mentions?.length ? alert.mentions : alert?.rawContent?.mentions)
+    .map((item) => safeToString(item, '').trim())
+    .filter(Boolean)
+    .slice(0, 4);
+  const fromAddress = alert.fromAddress || alert?.rawContent?.from_address || alert?.rawContent?.from || '';
+  const toAddress = alert.toAddress || alert?.rawContent?.to_address || alert?.rawContent?.to || '';
+  const token = safeToString(alert.token || alert.entity || alert?.metadata?.token, '');
+  const amount = safeToString(alert.amountDisplay || alert?.metadata?.amount, '');
+  const cardType = safeToString(alert.type, 'news').toLowerCase();
+  const isNews = cardType === 'news';
+  const isPrice = cardType === 'price';
+  const isOnchain = cardType === 'onchain';
+  const structuredSubtitle = safeToString(alert.subtitle, '') || [
+    fromAddress && toAddress ? `${compactAddress(fromAddress)} -> ${compactAddress(toAddress)}` : '',
+    token,
+  ].filter(Boolean).join(' | ');
+  const summaryPreview = summarizeForFeed(alert.summary);
+  const displayTitle = safeToString(alert.title, 'Feed update');
+  const priceValue = safeToString(
+    alert?.rawContent?.current_price,
+    safeToString(alert?.rawContent?.price, safeToString(alert?.rawContent?.price_usd, ''))
+  );
+  const priceChange = safeToString(
+    alert?.rawContent?.price_change_24h_pct,
+    safeToString(
+      alert?.rawContent?.change_24h_pct,
+      safeToString(
+        alert?.rawContent?.price_change_1h_pct,
+        safeToString(alert?.rawContent?.change_1h_pct, '')
+      )
+    )
+  );
+  const onchainDirection = [compactAddress(fromAddress), compactAddress(toAddress)].filter(Boolean).join(' -> ');
+  const onchainUsdValue = safeToString(alert.usdFormatted || alert.amountDisplay || alert.amountUsd, '');
+  const onchainRisk = safeToString(alert.riskSignal || '', 'neutral');
 
   return (
     <div
       className={`
-        group relative flex flex-col sm:flex-row gap-2 sm:gap-4 p-3 sm:p-4 rounded-lg sm:rounded-xl
+        group relative flex flex-col sm:flex-row gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-lg sm:rounded-xl
         bg-[#0D0D0D] border border-[#1F1F1F]
         border-l-2 ${priority.cardBorder}
         transition-all duration-300 cursor-pointer
@@ -159,21 +248,103 @@ export const AlertCard = ({ alert, onViewDetails, onMarkAsRead }) => {
 
         {/* Title */}
         <h4
-          className={`text-xs sm:text-sm font-semibold mb-0.5 sm:mb-1 line-clamp-2 ${
+          className={`text-xs sm:text-sm font-semibold mb-0.5 line-clamp-2 ${
             isUnread ? 'text-white' : 'text-slate-300'
           }`}
         >
-          {safeToString(alert.title)}
+          {displayTitle}
         </h4>
 
-        {/* Content preview */}
-        <p className="text-[11px] sm:text-xs text-slate-500 line-clamp-2 leading-relaxed">
-          {safeToString(alert.content)}
-        </p>
+        {isOnchain && structuredSubtitle && (
+          <p className="text-[10px] sm:text-[11px] text-cyan-300/90 mb-1 line-clamp-1">
+            {structuredSubtitle}
+          </p>
+        )}
+
+        {isOnchain && (amount || token) && (
+          <div className="flex flex-wrap items-center gap-1 mb-1">
+            {amount && (
+              <span className="px-1.5 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                {amount}
+              </span>
+            )}
+            {token && (
+              <span className="px-1.5 py-0.5 rounded-md text-[10px] font-semibold bg-blue-500/10 text-blue-300 border border-blue-500/20">
+                {token}
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* News layout */}
+        {isNews && summaryPreview.show && (
+          <p className="text-[11px] sm:text-xs text-slate-400 line-clamp-3 leading-relaxed">
+            {summaryPreview.text}
+            {summaryPreview.truncated && (
+              <span className="text-blue-300"> Read more</span>
+            )}
+          </p>
+        )}
+
+        {/* Price layout */}
+        {isPrice && (
+          <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+            {token && (
+              <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-blue-500/10 text-blue-300 border border-blue-500/20">
+                {token}
+              </span>
+            )}
+            {priceValue && (
+              <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-white/5 text-slate-200 border border-white/10">
+                ${priceValue}
+              </span>
+            )}
+            {priceChange && (
+              <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-amber-500/10 text-amber-300 border border-amber-500/20">
+                {priceChange}%
+              </span>
+            )}
+            {!priceValue && amount && (
+              <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-white/5 text-slate-200 border border-white/10">
+                {amount}
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Onchain layout */}
+        {isOnchain && (
+          <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[10px]">
+            {onchainDirection && (
+              <span className="px-2 py-0.5 rounded-md bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+                {onchainDirection}
+              </span>
+            )}
+            {token && (
+              <span className="px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-300 border border-blue-500/20 font-semibold">
+                {token}
+              </span>
+            )}
+            {onchainUsdValue && (
+              <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-semibold">
+                {onchainUsdValue}
+              </span>
+            )}
+            <span className="px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-300 border border-rose-500/20 uppercase">
+              {onchainRisk}
+            </span>
+          </div>
+        )}
 
         {/* Author + article link */}
-        <div className="mt-1.5 flex flex-wrap items-center gap-2 text-[10px] sm:text-[11px] text-slate-500">
-          <span className="truncate">By {author}</span>
+        {isNews && (
+          <div className="hidden xl:flex mt-1.5 flex-wrap items-center gap-2 text-[10px] sm:text-[11px] text-slate-500">
+          <span
+            title={author}
+            className="max-w-[220px] whitespace-nowrap overflow-hidden text-ellipsis"
+          >
+            By {author}
+          </span>
           {articleLink && (
             <a
               href={articleLink}
@@ -186,14 +357,43 @@ export const AlertCard = ({ alert, onViewDetails, onMarkAsRead }) => {
               Read more
             </a>
           )}
-        </div>
+          </div>
+        )}
 
-        {/* Categories as hashtags */}
-        {categories.length > 0 && (
-          <div className="mt-1.5 flex flex-wrap gap-1">
-            {categories.map((category) => (
+        {/* Hashtags: topics */}
+        {isNews && hashtags.length > 0 && (
+          <div className="hidden xl:flex mt-1.5 flex-wrap gap-1">
+            {hashtags.map((tag, idx) => (
               <span
-                key={`${alert.id}-${category}`}
+                key={`${alert.id}-hashtag-${tag}-${idx}`}
+                className="text-[10px] sm:text-[11px] text-blue-300/90 bg-blue-500/10 border border-blue-500/20 px-1.5 py-0.5 rounded-md"
+              >
+                {toHashtag(tag)}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Mentions: entities/tokens */}
+        {isNews && mentions.length > 0 && (
+          <div className="hidden xl:flex mt-1 flex-wrap gap-1">
+            {mentions.map((mention, idx) => (
+              <span
+                key={`${alert.id}-mention-${mention}-${idx}`}
+                className="text-[10px] sm:text-[11px] text-emerald-300 bg-emerald-500/10 border border-emerald-500/25 px-1.5 py-0.5 rounded-md font-medium"
+              >
+                [{mention}]
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Categories fallback if hashtags are unavailable */}
+        {isNews && hashtags.length === 0 && categories.length > 0 && (
+          <div className="hidden xl:flex mt-1.5 flex-wrap gap-1">
+            {categories.map((category, idx) => (
+              <span
+                key={`${alert.id}-category-${category}-${idx}`}
                 className="text-[10px] sm:text-[11px] text-blue-300/90 bg-blue-500/10 border border-blue-500/20 px-1.5 py-0.5 rounded-md"
               >
                 {toHashtag(category)}
@@ -203,8 +403,8 @@ export const AlertCard = ({ alert, onViewDetails, onMarkAsRead }) => {
         )}
 
         {/* Token/entity */}
-        {alert.entity && (
-          <div className="flex items-center gap-1 mt-1.5 sm:mt-2">
+        {isNews && alert.entity && (
+          <div className="flex items-center gap-1 mt-1">
             <span className="text-[9px] sm:text-[10px] text-slate-600 uppercase tracking-wider">Token:</span>
             <span className="text-[9px] sm:text-[10px] font-bold text-emerald-400">{alert.entity}</span>
           </div>
@@ -255,6 +455,8 @@ AlertCard.propTypes = {
     author: PropTypes.string,
     link: PropTypes.string,
     categories: PropTypes.arrayOf(PropTypes.string),
+    hashtags: PropTypes.arrayOf(PropTypes.string),
+    mentions: PropTypes.arrayOf(PropTypes.string),
     priority: PropTypes.oneOf(['HIGH', 'MEDIUM', 'LOW']),
     status: PropTypes.string,
     timestamp: PropTypes.string,
@@ -263,6 +465,8 @@ AlertCard.propTypes = {
       author: PropTypes.string,
       link: PropTypes.string,
       categories: PropTypes.arrayOf(PropTypes.string),
+      hashtags: PropTypes.arrayOf(PropTypes.string),
+      mentions: PropTypes.arrayOf(PropTypes.string),
     }),
   }).isRequired,
   onViewDetails: PropTypes.func,
