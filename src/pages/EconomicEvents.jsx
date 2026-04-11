@@ -1,16 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ChevronLeft,
   Search,
-  Filter as FilterIcon,
   Loader2,
   Calendar,
   Clock,
-  TrendingUp,
   AlertCircle,
-  Zap,
-  Globe,
 } from 'lucide-react';
 import { useToast } from '@hooks/useToast';
 
@@ -189,7 +185,7 @@ const EconomicEvents = () => {
     switch(impact) {
       case 'HIGH': return 'from-red-500/10 to-red-600/5 border-red-500/30';
       case 'MEDIUM': return 'from-amber-500/10 to-amber-600/5 border-amber-500/30';
-      case 'LOW': return 'from-blue-500/10 to-blue-600/5 border-blue-500/30';
+      case 'LOW': return 'from-slate-500/10 to-slate-600/5 border-slate-500/30';
       default: return 'from-slate-500/10 to-slate-600/5 border-slate-500/30';
     }
   };
@@ -207,7 +203,7 @@ const EconomicEvents = () => {
   };
 
   return (
-    <div className="min-h-screen w-full pt-24 sm:pt-28 pb-12 bg-gradient-to-br from-[#0f172a] via-slate-900 to-[#1a1f2e]">
+    <div className="min-h-screen w-full pt-24 sm:pt-28 pb-12 bg-[#050505]">
       <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 space-y-8">
         {/* Header Section */}
         <div className="space-y-6">
@@ -249,11 +245,11 @@ const EconomicEvents = () => {
                 <p className="text-xs text-amber-400/70">important events</p>
               </div>
             </div>
-            <div className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/30 rounded-xl p-4 hover:border-blue-500/50 transition-all">
+            <div className="bg-gradient-to-br from-slate-500/10 to-slate-600/5 border border-slate-500/30 rounded-xl p-4 hover:border-slate-400/50 transition-all">
               <div className="space-y-1">
-                <p className="text-xs font-semibold text-blue-400 uppercase tracking-wide">Low Impact</p>
-                <p className="text-3xl font-bold text-blue-300">{events.filter(e => e.impact === 'LOW').length}</p>
-                <p className="text-xs text-blue-400/70">minor events</p>
+                <p className="text-xs font-semibold text-slate-300 uppercase tracking-wide">Low Impact</p>
+                <p className="text-3xl font-bold text-slate-200">{events.filter(e => e.impact === 'LOW').length}</p>
+                <p className="text-xs text-slate-400">minor events</p>
               </div>
             </div>
           </div>
@@ -301,7 +297,7 @@ const EconomicEvents = () => {
                 <option value="all">All Impact Levels</option>
                 <option value="HIGH">🔴 High Impact</option>
                 <option value="MEDIUM">🟠 Medium Impact</option>
-                <option value="LOW">🔵 Low Impact</option>
+                <option value="LOW">⚪ Low Impact</option>
               </select>
             </div>
 
@@ -359,7 +355,7 @@ const EconomicEvents = () => {
                         <span className={`px-3 py-1 rounded-lg text-xs font-bold ${
                           event.impact === 'HIGH' ? 'bg-red-500/20 text-red-300' :
                           event.impact === 'MEDIUM' ? 'bg-amber-500/20 text-amber-300' :
-                          'bg-blue-500/20 text-blue-300'
+                          'bg-slate-500/20 text-slate-300'
                         }`}>
                           {event.impact} IMPACT
                         </span>

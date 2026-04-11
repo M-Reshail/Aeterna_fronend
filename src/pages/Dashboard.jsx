@@ -75,39 +75,245 @@ const toHashtag = (value) => {
   return cleaned ? `#${cleaned.replace(/\s+/g, '_')}` : '';
 };
 
+const toObject = (value) => {
+  if (value && typeof value === 'object' && !Array.isArray(value)) return value;
+  if (typeof value === 'string') {
+    try {
+      const parsed = JSON.parse(value);
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) return parsed;
+    } catch {
+      // Non-JSON string content is valid; just treat as text-only payload.
+    }
+  }
+  return {};
+};
+
 const inferEventType = (title = '') => {
   const lower = toDisplayText(title, '').toLowerCase();
   if (lower.includes('price')) return 'PRICE_ALERT';
   return 'NEWS';
 };
 
-const normalizeAlert = (alert) => ({
-  id: alert.alert_id ?? alert.id,
-  alert_id: alert.alert_id ?? alert.id,
-  event_type: toDisplayText(alert.event_type, inferEventType(alert.title)).toUpperCase(),
-  source: toDisplayText(alert.source, 'Unknown'),
-  title: toDisplayText(alert.title, 'Untitled Alert'),
-  content: toDisplayText(alert.content, toDisplayText(alert.description, toDisplayText(alert.title, 'No details provided'))),
-  priority: alert.priority || 'LOW',
-  status: normalizeStatus(alert.status),
-  timestamp: alert.created_at || alert.timestamp || alert.createdAt || new Date().toISOString(),
-  entity: toDisplayText(alert.entity, ''),
-});
+const normalizePriorityValue = (value) => {
+  const upper = String(value || '').trim().toUpperCase();
+  if (upper === 'HIGH' || upper === 'MEDIUM' || upper === 'LOW') return upper;
+
+  // Map common severity words into dashboard priority buckets.
+  if (['CRITICAL', 'SEVERE', 'URGENT'].includes(upper)) return 'HIGH';
+  if (['WARNING', 'MODERATE'].includes(upper)) return 'MEDIUM';
+  if (['INFO', 'INFORMATIONAL'].includes(upper)) return 'LOW';
+
+  return '';
+};
+
+const toNumericScore = (value) => {
+  if (value === null || value === undefined) return null;
+
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : null;
+  }
+
+  const text = String(value).trim();
+  if (!text) return null;
+
+  // Accept forms like "82", "82.5", "82%", "score: 82".
+  const match = text.match(/-?\d+(?:\.\d+)?/);
+  if (!match) return null;
+
+  const parsed = Number(match[0]);
+  return Number.isFinite(parsed) ? parsed : null;
+};
+
+const normalizeTimestamp = (...candidates) => {
+  for (const candidate of candidates) {
+    if (candidate === null || candidate === undefined || candidate === '') continue;
+
+    if (typeof candidate === 'number') {
+      const millis = candidate < 1e12 ? candidate * 1000 : candidate;
+      const date = new Date(millis);
+      if (!Number.isNaN(date.getTime())) return date.toISOString();
+      continue;
+    }
+
+    const text = String(candidate).trim();
+    if (!text) continue;
+
+    const numericValue = Number(text);
+    if (Number.isFinite(numericValue)) {
+      const millis = numericValue < 1e12 ? numericValue * 1000 : numericValue;
+      const numericDate = new Date(millis);
+      if (!Number.isNaN(numericDate.getTime())) return numericDate.toISOString();
+    }
+
+    const parsed = new Date(text);
+    if (!Number.isNaN(parsed.getTime())) return parsed.toISOString();
+  }
+
+  return null;
+};
+
+const resolveEventPriority = (event = {}, content = {}) => {
+  const details = (content && typeof content.details === 'object' && content.details)
+    ? content.details
+    : {};
+
+  const explicitPriority = normalizePriorityValue(
+    event?.priority ||
+    content?.priority ||
+    details?.priority ||
+    content?.priority_marker ||
+    details?.priority_marker ||
+    content?.severity ||
+    details?.severity ||
+    event?.severity ||
+    content?.impact ||
+    details?.impact ||
+    event?.impact
+  );
+
+  if (explicitPriority) return explicitPriority;
+
+  const scored = [
+    toNumericScore(content?.quality_score),
+    toNumericScore(details?.quality_score),
+    toNumericScore(content?.importance_score),
+    toNumericScore(details?.importance_score),
+    toNumericScore(content?.impact_score),
+    toNumericScore(details?.impact_score),
+    toNumericScore(content?.confidence_score),
+    toNumericScore(details?.confidence_score),
+    toNumericScore(content?.confidence),
+    toNumericScore(details?.confidence),
+    toNumericScore(event?.quality_score),
+    toNumericScore(event?.importance_score),
+    toNumericScore(event?.impact_score),
+    toNumericScore(event?.confidence_score),
+    toNumericScore(event?.confidence),
+  ].find((value) => value !== null);
+
+  if (scored !== undefined) {
+    const normalizedScore = scored >= 0 && scored <= 1 ? scored * 100 : scored;
+    if (normalizedScore >= 70) return 'HIGH';
+    if (normalizedScore >= 50) return 'MEDIUM';
+  }
+
+  return 'LOW';
+};
+
+const normalizeAlert = (alert) => {
+  const contentObject = toObject(alert?.content);
+  const detailsObject = toObject(contentObject?.details);
+
+  const title = toDisplayText(
+    alert?.title,
+    toDisplayText(
+      contentObject?.title,
+      toDisplayText(detailsObject?.title, 'Untitled Alert')
+    )
+  );
+
+  const summary = toDisplayText(
+    contentObject?.summary,
+    toDisplayText(
+      contentObject?.full_summary,
+      toDisplayText(
+        contentObject?.description,
+        toDisplayText(
+          detailsObject?.summary,
+          toDisplayText(
+            detailsObject?.full_summary,
+            toDisplayText(
+              detailsObject?.description,
+              toDisplayText(alert?.summary, toDisplayText(alert?.description, ''))
+            )
+          )
+        )
+      )
+    )
+  );
+
+  const categories = normalizeCategories(
+    Array.isArray(contentObject?.categories)
+      ? contentObject.categories
+      : detailsObject?.categories
+  );
+
+  const hashtags = categories.map(toHashtag).filter(Boolean);
+  const normalizedType = toDisplayText(
+    alert?.event_type,
+    toDisplayText(contentObject?.type, inferEventType(title))
+  ).toUpperCase();
+
+  return {
+    id: alert.alert_id ?? alert.id,
+    alert_id: alert.alert_id ?? alert.id,
+    event_type: normalizedType,
+    source: toDisplayText(alert.source, toDisplayText(contentObject?.source, 'Unknown')),
+    title,
+    content: summary || toDisplayText(alert.content, toDisplayText(alert.description, title)),
+    summary,
+    priority: resolveEventPriority(alert, contentObject),
+    status: normalizeStatus(alert.status),
+    timestamp: alert.created_at || alert.timestamp || alert.createdAt || new Date().toISOString(),
+    entity: toDisplayText(alert.entity, toDisplayText(contentObject?.symbol, toDisplayText(contentObject?.id, ''))),
+    rawContent: {
+      ...contentObject,
+      details: detailsObject,
+      title,
+      summary,
+      link: toDisplayText(contentObject?.link, toDisplayText(detailsObject?.link, '')),
+      author: toDisplayText(contentObject?.author, toDisplayText(detailsObject?.author, '')),
+      categories,
+      hashtags,
+      type: toDisplayText(contentObject?.type, normalizedType.toLowerCase()),
+    },
+  };
+};
 
 const normalizeNewsEvent = (event) => {
-  const content = event?.content || {};
+  const content = toObject(event?.content);
+  const details = toObject(content?.details);
   const title = toDisplayText(
     content.title,
-    toDisplayText(event?.title, toDisplayText(content.name, `News from ${toDisplayText(event?.source, 'source')}`))
+    toDisplayText(
+      details?.title,
+      toDisplayText(event?.title, toDisplayText(content.name, `News from ${toDisplayText(event?.source, 'source')}`))
+    )
   );
   const summary = toDisplayText(
     content.summary,
-    toDisplayText(event?.summary, toDisplayText(content.alert_reasons, 'No summary available'))
+    toDisplayText(
+      content.full_summary,
+      toDisplayText(
+        content.description,
+        toDisplayText(
+          details?.summary,
+          toDisplayText(
+            details?.full_summary,
+            toDisplayText(
+              details?.description,
+              toDisplayText(event?.summary, toDisplayText(content.alert_reasons, ''))
+            )
+          )
+        )
+      )
+    )
   );
-  const link = toDisplayText(content.link, toDisplayText(event?.link, ''));
-  const author = toDisplayText(content.author, toDisplayText(event?.author, 'Unknown author'));
-  const categories = normalizeCategories(content.categories?.length ? content.categories : event?.categories);
+  const link = toDisplayText(content.link, toDisplayText(details?.link, toDisplayText(event?.link, '')));
+  const author = toDisplayText(content.author, toDisplayText(details?.author, toDisplayText(event?.author, 'Unknown author')));
+  const categories = normalizeCategories(content.categories?.length ? content.categories : (details?.categories?.length ? details.categories : event?.categories));
   const hashtags = categories.map(toHashtag).filter(Boolean);
+  const normalizedTimestamp = normalizeTimestamp(
+    content?.published,
+    content?.published_at,
+    details?.published,
+    details?.published_at,
+    content?.timestamp,
+    details?.timestamp,
+    event?.timestamp,
+    event?.created_at,
+    event?.createdAt
+  ) || new Date().toISOString();
 
   return {
     id: `event-${event?.id}`,
@@ -121,9 +327,9 @@ const normalizeNewsEvent = (event) => {
     author,
     categories,
     hashtags,
-    priority: content.quality_score >= 70 ? 'HIGH' : content.quality_score >= 50 ? 'MEDIUM' : 'LOW',
+    priority: resolveEventPriority(event, content),
     status: 'new',
-    timestamp: event?.timestamp || new Date().toISOString(),
+    timestamp: normalizedTimestamp,
     entity: toDisplayText(content.id, toDisplayText(content.symbol, toDisplayText(content.name, ''))),
     // Preserve raw content for detailed view
     rawContent: {
@@ -167,6 +373,7 @@ const SOURCE_QUERY_BY_LABEL = {
 };
 
 const normalizeSourceName = (source) => {
+  const original = String(source || '').trim();
   const raw = String(source || '').trim().toLowerCase();
   if (!raw) return '';
 
@@ -179,11 +386,21 @@ const normalizeSourceName = (source) => {
   // Match patterns: coingecko.com, coingecko
   if (raw.includes('coingecko')) return 'CoinGecko';
 
-  // Keep Data Sources clean: only show known upstream providers.
-  return '';
+  // Keep any valid upstream source visible, including custom/onchain sources.
+  return original;
 };
 
-const toApiSourceParam = (sourceLabel) => SOURCE_QUERY_BY_LABEL[sourceLabel] || '';
+const toApiSourceParam = (sourceLabel) => {
+  const mapped = SOURCE_QUERY_BY_LABEL[sourceLabel];
+  if (mapped) return mapped;
+
+  // Preserve unknown sources for filtering instead of dropping them.
+  return String(sourceLabel || '')
+    .trim()
+    .replace(/^https?:\/\//, '')
+    .replace(/^www\./, '')
+    .replace(/\/$/, '');
+};
 
 const PRICE_KEYWORDS = [
   'price',
@@ -274,6 +491,38 @@ const AlertSkeleton = () => (
   </div>
 );
 
+const HighlightNewsSkeleton = () => (
+  <div className="space-y-2">
+    {Array.from({ length: 3 }).map((_, i) => (
+      <div key={`news-skeleton-${i}`} className="bg-white/5 border border-white/10 rounded-lg p-3 animate-pulse">
+        <div className="flex items-start gap-2">
+          <div className="h-6 w-12 rounded bg-red-500/15 border border-red-500/20 flex-shrink-0 mt-0.5" />
+          <div className="flex-1 min-w-0 space-y-2">
+            <div className="h-4 w-11/12 rounded bg-white/10" />
+            <div className="h-3 w-1/2 rounded bg-white/10" />
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
+const HighlightEventsSkeleton = () => (
+  <div className="space-y-2">
+    {Array.from({ length: 3 }).map((_, i) => (
+      <div key={`events-skeleton-${i}`} className="bg-white/5 border border-white/10 rounded-lg p-3 animate-pulse">
+        <div className="flex items-start gap-2">
+          <div className="h-6 w-16 rounded bg-amber-500/15 border border-amber-500/20 flex-shrink-0 mt-0.5" />
+          <div className="flex-1 min-w-0 space-y-2">
+            <div className="h-4 w-10/12 rounded bg-white/10" />
+            <div className="h-3 w-2/3 rounded bg-white/10" />
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
 // ─────────────────────────────────────────────────────────────────────────────
 // MAIN DASHBOARD
 // ─────────────────────────────────────────────────────────────────────────────
@@ -338,7 +587,9 @@ export const Dashboard = () => {
       try {
         if (sourceApiParams.length > 0) {
           // If sources selected: fetch from those sources with optional type filter
-          const type = eventType === 'PRICE_ALERT' ? 'price' : (eventType === 'NEWS' ? 'news' : undefined);
+          const type = eventType === 'PRICE_ALERT'
+            ? 'price'
+            : (eventType === 'NEWS' ? 'news' : (eventType === 'ONCHAIN' ? 'onchain' : undefined));
           const results = await Promise.all(
             sourceApiParams.map((source) =>
               eventsService.getEvents({ skip: 0, limit: 100, source, type })
@@ -352,6 +603,10 @@ export const Dashboard = () => {
         } else if (eventType === 'PRICE_ALERT') {
           // If only price filter selected (no sources): fetch all price events
           feedResult = await eventsService.getEventsByType('price', { skip: 0, limit: 100 });
+          if (!Array.isArray(feedResult)) feedResult = [];
+        } else if (eventType === 'ONCHAIN') {
+          // If only onchain filter selected (no sources): fetch all onchain events
+          feedResult = await eventsService.getEventsByType('onchain', { skip: 0, limit: 100 });
           if (!Array.isArray(feedResult)) feedResult = [];
         } else {
           // If no filter selected: fetch alerts
@@ -749,15 +1004,11 @@ export const Dashboard = () => {
                 onClick={() => navigate('/news')}
                 className="text-xs px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 transition-all"
               >
-                View All Alerts
+                View All News
               </button>
             </div>
             {isLoadingHighlights ? (
-              <div className="space-y-2">
-                {Array.from({ length: 2 }).map((_, i) => (
-                  <div key={i} className="h-16 bg-white/5 rounded-lg animate-pulse" />
-                ))}
-              </div>
+              <HighlightNewsSkeleton />
             ) : highImpactNews.length === 0 ? (
               <p className="text-sm text-slate-500 text-center py-6">No high-impact news today</p>
             ) : (
@@ -798,11 +1049,7 @@ export const Dashboard = () => {
               </button>
             </div>
             {isLoadingHighlights ? (
-              <div className="space-y-2">
-                {Array.from({ length: 2 }).map((_, i) => (
-                  <div key={i} className="h-16 bg-white/5 rounded-lg animate-pulse" />
-                ))}
-              </div>
+              <HighlightEventsSkeleton />
             ) : todayEvents.length === 0 ? (
               <p className="text-sm text-slate-500 text-center py-6">No economic events today</p>
             ) : (

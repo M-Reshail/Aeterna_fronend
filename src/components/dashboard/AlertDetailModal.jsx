@@ -72,6 +72,33 @@ const safeToString = (value, fallback = '—') => {
   return fallback;
 };
 
+const resolveNewsSummary = (alert) => {
+  const isPlaceholder = (value) => {
+    const text = String(value || '').trim().toLowerCase();
+    return !text || text === 'no summary available' || text === 'no details provided';
+  };
+
+  const raw = alert?.rawContent || {};
+  const candidates = [
+    raw?.full_summary,
+    raw?.summary,
+    raw?.description,
+    raw?.details?.summary,
+    raw?.details?.full_summary,
+    raw?.details?.description,
+    raw?.normalizedFeed?.summary,
+    alert?.summary,
+    alert?.content,
+  ];
+
+  for (const candidate of candidates) {
+    const text = safeToString(candidate, '');
+    if (!isPlaceholder(text)) return text;
+  }
+
+  return '';
+};
+
 export const AlertDetailModal = ({
   alert,
   isOpen,
@@ -87,10 +114,11 @@ export const AlertDetailModal = ({
   const closeButtonRef = useRef(null);
   const detailTimestamp = alert?.detailTimestamp || alert?.rawContent?.published || alert?.timestamp;
   const detailTitle = safeToString(alert?.rawContent?.title ?? alert?.title, 'Untitled');
-  const detailContent = safeToString(
-    alert?.rawContent?.summary ?? alert?.summary ?? alert?.content,
-    'No summary available'
-  );
+  const newsSummary = resolveNewsSummary(alert);
+  const isNewsItem = alert?.rawContent?.type === 'news';
+  const detailContent = isNewsItem
+    ? (newsSummary || 'No summary available')
+    : (newsSummary || 'No summary available');
 
   useEffect(() => {
     if (!isOpen || !alert) return;
@@ -285,6 +313,15 @@ export const AlertDetailModal = ({
           {alert.rawContent?.type === 'news' && alert.rawContent && (
             <div className="p-3 sm:p-4 rounded-lg sm:rounded-xl bg-blue-500/5 border border-blue-500/20 space-y-2 sm:space-y-3">
               <h3 className="text-xs sm:text-sm font-bold text-blue-400">📰 News Details</h3>
+
+              {!newsImageUrl && (
+                <div className="p-2.5 sm:p-3 rounded-lg bg-white/[0.03] border border-white/[0.07]">
+                  <p className="text-[10px] sm:text-xs text-slate-500 mb-1">Summary</p>
+                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                    {newsSummary || 'No summary available'}
+                  </p>
+                </div>
+              )}
 
               {newsImageUrl && (
                 <div className="rounded-lg overflow-hidden border border-blue-500/25 bg-[#0B1322]">
