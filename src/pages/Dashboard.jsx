@@ -14,6 +14,7 @@ import { useAuth } from '@hooks/useAuth';
 import { useToast } from '@hooks/useToast';
 import feedbackService from '@services/feedbackService';
 import eventsService from '@services/eventsService';
+import alertsService from '@services/alertsService';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // NORMALIZERS
@@ -607,12 +608,29 @@ export const Dashboard = () => {
   const { user } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
+  const [allAlerts, setAllAlerts] = useState([]);
+  const [filters, setFilters] = useState(DEFAULT_FILTERS);
+  const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS);
+  const [sortBy, setSortBy] = useState('newest');
   const [selectedAlert, setSelectedAlert] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(8);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [showSortMenu, setShowSortMenu] = useState(false);
+  const [recentAlertIds, setRecentAlertIds] = useState(new Set());
+  const [feedbackMap, setFeedbackMap] = useState({});
+  const [sourceOptions, setSourceOptions] = useState([]);
+  const [loadError, setLoadError] = useState('');
   const [highImpactNews, setHighImpactNews] = useState([]);
   const [todayEvents, setTodayEvents] = useState([]);
   const [isLoadingHighlights, setIsLoadingHighlights] = useState(true);
+  const sortMenuRef = useRef(null);
+  const feedRef = useRef(null);
   const toastRef = useRef(toast);
   const hasShownLoadErrorRef = useRef(false);
+  const readAlertIdsRef = useRef(new Set());
 
   useEffect(() => {
     toastRef.current = toast;
